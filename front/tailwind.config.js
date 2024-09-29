@@ -1,13 +1,20 @@
+import daisyui from "daisyui"
+
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
+	darkMode: ["class"],
+	safelist: ["dark"],
+	prefix: "",
+
 	content: [
-		"./index.html",
-		"./src/**/*.{vue,js,ts,jsx,tsx}",
+		'./pages/**/*.{ts,tsx,vue}',
+		'./components/**/*.{ts,tsx,vue}',
+		'./app/**/*.{ts,tsx,vue}',
+		'./src/**/*.{ts,tsx,vue}',
 	],
-	theme: {
-		extend: {},
+
+	plugins: [daisyui],
+	daisyui: {
+		themes: ["light"],
 	},
-	plugins: [
-		require('daisyui'),
-	],
 }
