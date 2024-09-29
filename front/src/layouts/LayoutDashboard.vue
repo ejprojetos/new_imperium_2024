@@ -4,7 +4,7 @@
 
 		<div class="flex flex-col w-full">
 			<Topbar />
-			<div class="flex-1 pb-12  bg-[#f2f2f2]">
+			<div class="flex-1 rounded-lg p-4 bg-[#f2f2f2]">
 				<slot />
 			</div>
 		</div>

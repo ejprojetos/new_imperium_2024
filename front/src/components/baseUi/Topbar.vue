@@ -1,6 +1,6 @@
 <template>
 	<!-- Desktop -->
-	<div v-if="!isMobile" class="flex items-center justify-end h-12 px-4 bg-white border-b border-gray-200">
+	<div v-if="!isMobile" class="flex items-center justify-end h-12 px-4 bg-white ">
 		<p class="font-bold">Olá, {{ role }}</p>
 	</div>
 
