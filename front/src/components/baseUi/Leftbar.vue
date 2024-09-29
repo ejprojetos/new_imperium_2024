@@ -1,11 +1,11 @@
 <template>
 	<div class="flex flex-col w-[250px] px-4 py-8 items-center justify-between">
-		<img class="w-32" src="../../assets/logo.svg" alt="" srcset="">
+		<img class="w-32" src="../../assets/logo.svg" alt="" srcset="" />
 
 		<div class="flex flex-col mt-12 gap-y-1">
 			<RouterLink class="router_link" v-for="item in navItems" :key="item.name" :to="item.path">
 				<div class="flex items-center justify-start mt-4 mb-2 text-sm gap-x-4">
-					<img :src="item.iconPath" alt="">
+					<img :src="item.iconPath" alt="" />
 					<p class="text-lg font-bold">{{ item.name }}</p>
 				</div>
 			</RouterLink>
@@ -24,7 +24,6 @@
 			</div>
 		</div>
 
-
 		<!-- ajuda (suporte, contatos, politicas) -->
 		<div class="flex flex-col items-start w-full">
 			<p class="font-bold">Ajuda</p>
@@ -32,47 +31,62 @@
 			<RouterLink to="/contatos">Contatos</RouterLink>
 			<RouterLink to="/politicas">Políticas</RouterLink>
 		</div>
-
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useRoute } from 'vue-router';
-import { Bell } from 'lucide-vue-next';
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { Bell } from 'lucide-vue-next'
 
-const route = useRoute();
-
+const route = useRoute()
 
 //const isActive = (path: string) => computed(() => route.path === path);
 
 const navItems = [
 	{
-		name: "Principal",
-		iconPath: "src/assets/icons/principal.svg",
-		path: "/dashboard",
-		roles: ["admin", "superadmin", "medico", "recepcionista", "paciente"],
+		name: 'Principal',
+		iconPath: 'src/assets/icons/principal.svg',
+		path: '/dashboard',
+		roles: ['admin', 'superadmin', 'medico', 'recepcionista', 'paciente']
 	},
 	{
-		name: "Institucional",
-		iconPath: "src/assets/icons/institucional.svg",
-		path: "/",
-		roles: ["admin", "superadmin", "medico", "recepcionista", "paciente"],
+		name: 'Institucional',
+		iconPath: 'src/assets/icons/institucional.svg',
+		path: '/',
+		roles: ['admin', 'superadmin', 'medico', 'recepcionista', 'paciente']
 	},
 	{
-		name: "Clinicas",
-		iconPath: "src/assets/icons/clinicas.svg",
-		path: "/dashboard/clinicas",
-		roles: ["admin", "superadmin", "medico", "recepcionista", "paciente"],
+		name: 'Clinicas',
+		iconPath: 'src/assets/icons/clinicas.svg',
+		path: '/dashboard/clinicas',
+		roles: ['admin', 'superadmin', 'medico', 'recepcionista', 'paciente']
 	},
 	{
-		name: "Emails",
-		iconPath: "src/assets/icons/email.svg",
-		path: "/dashboard/emails",
-		roles: ["admin", "superadmin", "medico", "recepcionista", "paciente"],
+		name: 'Emails',
+		iconPath: 'src/assets/icons/email.svg',
+		path: '/dashboard/emails',
+		roles: ['admin', 'superadmin', 'medico', 'recepcionista', 'paciente']
+	},
+	{
+		name: 'Recepcionistas',
+		iconPath: 'src/assets/icons/recepcionistas.svg',
+		path: '/dashboard/recepcionistas',
+		roles: ['admin', 'superadmin', 'medico', 'recepcionista', 'paciente']
+	},
+	{
+		name: 'Pacientes',
+		iconPath: 'src/assets/icons/pacientes.svg',
+		path: '/dashboard/pacientes',
+		roles: ['admin', 'superadmin', 'medico', 'recepcionista', 'paciente']
+	},
+	{
+		name: 'Minhas Consultas',
+		iconPath: 'src/assets/icons/minhas-consultas.svg',
+		path: '/dashboard/minhas-consultas',
+		roles: ['admin', 'superadmin', 'medico', 'recepcionista', 'paciente']
 	}
-];
-
+]
 </script>
 
 <style scoped>
