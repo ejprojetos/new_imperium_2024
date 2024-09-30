@@ -15,5 +15,5 @@ docker ps
 ```
 
 ```bash
-docker exec -it colacarIDAQUI /bin/bash
+docker exec -it colocarIDDOCKER /bin/bash
 ```
