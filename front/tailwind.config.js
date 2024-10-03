@@ -13,6 +13,17 @@ module.exports = {
 		'./src/**/*.{ts,tsx,vue}',
 	],
 
+	theme: {
+		extend: {
+			colors: {
+				primary: '#00428F',
+				lightGreen: '#BBFAE4',
+				lightBlue: '#DEECFA'
+			},
+		},
+	},
+
+
 	plugins: [daisyui],
 	daisyui: {
 		themes: ["light"],
