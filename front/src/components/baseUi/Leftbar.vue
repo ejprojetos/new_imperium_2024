@@ -15,7 +15,7 @@
                     :key="item.name"
                     :to="item.path">
                     <div class="flex items-center justify-start mt-4 mb-2 text-sm gap-x-4">
-                        <img clas :src="item.iconPath" alt="" />
+                        <img :src="item.icon" alt="" />
                         <p class="font-bold text-md">{{ item.name }}</p>
                     </div>
                 </RouterLink>
@@ -50,6 +50,14 @@
 </template>
 
 <script setup lang="ts">
+import principalIcon from '@/assets/icons/principal.svg'
+import institucionalIcon from '@/assets/icons/institucional.svg'
+import clinicasIcon from '@/assets/icons/clinicas.svg'
+import emailIcon from '@/assets/icons/email.svg'
+import recepcionistasIcon from '@/assets/icons/recepcionistas.svg'
+import pacientesIcon from '@/assets/icons/pacientes.svg'
+import minhasConsultasIcon from '@/assets/icons/minhas-consultas.svg'
+
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { Bell } from 'lucide-vue-next'
@@ -78,45 +86,44 @@ const expandLeftbar = () => {
 const navItems = [
     {
         name: 'Principal',
-        iconPath: 'src/assets/icons/principal.svg',
+        icon: principalIcon,
         path: '/dashboard',
         roles: ['admin', 'superadmin', 'medico', 'recepcionista', 'paciente']
     },
     {
         name: 'Institucional',
-        iconPath: 'src/assets/icons/institucional.svg',
-        path: '/',
+        icon: institucionalIcon,
+        path: '/dashboard/institucional',
         roles: ['admin', 'superadmin', 'medico', 'recepcionista', 'paciente']
     },
     {
         name: 'Clinicas',
-        iconPath: 'src/assets/icons/clinicas.svg',
+        icon: clinicasIcon,
         path: '/dashboard/clinicas',
+        roles: ['admin', 'superadmin', 'medico', 'recepcionista', 'paciente']
+    },
+    {
+        name: 'Emails',
+        icon: emailIcon,
+        path: '/dashboard/emails',
         roles: ['admin', 'superadmin', 'medico', 'recepcionista', 'paciente']
     }
     //{
-    //    name: 'Emails',
-    //    iconPath: 'src/assets/icons/email.svg',
-    //    path: '/dashboard/emails',
-    //    roles: ['admin', 'superadmin', 'medico', 'recepcionista', 'paciente']
-    //},
-    //{
     //    name: 'Recepcionistas',
-    //    iconPath: 'src/assets/icons/recepcionistas.svg',
+    //    icon: recepcionistasIcon,
     //    path: '/dashboard/recepcionistas',
     //    roles: ['admin', 'superadmin', 'medico', 'recepcionista', 'paciente']
     //},
     //{
     //    name: 'Pacientes',
-    //    iconPath: 'src/assets/icons/pacientes.svg',
+    //    icon: pacientesIcon,
     //    path: '/dashboard/pacientes',
     //    roles: ['admin', 'superadmin', 'medico', 'recepcionista', 'paciente']
     //},
     //{
     //    name: 'Minhas Consultas',
-    //    iconPath: 'src/assets/icons/minhas-consultas.svg',
-    //    path: '/dashboard/minhas-consultas',
-    //    roles: ['admin', 'superadmin', 'medico', 'recepcionista', 'paciente']
+    //    icon: minhasConsultasIcon,
+    //    path: '/dashboard/minhas-consultas'
     //}
 ]
 </script>

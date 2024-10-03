@@ -8,6 +8,7 @@
                 <slot />
             </div>
         </div>
+        <Toaster />
     </div>
 </template>
 
@@ -15,6 +16,7 @@
 import Leftbar from '@/components/baseUi/Leftbar.vue'
 import Topbar from '@/components/baseUi/Topbar.vue'
 import { useScreenSize } from '@/composables/useScreenSize'
+import { Toaster } from 'vue-sonner'
 
 const { isMobile } = useScreenSize()
 </script>

@@ -11,9 +11,6 @@ importers:
       '@vueuse/core':
         specifier: ^11.1.0
         version: 11.1.0(vue@3.5.9(typescript@5.4.5))
-      lucide:
-        specifier: ^0.447.0
-        version: 0.447.0
       lucide-vue-next:
         specifier: ^0.446.0
         version: 0.446.0(vue@3.5.9(typescript@5.4.5))
@@ -26,6 +23,9 @@ importers:
       vue-router:
         specifier: ^4.3.3
         version: 4.4.5(vue@3.5.9(typescript@5.4.5))
+      vue-sonner:
+        specifier: ^1.2.1
+        version: 1.2.1
     devDependencies:
       '@rushstack/eslint-patch':
         specifier: ^1.8.0
@@ -1728,9 +1728,6 @@ packages:
     peerDependencies:
       vue: '>=3.0.1'
 
-  lucide@0.447.0:
-    resolution: {integrity: sha512-FDF5jUaT3WjGE8OUDRLoNJ9RiG9EpQZaYk454B4AJtDbzuI1Ss3wg4LyB7kp5oW9wg7X2HmMgsiwOJUw9HCQnA==}
-
   magic-string@0.30.11:
     resolution: {integrity: sha512-+Wri9p0QHMy+545hKww7YAu5NyzF8iomPL/RQazugQ9+Ez4Ic3mERMd8ZTX5rfK944j+560ZJi8iAwgak1Ac7A==}
 
@@ -2452,6 +2449,9 @@ packages:
     resolution: {integrity: sha512-4fKZygS8cH1yCyuabAXGUAsyi1b2/o/OKgu/RUb+znIYOxPRxdkytJEx+0wGcpBE1pX6vUgh5jwWOKRGvuA/7Q==}
     peerDependencies:
       vue: ^3.2.0
+
+  vue-sonner@1.2.1:
+    resolution: {integrity: sha512-J5+TwkayiBkieYBG8PGk5PMys8+UZxDmT/CCaX9otDzRONRr5hgTgo2Fha2krUFnUw1d576jsNGXhmAL06ixfA==}
 
   vue-tsc@2.1.6:
     resolution: {integrity: sha512-f98dyZp5FOukcYmbFpuSCJ4Z0vHSOSmxGttZJCsFeX0M4w/Rsq0s4uKXjcSRsZqsRgQa6z7SfuO+y0HVICE57Q==}
@@ -4263,8 +4263,6 @@ snapshots:
     dependencies:
       vue: 3.5.9(typescript@5.4.5)
 
-  lucide@0.447.0: {}
-
   magic-string@0.30.11:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.0
@@ -4953,6 +4951,8 @@ snapshots:
     dependencies:
       '@vue/devtools-api': 6.6.4
       vue: 3.5.9(typescript@5.4.5)
+
+  vue-sonner@1.2.1: {}
 
   vue-tsc@2.1.6(typescript@5.4.5):
     dependencies:

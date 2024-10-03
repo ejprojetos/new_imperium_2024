@@ -9,10 +9,12 @@
                 class="flex gap-x-4 max-lg:flex-col max-lg:items-start max-lg:gap-x-0 max-lg:w-full max-lg:gap-y-4 max-lg:mt-4">
                 <div class="p-4 rounded-lg shadow-lg bg-lightGreen min-w-56 max-lg:w-full">
                     <h3 class="mb-8 text-xl font-bold">Cadastrar clínica</h3>
-                    <button
-                        class="w-full py-2 text-xs text-white min-h-unset btn bg-primary hover:bg-primary">
-                        Cadastrar
-                    </button>
+                    <RouterLink to="/dashboard/clinicas/cadastrar">
+                        <button
+                            class="w-full py-2 text-xs text-white min-h-unset btn bg-primary hover:bg-primary">
+                            Cadastrar
+                        </button>
+                    </RouterLink>
                 </div>
                 <div class="p-4 bg-white rounded-lg shadow-lg min-w-56 max-lg:w-full">
                     <h3 class="mb-8 text-xl font-bold">Pagamentos</h3>
@@ -75,6 +77,7 @@
 <script setup lang="ts">
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 import { Search } from 'lucide-vue-next'
+import { RouterLink } from 'vue-router'
 
 const cards = [
     {
@@ -127,6 +130,7 @@ const cards = [
     min-height: unset;
     height: unset;
 }
+
 .custom-placeholder::placeholder {
     color: #121212;
 }
