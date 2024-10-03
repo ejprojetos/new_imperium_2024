@@ -6,12 +6,63 @@ const router = createRouter({
         {
             path: '/',
             name: 'home',
-            component: () => import('../views/institucional/index.vue')
+            // component: () => import('../views/institucional/index.vue'
+            redirect: '/dashboard'
         },
         {
             path: '/dashboard',
             name: 'dashboard',
             component: () => import('../views/dashboard/index.vue')
+        },
+        {
+            path: '/dashboard/institucional',
+            name: 'institucional',
+            component: () => import('../views/dashboard/institucional/index.vue')
+        },
+        {
+            path: '/dashboard/institucional/secao-inicial',
+            name: 'secao-inicial',
+            component: () => import('../views/dashboard/institucional/secao-inicial.vue')
+        },
+        {
+            path: '/dashboard/institucional/fluxo',
+            name: 'fluxo',
+            component: () => import('../views/dashboard/institucional/fluxo.vue')
+        },
+        {
+            path: '/dashboard/institucional/features',
+            name: 'features',
+            component: () => import('../views/dashboard/institucional/features.vue')
+        },
+        {
+            path: '/dashboard/institucional/depoimentos',
+            name: 'depoimentos',
+            component: () => import('../views/dashboard/institucional/depoimentos.vue')
+        },
+        {
+            path: '/dashboard/institucional/cadastrar-depoimentos',
+            name: 'cadastrar-depoimentos',
+            component: () => import('../views/dashboard/institucional/cadastrar-depoimentos.vue')
+        },
+        {
+            path: '/dashboard/clinicas',
+            name: 'clinicas',
+            component: () => import('../views/dashboard/clinicas/index.vue')
+        },
+        {
+            path: '/dashboard/clinicas/cadastrar',
+            name: 'cadastrar-clinica',
+            component: () => import('../views/dashboard/clinicas/cadastrar-clinica.vue')
+        },
+        {
+            path: '/dashboard/emails',
+            name: 'emails',
+            component: () => import('../views/dashboard/emails/index.vue')
+        },
+        {
+            path: '/dashboard/emails/:id',
+            name: 'cadastrar-email',
+            component: () => import('../views/dashboard/emails/view-email.vue')
         },
         {
             path: '/:pathMatch(.*)*',
