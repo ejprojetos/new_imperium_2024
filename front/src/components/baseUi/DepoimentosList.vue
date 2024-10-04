@@ -1,25 +1,28 @@
 <template>
     <div class="overflow-hidden bg-white shadow-lg rounded-3xl">
         <div class="flex items-center justify-between p-4 text-white bg-primary">
-            <h2 class="text-xl font-semibold">CLÍNICAS</h2>
+            <h2 class="text-xl font-semibold">Depoimentos</h2>
             <button
-                @click="navigateToAddClinic"
+                @click="navigateToAddDepoimento"
                 class="px-4 py-2 text-blue-600 transition-colors bg-white rounded-md hover:bg-blue-100">
                 Adicionar
             </button>
         </div>
         <ul>
-            <li v-for="clinica in clinicas" :key="clinica.id" class="border-b last:border-b-0">
+            <li
+                v-for="depoimento in depoimentos"
+                :key="depoimento.id"
+                class="border-b last:border-b-0">
                 <div class="flex items-center justify-between p-4 hover:bg-blue-200">
-                    <span>{{ clinica.name }}</span>
+                    <span>{{ depoimento.name }}</span>
                     <div class="max-lg:flex max-lg:flex-col max-lg:space-y-1">
                         <button
-                            @click="editClinica(clinica.id)"
+                            @click="editDepoimento(depoimento.id)"
                             class="px-3 py-1 mr-2 text-white transition-colors bg-blue-600 rounded-md hover:bg-blue-600 max-lg:w-full">
                             Editar
                         </button>
                         <button
-                            @click="deleteClinica(clinica.id)"
+                            @click="deleteDepoimento(depoimento.id)"
                             class="px-3 py-1 text-white transition-colors bg-red-500 rounded-md hover:bg-red-600">
                             Desativar
                         </button>
@@ -55,18 +58,17 @@ const router = useRouter()
 const modalEdit = ref<HTMLDialogElement>()
 const modalDelete = ref<HTMLDialogElement>()
 
-interface Clinica {
+interface Depoimento {
     id: number
     name: string
 }
 
-const clinicas = ref<Clinica[]>([
-    { id: 1, name: 'Clínica Dr. Alexandre' },
-    { id: 2, name: 'Clínica Maxado de Assis' },
-    { id: 3, name: 'Clínica Odontológica Merci' },
-    { id: 4, name: 'Clínica LolOdonto' },
-    { id: 5, name: 'Clínica OdontoMed' },
-    { id: 6, name: 'Clínica Sorriso' }
+const depoimentos = ref<Depoimento[]>([
+    { id: 1, name: 'Depoimento 1' },
+    { id: 2, name: 'Depoimento 2' },
+    { id: 3, name: 'Depoimento 3' },
+    { id: 4, name: 'Depoimento 4' },
+    { id: 5, name: 'Depoimento 5' }
 ])
 
 const closeModalDelete = () => {
@@ -77,16 +79,16 @@ const showModalDelete = () => {
     modalDelete.value?.showModal()
 }
 
-const navigateToAddClinic = () => {
-    router.push('/dashboard/clinicas/cadastrar')
+const navigateToAddDepoimento = () => {
+    router.push('/dashboard/institucional/cadastrar-depoimentos')
 }
 
-const editClinica = (id: number) => {
-    console.log('Editar clinica')
+const editDepoimento = (id: number) => {
+    console.log('Editar depoimento')
 }
 
-const deleteClinica = (id: number) => {
-    console.log('Delete clinica')
+const deleteDepoimento = (id: number) => {
+    console.log('Delete depoimento')
     showModalDelete()
 }
 

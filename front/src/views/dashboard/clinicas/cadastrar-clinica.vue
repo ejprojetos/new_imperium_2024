@@ -134,7 +134,8 @@
                         </div>
                     </div>
 
-                    <div class="flex justify-end mt-8 space-x-4">
+                    <div
+                        class="flex justify-end mt-8 space-x-4 max-lg:flex-col max-lg:space-y-4 max-lg:space-x-0">
                         <button
                             type="button"
                             @click="saveAndAddAnother"
