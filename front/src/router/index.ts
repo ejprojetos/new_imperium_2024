@@ -35,6 +35,11 @@ const router = createRouter({
             component: () => import('../views/dashboard/consultas/consultas.vue')
         },
         {
+            path: '/dashboard/minhas-consultas',
+            name: 'minhas-consultas',
+            component: () => import('../views/dashboard/consultas/minhas-consultas.vue')
+        },
+        {
             path: '/dashboard/recepcionistas',
             name: 'recepcionistas',
             component: () => import('../views/dashboard/recepcionistas/recepcionistas.vue')
