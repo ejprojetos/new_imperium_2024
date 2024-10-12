@@ -30,6 +30,26 @@ const router = createRouter({
             component: () => import('../views/dashboard/institucional/fluxo.vue')
         },
         {
+            path: '/dashboard/consultas',
+            name: 'consultas',
+            component: () => import('../views/dashboard/consultas/consultas.vue')
+        },
+        {
+            path: '/dashboard/recepcionistas',
+            name: 'recepcionistas',
+            component: () => import('../views/dashboard/recepcionistas/recepcionistas.vue')
+        },
+        {
+            path: '/dashboard/medicos',
+            name: 'medicos',
+            component: () => import('../views/dashboard/medicos/medicos.vue')
+        },
+        {
+            path: '/dashboard/pacientes',
+            name: 'pacientes',
+            component: () => import('../views/dashboard/pacientes/pacientes.vue')
+        },
+        {
             path: '/dashboard/institucional/features',
             name: 'features',
             component: () => import('../views/dashboard/institucional/features.vue')

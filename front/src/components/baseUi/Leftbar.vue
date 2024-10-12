@@ -9,14 +9,16 @@
             class="flex flex-col w-[250px] px-4 py-8 items-center justify-between h-full max-lg:px-4 max-lg:items-start">
             <img class="w-32" src="../../assets/logo.svg" alt="" srcset="" />
             <div class="flex flex-col mt-12">
-                <RouterLink
-                    class="router_link"
-                    v-for="item in navItems"
-                    :key="item.name"
-                    :to="item.path">
-                    <div class="flex items-center justify-start mt-4 mb-2 text-sm gap-x-4">
+                <RouterLink v-for="item in navItems" :key="item.name" :to="item.path">
+                    <div
+                        v-if="item.roles.includes(role)"
+                        class="flex items-center justify-start mt-4 mb-2 text-sm gap-x-4">
                         <img :src="item.icon" alt="" />
-                        <p class="font-bold text-md">{{ item.name }}</p>
+                        <p
+                            :class="{ 'text-active': isActive(item.path) }"
+                            class="font-bold text-md">
+                            {{ item.name }}
+                        </p>
                     </div>
                 </RouterLink>
             </div>
@@ -63,7 +65,11 @@ import { useRoute } from 'vue-router'
 import { Bell } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
 import { useUIStore } from '@/stores/ui/useUIStore'
+import { useUserStore } from '@/stores/user/useUserStore'
 import { useScreenSize } from '@/composables/useScreenSize'
+
+const userStore = useUserStore()
+const { role, name } = storeToRefs(userStore)
 
 const uiStore = useUIStore()
 
@@ -71,7 +77,7 @@ const route = useRoute()
 const { isLeftbarOpen } = storeToRefs(uiStore)
 const { isMobile } = useScreenSize()
 
-//const isActive = (path: string) => computed(() => route.path === path);
+const isActive = (path: string) => computed(() => route.path === path).value
 
 const closeLeftbar = () => {
     uiStore.toggleLeftbar()
@@ -88,38 +94,50 @@ const navItems = [
         name: 'Principal',
         icon: principalIcon,
         path: '/dashboard',
-        roles: ['admin', 'superadmin', 'medico', 'recepcionista', 'paciente']
+        roles: ['admin', 'superadmin', 'paciente']
     },
     {
         name: 'Institucional',
         icon: institucionalIcon,
         path: '/dashboard/institucional',
-        roles: ['admin', 'superadmin', 'medico', 'recepcionista', 'paciente']
+        roles: ['admin', 'superadmin', 'paciente']
     },
     {
         name: 'Clinicas',
         icon: clinicasIcon,
         path: '/dashboard/clinicas',
-        roles: ['admin', 'superadmin', 'medico', 'recepcionista', 'paciente']
+        roles: ['admin', 'superadmin', 'paciente']
     },
     {
         name: 'Emails',
         icon: emailIcon,
         path: '/dashboard/emails',
+        roles: ['admin', 'superadmin', 'paciente']
+    },
+    {
+        name: 'Médicos',
+        icon: clinicasIcon,
+        path: '/dashboard/medicos',
+        roles: ['admin', 'superadmin', 'recepcionista', 'paciente']
+    },
+    {
+        name: 'Consultas',
+        icon: principalIcon,
+        path: '/dashboard/consultas',
+        roles: ['admin', 'superadmin', 'medico', 'recepcionista']
+    },
+    {
+        name: 'Recepcionistas',
+        icon: recepcionistasIcon,
+        path: '/dashboard/recepcionistas',
+        roles: ['admin', 'superadmin', 'medico', 'paciente']
+    },
+    {
+        name: 'Pacientes',
+        icon: pacientesIcon,
+        path: '/dashboard/pacientes',
         roles: ['admin', 'superadmin', 'medico', 'recepcionista', 'paciente']
     }
-    //{
-    //    name: 'Recepcionistas',
-    //    icon: recepcionistasIcon,
-    //    path: '/dashboard/recepcionistas',
-    //    roles: ['admin', 'superadmin', 'medico', 'recepcionista', 'paciente']
-    //},
-    //{
-    //    name: 'Pacientes',
-    //    icon: pacientesIcon,
-    //    path: '/dashboard/pacientes',
-    //    roles: ['admin', 'superadmin', 'medico', 'recepcionista', 'paciente']
-    //},
     //{
     //    name: 'Minhas Consultas',
     //    icon: minhasConsultasIcon,
@@ -129,6 +147,10 @@ const navItems = [
 </script>
 
 <style scoped>
+.text-active {
+    color: #ed5575; /* Color for active item name */
+}
+
 .slide-enter-active,
 .slide-leave-active {
     transition: transform 0.3s ease;
@@ -189,14 +211,6 @@ const navItems = [
 
 .menu-link {
     color: #334155;
-}
-
-.active-link {
-    /*background-color: #d6e3ff;*/
-    font-weight: bold;
-    border-left: 3px solid blue;
-    border-radius: 0px;
-    padding-left: 12px;
 }
 
 .link-transition {
