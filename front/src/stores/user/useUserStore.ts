@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-type UserRole = 'admin' | 'superadmin' | 'medico' | 'recepcionista' | 'paciente'
+type UserRole = 'admin' | 'superadmin' | 'medico' | 'recepcionista' | 'paciente' | 'clinica'
 
 export const useUserStore = defineStore('user', () => {
     const role = ref<UserRole>('admin')
@@ -20,6 +20,9 @@ export const useUserStore = defineStore('user', () => {
                 break
             case 'superadmin':
                 nome = 'Superadmin'
+                break
+            case 'clinica':
+                nome = 'Clinica'
                 break
             case 'medico':
                 nome = 'Médico'

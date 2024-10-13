@@ -6,6 +6,7 @@
             <select name="role" id="role" class="bg-red-500" @change="updateRole">
                 <option value="admin">Administrador</option>
                 <option value="superadmin">Superadmin</option>
+                <option value="clinica">Clinica</option>
                 <option value="medico">Médico</option>
                 <option value="recepcionista">Recepcionista</option>
                 <option value="paciente">Paciente</option>

@@ -94,7 +94,7 @@ const navItems = [
         name: 'Principal',
         icon: principalIcon,
         path: '/dashboard',
-        roles: ['admin', 'superadmin']
+        roles: ['admin', 'superadmin', 'clinica']
     },
     {
         name: 'Institucional',
@@ -118,25 +118,25 @@ const navItems = [
         name: 'Médicos',
         icon: clinicasIcon,
         path: '/dashboard/medicos',
-        roles: ['admin', 'superadmin', 'recepcionista']
+        roles: ['admin', 'superadmin', 'clinica', 'recepcionista']
     },
     {
         name: 'Consultas',
         icon: principalIcon,
         path: '/dashboard/consultas',
-        roles: ['admin', 'superadmin', 'medico', 'recepcionista']
+        roles: ['admin', 'superadmin', 'clinica', 'medico', 'recepcionista']
     },
     {
         name: 'Recepcionistas',
         icon: recepcionistasIcon,
         path: '/dashboard/recepcionistas',
-        roles: ['admin', 'superadmin', 'medico']
+        roles: ['admin', 'superadmin', 'clinica', 'medico']
     },
     {
         name: 'Pacientes',
         icon: pacientesIcon,
         path: '/dashboard/pacientes',
-        roles: ['admin', 'superadmin', 'medico', 'recepcionista']
+        roles: ['admin', 'superadmin', 'clinica', 'medico', 'recepcionista']
     },
     {
         name: 'Minhas Consultas',
