@@ -106,7 +106,7 @@
                                 class="w-full px-2 py-1 border rounded"
                                 rows="3"></textarea>
                         </div>
-                        <p v-else>{{ formData.medications }}</p>
+                        <p v-else>{{ formData.medication }}</p>
                     </div>
                 </div>
 
@@ -131,10 +131,7 @@
                     </template>
                 </div>
             </div>
-            <ChangePasswordModal
-                v-if="showPasswordModal"
-                @close="showPasswordModal = false"
-                @password-changed="handlePasswordChanged" />
+            <ChangePasswordModal v-if="showPasswordModal" @close="showPasswordModal = false" />
         </div>
     </LayoutDashboard>
 </template>
@@ -164,7 +161,7 @@ const formData = reactive({
     phone: '(00) 00000-0000',
     allergies: '',
     recurringProblems: '',
-    medications: ''
+    medication: ''
 })
 
 const personalInfo = {

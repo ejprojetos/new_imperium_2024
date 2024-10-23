@@ -78,7 +78,7 @@ const triggerFileInput = () => {
 }
 
 const submitForm = () => {
-    console.log('Form submitted:', formData)
+    console.log('Form submitted:', '123')
     console.log('Selected image:', selectedImage.value)
     toast.success('Salvo com sucesso!')
 }

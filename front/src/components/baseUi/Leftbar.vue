@@ -58,7 +58,6 @@ import clinicasIcon from '@/assets/icons/clinicas.svg'
 import emailIcon from '@/assets/icons/email.svg'
 import recepcionistasIcon from '@/assets/icons/recepcionistas.svg'
 import pacientesIcon from '@/assets/icons/pacientes.svg'
-import minhasConsultasIcon from '@/assets/icons/minhas-consultas.svg'
 import { RouterLink } from 'vue-router'
 
 import { computed } from 'vue'

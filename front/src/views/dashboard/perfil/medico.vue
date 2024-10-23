@@ -9,7 +9,7 @@
                             alt="Profile"
                             class="object-cover w-full h-full" />
                     </div>
-                    <h1 class="text-2xl font-bold">{{ formData.fullName }}</h1>
+                    <h1 class="text-2xl font-bold">{{ formData.personalInfo.fullName }}</h1>
                 </div>
                 <div>
                     <button
@@ -28,10 +28,10 @@
                         <label class="block mb-1 font-semibold">{{ labels[key] }}:</label>
                         <input
                             v-if="isEditing"
-                            v-model="formData[key]"
+                            v-model="formData.personalInfo[key]"
                             :type="inputType(key)"
                             class="w-full px-2 py-1 border rounded" />
-                        <p v-else>{{ formData[key] }}</p>
+                        <p v-else>{{ formData.personalInfo[key] }}</p>
                     </div>
                 </div>
 
@@ -42,10 +42,10 @@
                         <label class="block mb-1 font-semibold">{{ labels[key] }}:</label>
                         <input
                             v-if="isEditing"
-                            v-model="formData[key]"
+                            v-model="formData.addressInfo[key]"
                             type="text"
                             class="w-full px-2 py-1 border rounded" />
-                        <p v-else>{{ formData[key] }}</p>
+                        <p v-else>{{ formData.addressInfo[key] }}</p>
                     </div>
                 </div>
 
@@ -57,20 +57,20 @@
                         <div v-if="key === 'email'" class="flex items-center">
                             <input
                                 v-if="isEditing"
-                                v-model="formData[key]"
+                                v-model="formData.contactInfo[key]"
                                 type="email"
                                 class="w-full px-2 py-1 border rounded" />
-                            <p v-else>{{ formData[key] }}</p>
+                            <p v-else>{{ formData.contactInfo[key] }}</p>
                             <!--<button class="px-2 py-1 ml-2 text-sm text-white bg-blue-600 rounded">
                   Editar e-mail
                 </button>-->
                         </div>
                         <input
                             v-else-if="isEditing"
-                            v-model="formData[key]"
+                            v-model="formData.contactInfo[key]"
                             :type="inputType(key)"
                             class="w-full px-2 py-1 border rounded" />
-                        <p v-else>{{ formData[key] }}</p>
+                        <p v-else>{{ formData.contactInfo[key] }}</p>
                     </div>
                 </div>
 
@@ -156,28 +156,67 @@ import { ref, reactive } from 'vue'
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 import ChangePasswordModal from '@/components/baseUi/ChangePasswordModal.vue'
 
+interface FormData {
+  profileImage: string;
+  personalInfo: {
+    fullName: string;
+    birthDate: string;
+    gender: string;
+    cpf: string;
+  };
+  addressInfo: {
+    country: string;
+    state: string;
+    city: string;
+    neighborhood: string;
+    zipCode: string;
+    street: string;
+    number: string;
+  };
+  contactInfo: {
+    email: string;
+    phone: string;
+  };
+  education: string;
+  specialty: string;
+  documents: string;
+  crm: string;
+}
+
 const isEditing = ref(false)
 const originalData = ref(null)
 
-const formData = reactive({
-    profileImage: '../../../assets/placeholder.png',
-    fullName: 'Gabriele Rocha de Carvalho',
-    birthDate: '10/10/1981',
-    gender: 'Feminino',
-    cpf: '999.999.999-99',
-    country: 'Brasil',
-    state: 'RN',
-    city: 'Parnamirim',
-    neighborhood: 'Nova Parnamirim',
-    zipCode: '00000-000',
-    street: 'Av. Ayrton Senna',
-    number: '000',
-    email: 'exemplo99@hotmail.com',
-    phone: '(00) 00000-0000',
-    allergies: '',
-    recurringProblems: '',
-    medications: ''
+const handlePasswordChanged = () => {
+    console.log('Password changed:', '123')
+}
+
+const formData = reactive<FormData>({
+  profileImage: '../../../assets/placeholder.png',
+  personalInfo: {
+    fullName: '',
+    birthDate: '',
+    gender: '',
+    cpf: ''
+  },
+  addressInfo: {
+    country: '',
+    state: '',
+    city: '',
+    neighborhood: '',
+    zipCode: '',
+    street: '',
+    number: ''
+  },
+  contactInfo: {
+    email: '',
+    phone: ''
+  },
+  education: '',
+  specialty: '',
+  documents: '',
+  crm: ''
 })
+
 
 const personalInfo = {
     fullName: '',
@@ -199,6 +238,9 @@ const addressInfo = {
 const contactInfo = {
     email: '',
     phone: ''
+}
+const attachDocuments = () => {
+    console.log('Attaching documents')
 }
 
 const labels = {
@@ -247,3 +289,4 @@ function saveChanges() {
     isEditing.value = false
 }
 </script>
+

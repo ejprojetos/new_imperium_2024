@@ -169,6 +169,7 @@ import { ref, reactive } from 'vue'
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 import { toast } from 'vue-sonner'
 
+const phrase = ref('')
 const fileInput = ref<HTMLInputElement | null>(null)
 const selectedImage = ref<File | null>(null)
 
