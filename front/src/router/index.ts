@@ -15,6 +15,26 @@ const router = createRouter({
             component: () => import('../views/dashboard/index.vue')
         },
         {
+            path: '/dashboard/perfil/clinica',
+            name: 'perfil_clinica',
+            component: () => import('../views/dashboard/perfil/adm_clinica.vue')
+        },
+        {
+            path: '/dashboard/perfil/administrador',
+            name: 'perfil_administrador',
+            component: () => import('../views/dashboard/perfil/adm_clinica.vue')
+        },
+        {
+            path: '/dashboard/perfil/paciente',
+            name: 'perfil_paciente',
+            component: () => import('../views/dashboard/perfil/paciente.vue')
+        },
+        {
+            path: '/dashboard/perfil/medico',
+            name: 'perfil_medico',
+            component: () => import('../views/dashboard/perfil/medico.vue')
+        },
+        {
             path: '/dashboard/institucional',
             name: 'institucional',
             component: () => import('../views/dashboard/institucional/index.vue')

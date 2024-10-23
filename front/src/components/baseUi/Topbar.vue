@@ -12,7 +12,17 @@
                 <option value="paciente">Paciente</option>
             </select>
         </div>
-        <p class="font-bold">Olá, {{ name }}</p>
+        <RouterLink :to="{ name: 'perfil_medico' }" class="">
+            <div @click="goToProfile" class="flex items-center cursor-pointer gap-x-4">
+                <img
+                    src="../../assets/placeholder.png"
+                    class="w-10 h-10 rounded-full"
+                    alt=""
+                    sizes=""
+                    srcset="" />
+                <p class="font-bold">Olá, {{ name }}</p>
+            </div>
+        </RouterLink>
     </div>
 
     <!-- Mobile -->
@@ -33,6 +43,8 @@ import { useScreenSize } from '@/composables/useScreenSize'
 import { Menu } from 'lucide-vue-next'
 import { useUIStore } from '@/stores/ui/useUIStore'
 import { useUserStore } from '@/stores/user/useUserStore'
+import { useRoute } from 'vue-router'
+import { RouterLink } from 'vue-router'
 
 const { isMobile } = useScreenSize()
 const { toggleLeftbar } = useUIStore()
@@ -40,6 +52,19 @@ const { toggleLeftbar } = useUIStore()
 const userStore = useUserStore()
 const { setRole } = userStore
 const { role, name } = storeToRefs(userStore)
+
+// TODO: escrever de para para rotas de perfil para cada tipo de usuário
+const profile = [
+    { name: 'admin', nameRoute: 'perfil_administrador' },
+    { name: 'clinica', nameRoute: 'perfil_clinica' },
+    { name: 'paciente', nameRoute: 'perfip_paciente' },
+    { name: 'medico', nameRoute: 'perfil_medico' }
+]
+
+const getProfileRoute = () => {
+    //return profile.find((p) => p.name === role.value).nameRoute
+    return 'perfil_paciente'
+}
 
 const updateRole = (event) => {
     setRole(event.target.value)
