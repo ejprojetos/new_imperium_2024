@@ -55,24 +55,25 @@ class ClinicAdminViewSet(viewsets.ModelViewSet):
 # from .models import Patient, Role, UserRole
 # from .serializers import PatientSerializer
 
-# class PatientViewSet(viewsets.ModelViewSet):
-#     queryset = Patient.objects.all()
-#     serializer_class = PatientSerializer
+"""
+class PatientViewSet(viewsets.ModelViewSet):
+    queryset = Patient.objects.all()
+    serializer_class = PatientSerializer
 
-#     def create(self, request, *args, **kwargs):
-#         user = request.data.get('user')
+    def create(self, request, *args, **kwargs):
+        user = request.data.get('user')
 
-#         role, created = Role.objects.get_or_create(name='Patient')
+        role, created = Role.objects.get_or_create(name='Patient')
 
-#         serializer = self.get_serializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         patient = serializer.save()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        patient = serializer.save()
 
-#         UserRole.objects.get_or_create(user=patient.user, role=role)
+        UserRole.objects.get_or_create(user=patient.user, role=role)
 
-#         headers = self.get_success_headers(serializer.data)
-#         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+"""
 
 # from rest_framework import viewsets, status
 # from rest_framework.response import Response

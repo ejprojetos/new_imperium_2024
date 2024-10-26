@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'users',
     'clinic',
     'drf_spectacular',
-    'commom'
+    'commom',
+    'patient',
 ]
 
 MIDDLEWARE = [
