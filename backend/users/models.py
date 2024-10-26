@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from django.conf import settings
+from clinic.models import Clinic
 
 
 class UserManager(BaseUserManager):
@@ -47,6 +47,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         ),
     )
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+    clinics = models.ManyToManyField(Clinic)
+    
+    cpf = models.CharField(max_length=11)
+    date_birth = models.DateField()
 
     objects = UserManager()
 
@@ -100,28 +104,3 @@ class UserRole(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.role.name}"
-
-
-class Patient(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    date_of_birth = models.DateField()
-    address = models.CharField(max_length=255)
-    phone_number = models.CharField(max_length=20)
-
-    def __str__(self):
-        return f"{self.user.get_full_name()} (Patient)"
-
-
-class Doctor(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    specialization = models.CharField(max_length=100)
-
-    def __str__(self):
-        return f"Dr. {self.user.get_full_name()}"
-
-
-class Receptionist(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.user.get_full_name()} (Receptionist)"
