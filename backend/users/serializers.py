@@ -1,25 +1,81 @@
 from rest_framework import serializers
 from .models import User, Role
-from clinic.models import Clinic
 
-class RoleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Role
-        fields = ['name']
-
-
-class UserSerializer(serializers.ModelSerializer):
-    roles = RoleSerializer(many=True)
-
+class AdminClinicSerializer(serializers.ModelSerializer):
+    """Serializer for registering an Admin Clinic user."""
+    
     class Meta:
         model = User
-        fields = ['username', 'email', 'roles', 'password']
+        fields = ['id', 'username', 'email', 'password', 'name']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        roles_data = validated_data.pop('roles')
-        user = User.objects.create_user(**validated_data)
-        for role_data in roles_data:
-            role, _ = Role.objects.get_or_create(**role_data)
-            user.roles.add(role)
+        """Override create method to handle password hashing and user creation."""
+        user = User(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            name=validated_data['name'],
+        )
+        user.set_password(validated_data['password'])  # Hash the password
+        user.save()
+        return user
+
+
+class DoctorRegisterSerializer(serializers.ModelSerializer):
+    """Serializer for registering a Doctor user."""
+    
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'password', 'name']
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        """Override create method to handle password hashing and user creation."""
+        user = User(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            name=validated_data['name'],
+        )
+        user.set_password(validated_data['password'])  # Hash the password
+        user.save()
+        return user
+
+
+class PacientRegisterSerializer(serializers.ModelSerializer):
+    """Serializer for registering a Pacient user."""
+    
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'password', 'name']
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        """Override create method to handle password hashing and user creation."""
+        user = User(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            name=validated_data['name'],
+        )
+        user.set_password(validated_data['password'])  # Hash the password
+        user.save()
+        return user
+
+
+class RecepcionistRegisterSerializer(serializers.ModelSerializer):
+    """Serializer for registering a Recepcionist user."""
+    
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'password', 'name']
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        """Override create method to handle password hashing and user creation."""
+        user = User(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            name=validated_data['name'],
+        )
+        user.set_password(validated_data['password'])  # Hash the password
+        user.save()
         return user
