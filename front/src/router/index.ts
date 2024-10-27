@@ -35,6 +35,11 @@ const router = createRouter({
             component: () => import('../views/dashboard/perfil/medico.vue')
         },
         {
+            path: '/dashboard/perfil/recepcionista',
+            name: 'perfil_recepcionista',
+            component: () => import('../views/dashboard/perfil/recepcionista.vue')
+        },
+        {
             path: '/dashboard/institucional',
             name: 'institucional',
             component: () => import('../views/dashboard/institucional/index.vue')
