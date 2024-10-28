@@ -2,7 +2,6 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-# from clinic.models import Clinic
 
 
 class Role(models.Model):
@@ -94,15 +93,3 @@ class Receptionist(models.Model):
     def __str__(self):
         return self.user.get_full_name()
 
-
-
-class Address(models.Model):
-    street = models.CharField(max_length=255)
-    city = models.CharField(max_length=100)
-    zip_code = models.CharField(max_length=10)
-    state = models.CharField(max_length=100)
-    complement = models.CharField(max_length=255, blank=True)
-    neighborhood = models.CharField(max_length=100)
-
-    def __str__(self):
-        return f"{self.street}, {self.city} - {self.state}"

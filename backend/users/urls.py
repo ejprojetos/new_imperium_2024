@@ -1,9 +1,16 @@
-from django.urls import path
-from .views import AdminClinicRegisterView, DoctorRegisterView, PacientRegisterView, RecepcionistRegisterView
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import AdminViewSet, DoctorViewSet, PatientViewSet, ReceptionistViewSet
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
+router = DefaultRouter()
+router.register(r'admins', AdminViewSet, basename='users/admin')
+router.register(r'doctors', DoctorViewSet, basename='users/doctor')
+router.register(r'patients', PatientViewSet, basename='users/patient')
+router.register(r'receptionists', ReceptionistViewSet, basename='users/receptionist')
 
 urlpatterns = [
-    path('register/admin-clinic/', AdminClinicRegisterView.as_view(), name='register_admin_clinic'),
-    path('register/doctor/', DoctorRegisterView.as_view(), name='register_doctor'),
-    path('register/pacient/', PacientRegisterView.as_view(), name='register_pacient'),
-    path('register/recepcionist/', RecepcionistRegisterView.as_view(), name='register_recepcionist'),
+    path('', include(router.urls)),
+    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),    
 ]

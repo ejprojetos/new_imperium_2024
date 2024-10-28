@@ -52,7 +52,7 @@ class MedicalRecord(models.Model):
 
 
 class WorkingHours(models.Model):
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='working_hours')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='working_hours')
     day_of_week = models.PositiveSmallIntegerField(
         choices=[(i, day) for i, day in enumerate(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], 1)]
     )
