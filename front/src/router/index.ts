@@ -113,7 +113,12 @@ const router = createRouter({
             path: '/:pathMatch(.*)*',
             name: '404',
             component: () => import('../views/404.vue')
-        }
+        },
+        {
+            path: '/dashboard/recepcionista/cadastrar',
+            name: 'cadastrar-recepcionista',
+            component: () => import('../views/dashboard/recepcionistas/cadastrar-recepcionista.vue')
+        },
     ]
 })
 
