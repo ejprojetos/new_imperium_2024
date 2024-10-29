@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-wrap gap-x-[10px] gap-y-[15px]">
-        <button
+        <span
         v-for="(shift, index) in shifts"
         :key="index"
         @click="() => toggleShift(shift)"
@@ -8,7 +8,7 @@
         'px-4 py-2 rounded-2xl cursor-pointer w-[90px] h-[30px] flex items-center justify-center font-montserrat',
         selectedShifts.includes(shift) ? 'bg-[#00428F] text-white' : 'bg-[#DEECFA] text-gray-700'
       ]"
-        >{{ shift }}</button>
+        >{{ shift }}</span>
     
     </div>
 </template>

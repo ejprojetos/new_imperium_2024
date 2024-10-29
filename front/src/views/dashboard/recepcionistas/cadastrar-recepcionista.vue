@@ -281,7 +281,7 @@
                             
                             <form method="dialog">
                                 <!-- if there is a button, it will close the modal -->
-                                <button class="absolute left-[80px] bottom-[-750px] w-[104px] h-[42px] bg-[#00428F] text-white btn" >Close</button>
+                                <button class="absolute left-[80px] bottom-[-900px] w-[104px] h-[42px] bg-[#00428F] text-white btn" >Close</button>
                             </form>
                             <form method="dialog" class="modal-backdrop">
                                 <button>close</button>
@@ -345,9 +345,9 @@ const FormData = reactive({
 })
 
 const submitForm = () => {
-    // Your form submission logic here
+    
     console.log('Form submitted', FormData)
-    // toast.success('Salvo com sucesso!')
+    toast.success('Salvo com sucesso!')
 
 };
 
