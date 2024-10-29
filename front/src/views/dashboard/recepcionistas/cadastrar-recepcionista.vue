@@ -211,7 +211,7 @@
                     <!-- <button class="mt-[40px] bg-[#00428F] text-white w-[104px] h-[42px] rounded-lg btn"  @click="submitForm">Cadastrar</button> -->
                     <!-- You can open the modal using ID.showModal() method -->
                     <button class="mt-[40px] bg-[#00428F] text-white w-[104px] h-[42px] rounded-lg btn"  @click="submitForm" onclick="my_modal_4.showModal() ">Cadastrar</button>
-                    <dialog id="my_modal_4" class="modal">
+                    <dialog id="my_modal_4" class="modal" ref="modal" @click.self="closeModal">
                     <div class="modal-box w-[750px] max-w-5xl">
                         <ModalCadastro :FormData="FormData">
                             <template v-slot:header>
@@ -281,7 +281,7 @@
                             
                             <form method="dialog">
                                 <!-- if there is a button, it will close the modal -->
-                                <button class="absolute left-[80px] bottom-[-900px] w-[104px] h-[42px] bg-[#00428F] text-white btn" >Close</button>
+                                <button @click="closeModal" class="absolute left-[80px] bottom-[-900px] w-[104px] h-[42px] bg-[#00428F] text-white btn" >Close</button>
                             </form>
                             <form method="dialog" class="modal-backdrop">
                                 <button>close</button>
@@ -310,19 +310,19 @@ const weekDays = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', '
 
 const shifts = ['Matutino','Vespertino','Noturno']
 
-const selectedOption = ref(''); // Armazena a opção selecionada
-
 const selectedDays = ref<string[]>([]);
 
 const selectedShifts = ref<string[]>([]);
 
+//lista de dias
 const handleSelectedDays = (days: string[]) =>{
     selectedDays.value = days;
 }
-
+//Lista de horários 
 const handleSelectedShifts = (shifts: string[]) =>{
     selectedShifts.value = shifts;
 }
+
 // reactive pq formData é um objeto
 const FormData = reactive({
     name: '',
@@ -344,12 +344,23 @@ const FormData = reactive({
     plantoes:''
 })
 
+
+//Constante para manipular modal e poder fechar ao clicar fora do modal
+const modal = ref<HTMLDialogElement | null> (null);
+
+//função para fechar ao clicar fora
+const closeModal = () =>{
+    modal.value?.close();
+}
+
 const submitForm = () => {
     
     console.log('Form submitted', FormData)
     toast.success('Salvo com sucesso!')
 
 };
+
+
 
 </script>
 
