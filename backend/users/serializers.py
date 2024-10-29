@@ -1,81 +1,202 @@
 from rest_framework import serializers
-from .models import User, Role
+from .models import Admin, Role, User, Doctor, Patient, Receptionist
 
-class AdminClinicSerializer(serializers.ModelSerializer):
-    """Serializer for registering an Admin Clinic user."""
-    
+class RoleSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ['id', 'username', 'email', 'password', 'name']
-        extra_kwargs = {'password': {'write_only': True}}
+        model = Role
+        fields = ['id', 'name']
+
+
+class AdminSerializer(serializers.ModelSerializer):
+    roles = RoleSerializer(many=True, read_only=True)  # Display roles as objects
+    first_name = serializers.CharField(source='user.first_name', required=True)
+    last_name = serializers.CharField(source='user.last_name', required=True)
+    email = serializers.EmailField(source='user.email', required=True)
+    cpf = serializers.CharField(source='user.cpf', required=True)
+    date_birth = serializers.DateField(source='user.date_birth', required=True)
+    password = serializers.CharField(write_only=True, required=True)
+
+    class Meta:
+        model = Admin
+        fields = [
+            'id', 'first_name', 'last_name', 'email', 'cpf', 
+            'date_birth', 'password', 'roles'
+        ]
+        read_only_fields = ['id']
+
+    def validate_email(self, value):
+        """Ensure the email is unique among Admins."""
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("This email is already in use.")
+        return value
 
     def create(self, validated_data):
-        """Override create method to handle password hashing and user creation."""
-        user = User(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            name=validated_data['name'],
-        )
-        user.set_password(validated_data['password'])  # Hash the password
+        """Create a new Admin instance with a related User."""
+        user_data = {
+            'first_name': validated_data["user"].pop('first_name'),
+            'last_name': validated_data["user"].pop('last_name'),
+            'email': validated_data["user"].pop('email'),
+            'cpf': validated_data["user"].pop('cpf'),
+            'date_birth': validated_data["user"].pop('date_birth'),
+            'password': validated_data.pop('password')
+        }
+        
+        user = User.objects.create(**user_data)
+        user.set_password(user_data['password'])
+        
+        admin = Admin.objects.create(user=user, **validated_data["user"])
+
+        role, created = Role.objects.get_or_create(name='Admin', defaults={'description': 'Admin role'})
+        user.roles.add(role)
+
         user.save()
-        return user
+        admin.save()
+        
+        return admin
 
 
-class DoctorRegisterSerializer(serializers.ModelSerializer):
-    """Serializer for registering a Doctor user."""
-    
+class DoctorSerializer(serializers.ModelSerializer):
+    roles = RoleSerializer(many=True, read_only=True)  # Display roles as objects
+    first_name = serializers.CharField(source='user.first_name', required=True)
+    last_name = serializers.CharField(source='user.last_name', required=True)
+    email = serializers.EmailField(source='user.email', required=True)
+    cpf = serializers.CharField(source='user.cpf', required=True)
+    date_birth = serializers.DateField(source='user.date_birth', required=True)
+    password = serializers.CharField(write_only=True, required=True)
+    specialty = serializers.CharField(required=True)
+    clinic = serializers.CharField(source='user.clinic', required=True)  # Add clinic field
+
     class Meta:
-        model = User
-        fields = ['id', 'username', 'email', 'password', 'name']
-        extra_kwargs = {'password': {'write_only': True}}
+        model = Doctor
+        fields = [
+            'id', 'first_name', 'last_name', 'email', 'cpf', 
+            'date_birth', 'password', 'roles', 'specialty', 'clinic'
+        ]
+        read_only_fields = ['id']
+
+    def validate_email(self, value):
+        """Ensure the email is unique among Doctors."""
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("This email is already in use.")
+        return value
 
     def create(self, validated_data):
-        """Override create method to handle password hashing and user creation."""
-        user = User(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            name=validated_data['name'],
-        )
-        user.set_password(validated_data['password'])  # Hash the password
+        """Create a new Doctor instance with a related User."""
+        user_data = {
+            'first_name': validated_data["user"].pop('first_name'),
+            'last_name': validated_data["user"].pop('last_name'),
+            'email': validated_data["user"].pop('email'),
+            'cpf': validated_data["user"].pop('cpf'),
+            'date_birth': validated_data["user"].pop('date_birth'),
+            'password': validated_data.pop('password'),
+            'clinic': validated_data["user"].pop('clinic')  # Add clinic to user data
+        }
+        
+        user = User.objects.create(**user_data)
+        user.set_password(user_data['password'])
+        
+        doctor = Doctor.objects.create(user=user, specialty=validated_data.pop('specialty'), **validated_data["user"])
+
+        role, created = Role.objects.get_or_create(name='Doctor', defaults={'description': 'Doctor role'})
+        user.roles.add(role)
+
         user.save()
-        return user
-
-
-class PacientRegisterSerializer(serializers.ModelSerializer):
-    """Serializer for registering a Pacient user."""
+        doctor.save()
+        
+        return doctor
     
+class PatientSerializer(serializers.ModelSerializer):
+    roles = RoleSerializer(many=True, read_only=True)  # Display roles as objects
+    first_name = serializers.CharField(source='user.first_name', required=True)
+    last_name = serializers.CharField(source='user.last_name', required=True)
+    email = serializers.EmailField(source='user.email', required=True)
+    cpf = serializers.CharField(source='user.cpf', required=True)
+    date_birth = serializers.DateField(source='user.date_birth', required=True)
+    password = serializers.CharField(write_only=True, required=True)
+    medical_record_number = serializers.CharField(required=True)
+
     class Meta:
-        model = User
-        fields = ['id', 'username', 'email', 'password', 'name']
-        extra_kwargs = {'password': {'write_only': True}}
+        model = Patient
+        fields = [
+            'id', 'first_name', 'last_name', 'email', 'cpf', 
+            'date_birth', 'password', 'roles', 'medical_record_number'
+        ]
+        read_only_fields = ['id']
+
+    def validate_email(self, value):
+        """Ensure the email is unique among Patients."""
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("This email is already in use.")
+        return value
 
     def create(self, validated_data):
-        """Override create method to handle password hashing and user creation."""
-        user = User(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            name=validated_data['name'],
-        )
-        user.set_password(validated_data['password'])  # Hash the password
+        """Create a new Patient instance with a related User."""
+        user_data = {
+            'first_name': validated_data["user"].pop('first_name'),
+            'last_name': validated_data["user"].pop('last_name'),
+            'email': validated_data["user"].pop('email'),
+            'cpf': validated_data["user"].pop('cpf'),
+            'date_birth': validated_data["user"].pop('date_birth'),
+            'password': validated_data.pop('password')
+        }
+        
+        user = User.objects.create(**user_data)
+        user.set_password(user_data['password'])
+        
+        patient = Patient.objects.create(user=user, medical_record_number=validated_data.pop('medical_record_number'), **validated_data["user"])
+
+        role, created = Role.objects.get_or_create(name='Patient', defaults={'description': 'Patient role'})
+        user.roles.add(role)
+
         user.save()
-        return user
+        patient.save()
+        
+        return patient
 
 
-class RecepcionistRegisterSerializer(serializers.ModelSerializer):
-    """Serializer for registering a Recepcionist user."""
-    
+class ReceptionistSerializer(serializers.ModelSerializer):
+    roles = RoleSerializer(many=True, read_only=True)  # Display roles as objects
+    first_name = serializers.CharField(source='user.first_name', required=True)
+    last_name = serializers.CharField(source='user.last_name', required=True)
+    email = serializers.EmailField(source='user.email', required=True)
+    cpf = serializers.CharField(source='user.cpf', required=True)
+    date_birth = serializers.DateField(source='user.date_birth', required=True)
+    password = serializers.CharField(write_only=True, required=True)
+
     class Meta:
-        model = User
-        fields = ['id', 'username', 'email', 'password', 'name']
-        extra_kwargs = {'password': {'write_only': True}}
+        model = Receptionist
+        fields = [
+            'id', 'first_name', 'last_name', 'email', 'cpf', 
+            'date_birth', 'password', 'roles'
+        ]
+        read_only_fields = ['id']
+
+    def validate_email(self, value):
+        """Ensure the email is unique among Receptionists."""
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("This email is already in use.")
+        return value
 
     def create(self, validated_data):
-        """Override create method to handle password hashing and user creation."""
-        user = User(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            name=validated_data['name'],
-        )
-        user.set_password(validated_data['password'])  # Hash the password
+        """Create a new Receptionist instance with a related User."""
+        user_data = {
+            'first_name': validated_data["user"].pop('first_name'),
+            'last_name': validated_data["user"].pop('last_name'),
+            'email': validated_data["user"].pop('email'),
+            'cpf': validated_data["user"].pop('cpf'),
+            'date_birth': validated_data["user"].pop('date_birth'),
+            'password': validated_data.pop('password')
+        }
+        
+        user = User.objects.create(**user_data)
+        user.set_password(user_data['password'])
+        
+        receptionist = Receptionist.objects.create(user=user, **validated_data["user"])
+
+        role, created = Role.objects.get_or_create(name='Receptionist', defaults={'description': 'Receptionist role'})
+        user.roles.add(role)
+
         user.save()
-        return user
+        receptionist.save()
+        
+        return receptionist

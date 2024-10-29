@@ -1,12 +1,8 @@
-from rest_framework.permissions import BasePermission
+from rest_framework import permissions
 
-class RolePermission(BasePermission):
-    """
-    Permissão baseada em papel. Verifica se o papel do usuário está
-    na lista permitida para acessar a rota.
-    """
-    allowed_roles = []
 
+class IsRoleUser(permissions.BasePermission):
     def has_permission(self, request, view):
-        user_role = getattr(request.user, 'role', None)
-        return user_role in self.allowed_roles
+        required_roles = getattr(view, 'required_roles', [])
+        user_roles = getattr(request.user, 'roles', [])
+        return any(role in user_roles for role in required_roles)
