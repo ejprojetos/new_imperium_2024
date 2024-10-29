@@ -284,7 +284,7 @@
                                 <button @click="closeModal" class="absolute left-[80px] bottom-[-900px] w-[104px] h-[42px] bg-[#00428F] text-white btn" >Close</button>
                             </form>
                             <form method="dialog" class="modal-backdrop">
-                                <button>close</button>
+                                <button>Fechar</button>
                             </form>
                         </div>
                     </div>
