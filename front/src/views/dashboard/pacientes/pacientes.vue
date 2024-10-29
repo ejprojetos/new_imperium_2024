@@ -20,9 +20,11 @@
             </div>
             <div class="p-4 bg-white rounded-lg shadow-lg min-w-56">
                 <h3 class="mb-8 text-xl font-bold">Cadastrar Pacientes</h3>
-                <button class="w-full py-2 text-xs text-white btn bg-primary hover:bg-primary">
-                    Cadastrar
-                </button>
+                <RouterLink to="/dashboard/pacientes/cadastrar">
+                    <button class="w-full py-2 text-xs text-white btn bg-primary hover:bg-primary">
+                        Cadastrar
+                    </button>
+                </RouterLink>
             </div>
         </div>
 

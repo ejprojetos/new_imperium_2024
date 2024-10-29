@@ -4,12 +4,10 @@
         <header>
             <slot name="header" class="mb-6 text-4xl font-bold text-3xl">Cadastrado com sucesso!</slot>
         </header>
-
-        <!-- <h1 class="mb-6 text-4xl font-bold text-3xl">Recepcionista cadastrado com sucesso!</h1> -->
+        
     
-        <h2 class="mb-4 text-xl font-montserrat text-black font-bold">Dados Pessoais:</h2>
         <div class="flex flex-col">
-            <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold" >
+            <label class="block mt-[10px] mb-2 text-lg font-montserrat br-16 font-semibold" >
                 Nome completo:
             </label>
             <p>

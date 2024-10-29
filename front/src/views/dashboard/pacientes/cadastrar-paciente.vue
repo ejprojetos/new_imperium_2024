@@ -1,28 +1,18 @@
 <template>
     <LayoutDashboard>
         <div class="p-8">
-            <h1 class="mb-6 text-[50px] font-normal">Cadastrar Recepcionista</h1>
+            <h1 class="mb-6 text-[50px] font-normal">Cadastrar Paciente</h1>
             <div class="pb-[70px] pt-[40px] px-[60px] mb-4 bg-white ded-lgroun gap-x-4 w-[650px]">
                 <form @submit.prevent="submitForm">
-                    <h2 class="mb-4 text-xl font-montserrat text-black font-bold">Dados Pessoais</h2>
-        
+                    <h2 class="mb-4 text-xl font-montserrat text-black font-bold">Identificação do paciente:</h2>
+                    
                     <div class="grid grid-cols-1 gap-4">
                         <div>
-                            <label class="block mb-2 text-lg font-montserrat">
-                                Nome:
+                            <label class="block mb-2 text-lg font-montserrat labelText">
+                                Nome completo:
                             </label>
                             <input 
-                            v-model="FormData.name"
-                            type="text"
-                            class="w-full px-2 py-1 border rounded-2xl"
-                            />
-                        </div>
-                        <div>
-                            <label class="block mb-2 text-lg font-montserrat br-16">
-                                Sobrenome:
-                            </label>
-                            <input 
-                            v-model="FormData.lastName"
+                            v-model="FormData.fullName"
                             type="text"
                             class="w-full px-2 py-1 border rounded-2xl"
                             />
@@ -121,7 +111,7 @@
                         <input 
                         v-model="FormData.zipCode"
                         type="text"
-                        class="w-full px-2 py-1 border rounded-2xl"
+                        class="w-260 px-2 py-1 border rounded-2xl"
                         placeholder="00000-000"
                         />
                     </div>
@@ -172,122 +162,31 @@
                         placeholder="(00) 0 0000-0000"
                         />
                     </div>
-                    <h2 class="mt-[30px] mb-4 text-xl font-montserrat text-black font-bold">Expediente:</h2>
-                    <div>
-                        <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16">
-                            Dias de Trabalho (Selecione os dias):
-                        </label>
-                        <DaysSelector 
-                        @update:selected-days = "handleSelectedDays"
-                        />
-                    </div>
-                    <div>
-                        <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16">
-                            Turnos:
-                        </label>
-                        <WorkShifts :selectedShifts="selectedShifts"
-                        @update:selected-shifts="handleSelectedShifts"/>
-                    </div>
-                    <div class="flex flex-col">
-                        <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16">
-                            Disponibilidade para plantões:
-                        </label>
-                        <label class="cursor-pointer flex items-center gap-2">
-                            <input
-                            type="radio" 
-                            value="sim" 
-                            v-model="FormData.plantoes" 
-                            class="custom-radio-square cursor-pointer">Sim
-                        </label>
-                        <label class="cursor-pointer flex items-center gap-2">
-                            <input 
-                            type="radio" 
-                            value="nao" 
-                            v-model="FormData.plantoes"
-                            class="custom-radio-square cursor-pointer">Não
-                        </label>
-                    </div>
-
-                    <!-- <button class="mt-[40px] bg-[#00428F] text-white w-[104px] h-[42px] rounded-lg btn"  @click="submitForm">Cadastrar</button> -->
-                    <!-- You can open the modal using ID.showModal() method -->
                     <button class="mt-[40px] bg-[#00428F] text-white w-[104px] h-[42px] rounded-lg btn"  @click="submitForm" onclick="my_modal_4.showModal() ">Cadastrar</button>
                     <dialog id="my_modal_4" class="modal" ref="modal" @click.self="closeModal">
                     <div class="modal-box w-[750px] max-w-5xl">
                         <ModalCadastro :FormData="FormData">
                             <template v-slot:header>
-                                <h1 class="mb-6 font-bold text-[30px] w-[640px] text-h1 font-montserrat">Recepcionista cadastrado com sucesso!</h1>
-                                
-                                <h2 class="mb-4 text-xl font-montserrat text-black font-bold">Dados Pessoais:</h2>
+                                <h1 class="mb-6 font-bold text-[30px] w-[640px] text-h1 font-montserrat">Paciente cadastrado com sucesso!</h1>
+
+                                <h2 class="mb-4 text-xl font-montserrat text-black font-bold">Identificação do paciente:</h2>
                             </template>
 
-                            <h2 class="mt-[30px] mb-4 text-xl font-montserrat text-black font-bold">Expediente:</h2>
-                            <span class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold">
-                                Dias de Trabalho:
-                            </span>
-                            <div class="flex flex-wrap gap-2">
-                                <span
-                                    v-for="(day, index) in weekDays"
-                                    :key="index"
-                                    :class="[
-                                        'px-px-4 py-2 rounded-2xl cursor-pointer w-[90px] h-[30px] flex items-center justify-center font-montserrat',
-                                        selectedDays.includes(day) ? 'bg-[#00428F] text-white' : 'bg-[#DEECFA] text-gray-700'
-                                    ]"
-                                >
-                                    {{ day }}
-                                </span>
-                            </div>
-                            <span class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold">
-                                Turnos:
-                            </span>
-                            <div class="flex flex-wrap gap-2">
-                                
-                                <span
-                                    v-for="(shift, index) in shifts"
-                                    :key="index"
-                                    :class="[
-                                        'px-px-4 py-2 rounded-2xl cursor-pointer w-[90px] h-[30px] flex items-center justify-center font-montserrat',
-                                        selectedShifts.includes(shift) ? 'bg-[#00428F] text-white' : 'bg-[#DEECFA] text-gray-700'
-                                    ]"
-                                >
-                                    {{ shift }}
-                                </span>
-                            </div>
-                            <span class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold">
-                                Disponibilidade para plantões:
-                            </span>
-
-                            <div class="flex flex-col gap-2">
-                                <label class="flex items-center gap-2">
-                                    <input
-                                        type="radio"
-                                        value="sim"
-                                        v-model="FormData.plantoes"
-                                        disabled
-                                        class="custom-radio-square"
-                                    />
-                                    Sim
-                                </label>
-                                <label class="flex items-center gap-2">
-                                    <input
-                                        type="radio"
-                                        value="nao"
-                                        v-model="FormData.plantoes"
-                                        disabled
-                                        class="custom-radio-square"
-                                    />
-                                    Não
-                                </label>
-                            </div>
                         </ModalCadastro>
                         <div class="modal-action">
                             
-                            <form method="dialog">
-                                <!-- if there is a button, it will close the modal -->
-                                <button @click="closeModal" class="absolute left-[80px] bottom-[-900px] w-[104px] h-[42px] bg-[#00428F] text-white btn" >Fechar</button>
-                            </form>
-                            <form method="dialog" class="modal-backdrop">
-                                <button>Fechar</button>
-                            </form>
+                            <div class="flex w-full pl-[50px]">
+                                <form method="dialog">
+                                    <!-- if there is a button, it will close the modal -->
+                                    <button  @click="closeModal" class="btn-close w-[104px] h-[42px] bg-[#DEECFA] text-white btn text-[18px]" style="color: #00428F;">Fechar</button>
+                                </form>
+                                <form method="dialog" class="modal-backdrop">
+                                    <button>Fechar</button>
+                                </form>
+                                <button class="w-[180px] bg-[#00428f] text-white rounded-xl">
+                                    Cadastrar Consulta
+                                </button>
+                            </div>
                         </div>
                     </div>
                     </dialog>
@@ -305,7 +204,6 @@ import DaysSelector from '@/components/baseUi/DaysSelector.vue';
 import ModalCadastro from '@/components/baseUi/ModalCadastro.vue';
 import WorkShifts from '@/components/baseUi/WorkShifts.vue';
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
-import { objectEntries } from '@vueuse/core';
 import { reactive, ref } from 'vue';
 import { toast } from 'vue-sonner';
 
@@ -328,8 +226,7 @@ const handleSelectedShifts = (shifts: string[]) =>{
 
 // reactive pq formData é um objeto
 const FormData = reactive({
-    name: '',
-    lastName: '',
+    fullName: '',
     dateOfBirth: '',
     gener: 'Feminino',
     cpf: '',
@@ -346,7 +243,6 @@ const FormData = reactive({
     shifts:'',
     plantoes:''
 })
-
 
 
 //Constante para manipular modal e poder fechar ao clicar fora do modal
@@ -399,7 +295,5 @@ const submitForm = () => {
     label{
         color: #010424;
     }
-
-
 
 </style>
