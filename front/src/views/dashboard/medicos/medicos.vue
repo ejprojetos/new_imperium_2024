@@ -14,15 +14,19 @@
             </div>
             <div class="p-4 bg-green-100 rounded-lg shadow-lg min-w-56">
                 <h3 class="mb-8 text-xl font-bold">Cadastrar Consultas</h3>
+                <RouterLink to="/dashboard/medicos/cadastrar">
+                </RouterLink>
                 <button class="w-full py-2 text-xs text-white btn bg-primary hover:bg-primary">
                     Cadastrar
                 </button>
             </div>
             <div class="p-4 bg-white rounded-lg shadow-lg min-w-56">
                 <h3 class="mb-8 text-xl font-bold">Cadastrar Médicos</h3>
-                <button class="w-full py-2 text-xs text-white btn bg-primary hover:bg-primary">
-                    Cadastrar
-                </button>
+                <RouterLink to="/dashboard/medicos/cadastrar">
+                    <button class="w-full py-2 text-xs text-white btn bg-primary hover:bg-primary">
+                        Cadastrar
+                    </button>
+                </RouterLink>
             </div>
         </div>
 
@@ -78,6 +82,8 @@
 import { ref } from 'vue'
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 import { Search, Mail, Phone } from 'lucide-vue-next'
+
+import { RouterLink } from 'vue-router';
 
 const receptionists = ref([
     {

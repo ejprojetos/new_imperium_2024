@@ -10,8 +10,8 @@
             <label class="block mt-[10px] mb-2 text-lg font-montserrat br-16 font-semibold" >
                 Nome completo:
             </label>
-            <p>
-                {{ `${props.FormData.name} ${props.FormData.lastName}` }}
+            <p v-if="props.FormData.name !== ''">
+                {{ (props.FormData.name && props.FormData.lastName) ? `${props.FormData.name} ${props.FormData.lastName}` : props.FormData.fullName }}
             </p>
         </div>
         <div class="flex gap-[80px]">
@@ -136,6 +136,7 @@
 import {defineProps } from 'vue';
 
 interface formData{
+    fullName:string;
     name: string;
     lastName: string;
     dateOfBirth: string;
@@ -151,6 +152,11 @@ interface formData{
     email: string;
     phone: string;
     days: string[];
+    shifts: string;
+    plantoes: string;
+    degree: string;
+    specialty: string;
+    uploadedFile: File | null;
 }
 
 const props = defineProps<{
