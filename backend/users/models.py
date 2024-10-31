@@ -65,8 +65,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Patient(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='patient_profile')
-    date_of_birth = models.DateField()
-    medical_history = models.TextField(blank=True)
+    #date_of_birth = models.DateField()
+    #medical_history = models.TextField(blank=True)
 
     def __str__(self):
         return self.user.get_full_name()
