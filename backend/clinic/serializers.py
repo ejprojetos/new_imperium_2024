@@ -3,8 +3,8 @@ from .models import MedicalRecord, Appointment
 from users.models import Patient, Doctor
 
 class MedicalRecordSerializer(serializers.ModelSerializer):
-    patient = serializers.PrimaryKeyRelatedField(queryset=Patient.objects.all())
-    doctor = serializers.PrimaryKeyRelatedField(queryset=Doctor.objects.all())
+    patient = serializers.ReadOnlyField(source='appointment.patient.id')
+    doctor = serializers.ReadOnlyField(source='appointment.doctor.id')
     appointment = serializers.PrimaryKeyRelatedField(queryset=Appointment.objects.all())
 
     class Meta:
