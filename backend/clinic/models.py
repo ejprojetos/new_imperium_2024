@@ -84,8 +84,11 @@ class Notification(models.Model):
 class Room(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='rooms')
-    number = models.CharField(max_length=20, unique=True)
+    number = models.CharField(max_length=20)
     description = models.TextField(blank=True)
+
+    class Meta:
+        unique_together = ('clinic', 'number')
 
     def __str__(self):
         return self.number
