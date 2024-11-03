@@ -20,6 +20,9 @@ module.exports = {
 				lightGreen: '#BBFAE4',
 				lightBlue: '#DEECFA'
 			},
+			fontFamily:{
+				montserrat:['Montserrat', 'sans-serif']
+			}
 		},
 	},
 

@@ -1,12 +1,9 @@
-#from django.urls import path, include
-#from rest_framework.routers import DefaultRouter
-#from .views import MedicalRecordViewSet, ClinicViewSet, AppointmentViewSet
+from django.urls import path, include
+from .views import RoomViewSet, MedicalRecordViewSet, ClinicViewSet, AppointmentViewSet
+from rest_framework.routers import DefaultRouter
 
-#router_clinic = DefaultRouter()
-#router_clinic.register(r'', ClinicViewSet, basename='clinic')
-#router_clinic.register(r'medical-records', MedicalRecordViewSet, basename='medical-records')
-#router_clinic.register(r'appointment', AppointmentViewSet, basename='appointment')
 
-#urlpatterns = [
-    #path('', include(router_clinic.urls)),   
-#]
+urlpatterns = [
+    path('<int:clinic_id>/rooms/', RoomViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path('<int:clinic_id>/rooms/<uuid:uuid>/', RoomViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'})),
+]
