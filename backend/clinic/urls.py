@@ -1,5 +1,6 @@
 from django.urls import path, include
-from .views import RoomViewSet
+from .views import RoomViewSet, MedicalRecordViewSet, ClinicViewSet, AppointmentViewSet
+from rest_framework.routers import DefaultRouter
 
 
 urlpatterns = [
