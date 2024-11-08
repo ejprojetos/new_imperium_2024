@@ -92,3 +92,20 @@ class Room(models.Model):
 
     def __str__(self):
         return self.number
+
+
+class WaitingList(models.Model):
+    STATUS_CHOICES = [
+        ('waiting', 'Waiting'),
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed'),
+    ]
+    
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='waiting_list')
+    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='waiting_list')
+    arrival_datetime = models.DateTimeField()
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='waiting')
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='waiting_list', blank=True, null=True)
+
+    def __str__(self):
+        return f"Waiting List for {self.patient} in {self.clinic} on {self.appointment_date}"
