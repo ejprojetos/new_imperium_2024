@@ -1,28 +1,18 @@
 <template>
     <LayoutDashboard>
         <div class="p-8">
-            <h1 class="mb-6 text-[50px] font-normal">Cadastrar Recepcionista</h1>
+            <h1 class="mb-6 text-[50px] font-normal">Cadastrar Médico</h1>
             <div class="pb-[70px] pt-[40px] px-[60px] mb-4 bg-white ded-lgroun gap-x-4 w-[650px]">
                 <form @submit.prevent="submitForm">
-                    <h2 class="mb-4 text-xl font-montserrat text-black font-bold">Dados Pessoais</h2>
-        
+                    <h2 class="mb-4 text-xl font-montserrat text-black font-bold">Dados Pessoais:</h2>
+                    
                     <div class="grid grid-cols-1 gap-4">
                         <div>
-                            <label class="block mb-2 text-lg font-montserrat">
-                                Nome:
+                            <label class="block mb-2 text-lg font-montserrat labelText">
+                                Nome completo:
                             </label>
                             <input 
-                            v-model="FormData.name"
-                            type="text"
-                            class="w-full px-2 py-1 border rounded-2xl"
-                            />
-                        </div>
-                        <div>
-                            <label class="block mb-2 text-lg font-montserrat br-16">
-                                Sobrenome:
-                            </label>
-                            <input 
-                            v-model="FormData.lastName"
+                            v-model="FormData.fullName"
                             type="text"
                             class="w-full px-2 py-1 border rounded-2xl"
                             />
@@ -121,7 +111,7 @@
                         <input 
                         v-model="FormData.zipCode"
                         type="text"
-                        class="w-full px-2 py-1 border rounded-2xl"
+                        class="w-260 px-2 py-1 border rounded-2xl"
                         placeholder="00000-000"
                         />
                     </div>
@@ -172,112 +162,97 @@
                         placeholder="(00) 0 0000-0000"
                         />
                     </div>
-                    <h2 class="mt-[30px] mb-4 text-xl font-montserrat text-black font-bold">Expediente:</h2>
+
+                    <h2 class="mt-[30px] mb-4 text-xl font-montserrat text-black font-bold">Dados Profissionais</h2>
                     <div>
-                        <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16">
-                            Dias de Trabalho (Selecione os dias):
+                        <label class="block mb-2 text-lg font-montserrat br-16">
+                                    Formação:
+                                </label>
+                                <select 
+                                v-model="FormData.degree"
+                                class="w-[530px] px-2 py-1 border rounded-2xl"
+                                >
+                                    <option value="GraduaçãoCompleta">Graduação e Pós-Graduação completo</option>
+                                    <option value="Mestrado">Mestrado Completo</option>
+                                </select>
+                    </div>
+                    <div class="mt-[20px]">
+                        <label class="block mb-2 text-lg font-montserrat br-16">Especialidade:
                         </label>
-                        <DaysSelector 
-                        @update:selected-days = "handleSelectedDays"
+                        <select 
+                        v-model="FormData.specialty"
+                        class="w-[530px] px-2 py-1 border rounded-2xl"
+                        >
+                            <option value="Oftalmologia">Oftalmologia</option>
+                            <option value="Clinico Geral">Clinico Geral</option>
+                        </select>
+                    </div>
+                    <div class="mt-[20px]">
+                        <label class="block mb-2 text-lg font-montserrat labelText">
+                            Documento comprobatórios:
+                        </label>
+                        <div class="flex items-start flex-col">
+                            <label for="file-upload" class="px-4 py-2 bg-white text-black rounded-lg border border-gray-300 cursor-pointer text-lg hover:bg-gray-100">Anexar</label>
+                            <input 
+                            @change="onFileChange"
+                            type="file"
+                            id="file-upload"
+                            class="hidden"
+                            />
+                            <span v-if="FormData.fileName" class="text-gray-700">{{ FormData.fileName }}</span>
+                        </div>
+                    </div>
+                    <div class="mt-[20px]">
+                        <label class="block mb-2 text-lg font-montserrat br-16">
+                            CRM:
+                        </label>
+                        <input 
+                        v-model="FormData.crm"
+                        type="text"
+                        class="w-full px-2 py-1 border rounded-2xl"
+                        placeholder="999.999.999-99"
                         />
                     </div>
-                    <div>
-                        <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16">
-                            Turnos:
-                        </label>
-                        <WorkShifts :selectedShifts="selectedShifts"
-                        @update:selected-shifts="handleSelectedShifts"/>
-                    </div>
-                    <div class="flex flex-col">
-                        <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16">
-                            Disponibilidade para plantões:
-                        </label>
-                        <label class="cursor-pointer flex items-center gap-2">
-                            <input
-                            type="radio" 
-                            value="sim" 
-                            v-model="FormData.plantoes" 
-                            class="custom-radio-square cursor-pointer">Sim
-                        </label>
-                        <label class="cursor-pointer flex items-center gap-2">
-                            <input 
-                            type="radio" 
-                            value="nao" 
-                            v-model="FormData.plantoes"
-                            class="custom-radio-square cursor-pointer">Não
-                        </label>
-                    </div>
-
-                    <!-- <button class="mt-[40px] bg-[#00428F] text-white w-[104px] h-[42px] rounded-lg btn"  @click="submitForm">Cadastrar</button> -->
-                    <!-- You can open the modal using ID.showModal() method -->
                     <button class="mt-[40px] bg-[#00428F] text-white w-[104px] h-[42px] rounded-lg btn"  @click="submitForm" onclick="my_modal_4.showModal() ">Cadastrar</button>
                     <dialog id="my_modal_4" class="modal" ref="modal" @click.self="closeModal">
                     <div class="modal-box w-[750px] max-w-5xl">
                         <ModalCadastro :FormData="FormData">
                             <template v-slot:header>
-                                <h1 class="mb-6 font-bold text-[30px] w-[640px] text-h1 font-montserrat">Recepcionista cadastrado com sucesso!</h1>
-                                
-                                <h2 class="mb-4 text-xl font-montserrat text-black font-bold">Dados Pessoais:</h2>
+                                <h1 class="mb-6 font-bold text-[30px] w-[640px] text-h1 font-montserrat">Paciente cadastrado com sucesso!</h1>
+
+                                <h2 class="mb-4 text-xl font-montserrat text-black font-bold">Identificação do paciente:</h2>
                             </template>
 
-                            <h2 class="mt-[30px] mb-4 text-xl font-montserrat text-black font-bold">Expediente:</h2>
-                            <span class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold">
-                                Dias de Trabalho:
-                            </span>
-                            <div class="flex flex-wrap gap-2">
-                                <span
-                                    v-for="(day, index) in weekDays"
-                                    :key="index"
-                                    :class="[
-                                        'px-px-4 py-2 rounded-2xl cursor-pointer w-[90px] h-[30px] flex items-center justify-center font-montserrat',
-                                        selectedDays.includes(day) ? 'bg-[#00428F] text-white' : 'bg-[#DEECFA] text-gray-700'
-                                    ]"
-                                >
-                                    {{ day }}
-                                </span>
-                            </div>
-                            <span class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold">
-                                Turnos:
-                            </span>
-                            <div class="flex flex-wrap gap-2">
-                                
-                                <span
-                                    v-for="(shift, index) in shifts"
-                                    :key="index"
-                                    :class="[
-                                        'px-px-4 py-2 rounded-2xl cursor-pointer w-[90px] h-[30px] flex items-center justify-center font-montserrat',
-                                        selectedShifts.includes(shift) ? 'bg-[#00428F] text-white' : 'bg-[#DEECFA] text-gray-700'
-                                    ]"
-                                >
-                                    {{ shift }}
-                                </span>
-                            </div>
-                            <span class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold">
-                                Disponibilidade para plantões:
-                            </span>
+                            <h2 class="mt-[40px] mb-4 text-xl font-montserrat text-black font-bold">Dados Profissionais:</h2>
 
-                            <div class="flex flex-col gap-2">
-                                <label class="flex items-center gap-2">
-                                    <input
-                                        type="radio"
-                                        value="sim"
-                                        v-model="FormData.plantoes"
-                                        disabled
-                                        class="custom-radio-square"
-                                    />
-                                    Sim
-                                </label>
-                                <label class="flex items-center gap-2">
-                                    <input
-                                        type="radio"
-                                        value="nao"
-                                        v-model="FormData.plantoes"
-                                        disabled
-                                        class="custom-radio-square"
-                                    />
-                                    Não
-                                </label>
+                            <div class="flex flex-col">
+                                <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold">Formação: </label>
+                                <p>
+                                    {{ FormData.degree }}
+                                </p>
                             </div>
+                            <div class="flex flex-col">
+                                <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold">Especialidade: </label>
+                                <p>
+                                    {{ FormData.specialty }}
+                                </p>
+                            </div>
+                            <div class="flex flex-col">
+                                <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold">Documentos comprobatórios: </label>
+
+                                <p class="border rounded-3xl p-4 w-[160px]" :style="{ borderColor: '#010424', color:'#010424'}">
+                                    {{ FormData.uploadedFile?.name || 'Nenhum arquivo carregado' }}
+                                </p>
+
+                            </div>
+
+                            <div class="flex flex-col">
+                                <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold">CRM: </label>
+                                <p>
+                                    {{ FormData.crm }}
+                                </p>
+                            </div>
+                            
                         </ModalCadastro>
                         <div class="modal-action flex flex-col justify-between">
                             
@@ -306,35 +281,15 @@
    
 
 <script setup lang="ts">
-import DaysSelector from '@/components/baseUi/DaysSelector.vue';
 import ModalCadastro from '@/components/baseUi/ModalCadastro.vue';
-import WorkShifts from '@/components/baseUi/WorkShifts.vue';
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
-import { objectEntries } from '@vueuse/core';
+// import { props } from 'node_modules/cypress/types/bluebird';
 import { reactive, ref } from 'vue';
 import { toast } from 'vue-sonner';
 
-const weekDays = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
-
-const shifts = ['Matutino','Vespertino','Noturno']
-
-const selectedDays = ref<string[]>([]);
-
-const selectedShifts = ref<string[]>([]);
-
-//lista de dias
-const handleSelectedDays = (days: string[]) =>{
-    selectedDays.value = days;
-}
-//Lista de horários 
-const handleSelectedShifts = (shifts: string[]) =>{
-    selectedShifts.value = shifts;
-}
-
 // reactive pq formData é um objeto
 const FormData = reactive({
-    name: '',
-    lastName: '',
+    fullName: '',
     dateOfBirth: '',
     gener: 'Feminino',
     cpf: '',
@@ -347,11 +302,14 @@ const FormData = reactive({
     number: '',
     email: '',
     phone: '',
-    days:'',
     shifts:'',
-    plantoes:''
+    plantoes:'',
+    degree:'Graduação Completa',
+    specialty:'Oftalmologia',
+    uploadedFile: null as File | null,
+    fileName:'',
+    crm:''
 })
-
 
 
 //Constante para manipular modal e poder fechar ao clicar fora do modal
@@ -369,42 +327,27 @@ const submitForm = () => {
 
 };
 
+const onFileChange = (event: Event) =>{
+    const input = event.target as HTMLInputElement;
+    if(input.files && input.files.length > 0){
+        const file = input.files[0]
+        FormData.uploadedFile = file;
+        FormData.fileName = file.name;
+    }
+};
+
 
 
 </script>
 
 
 <style scoped>
-    .custom-radio-square {
-    /* Oculta o círculo padrão */
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        
-        /* Estilos para o quadrado */
-        width: 1rem; /* Tamanho do quadrado */
-        height: 1rem;
-        border: 2px solid #00428F; /* Bordas do quadrado */
-        background-color: transparent;
-        border-radius: 4px; /* Para manter o quadrado */
 
-        /* Efeito ao ser selecionado */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .custom-radio-square:checked {
-        background-color: #00428F; /* Cor de fundo quando selecionado */
-        border-color: #00428F; /* Cor da borda quando selecionado */
-    }
     h1, h2, p, span, label{
         font-family: 'montserrat';
     }
     label{
         color: #010424;
     }
-
-
 
 </style>
