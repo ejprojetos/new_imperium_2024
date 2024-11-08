@@ -223,13 +223,46 @@
                                 <h2 class="mb-4 text-xl font-montserrat text-black font-bold">Identificação do paciente:</h2>
                             </template>
 
+                            <h2 class="mt-[40px] mb-4 text-xl font-montserrat text-black font-bold">Dados Profissionais:</h2>
+
+                            <div class="flex flex-col">
+                                <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold">Formação: </label>
+                                <p>
+                                    {{ FormData.degree }}
+                                </p>
+                            </div>
+                            <div class="flex flex-col">
+                                <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold">Especialidade: </label>
+                                <p>
+                                    {{ FormData.specialty }}
+                                </p>
+                            </div>
+                            <div class="flex flex-col">
+                                <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold">Documentos comprobatórios: </label>
+
+                                <p class="border rounded-3xl p-4 w-[160px]" :style="{ borderColor: '#010424', color:'#010424'}">
+                                    {{ FormData.uploadedFile?.name || 'Nenhum arquivo carregado' }}
+                                </p>
+
+                            </div>
+
+                            <div class="flex flex-col">
+                                <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold">CRM: </label>
+                                <p>
+                                    {{ FormData.crm }}
+                                </p>
+                            </div>
+                            
                         </ModalCadastro>
-                        <div class="modal-action">
+                        <div class="modal-action flex flex-col justify-between">
                             
                             <div class="flex w-full pl-[50px]">
+                                
                                 <form method="dialog">
                                     <!-- if there is a button, it will close the modal -->
-                                    <button  @click="closeModal" class="btn-close w-[104px] h-[42px] bg-[#DEECFA] text-white btn text-[18px]" style="color: #00428F;">Fechar</button>
+                                    <button 
+                                    @click="closeModal" 
+                                    class="bg-[#00428F] text-white w-[104px] h-[42px] rounded-lg mt-auto" >Fechar</button>
                                 </form>
                                 <form method="dialog" class="modal-backdrop">
                                     <button>Fechar</button>
@@ -250,6 +283,7 @@
 <script setup lang="ts">
 import ModalCadastro from '@/components/baseUi/ModalCadastro.vue';
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
+// import { props } from 'node_modules/cypress/types/bluebird';
 import { reactive, ref } from 'vue';
 import { toast } from 'vue-sonner';
 

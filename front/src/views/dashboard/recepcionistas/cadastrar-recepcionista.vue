@@ -279,15 +279,20 @@
                                 </label>
                             </div>
                         </ModalCadastro>
-                        <div class="modal-action">
+                        <div class="modal-action flex flex-col justify-between">
                             
-                            <form method="dialog">
-                                <!-- if there is a button, it will close the modal -->
-                                <button @click="closeModal" class="absolute left-[80px] bottom-[-900px] w-[104px] h-[42px] bg-[#00428F] text-white btn" >Fechar</button>
-                            </form>
-                            <form method="dialog" class="modal-backdrop">
-                                <button>Fechar</button>
-                            </form>
+                            <div class="flex w-full pl-[50px]">
+                                
+                                <form method="dialog">
+                                    <!-- if there is a button, it will close the modal -->
+                                    <button 
+                                    @click="closeModal" 
+                                    class="bg-[#00428F] text-white w-[104px] h-[42px] rounded-lg mt-auto" >Fechar</button>
+                                </form>
+                                <form method="dialog" class="modal-backdrop">
+                                    <button>Fechar</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                     </dialog>

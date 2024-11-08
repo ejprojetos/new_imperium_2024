@@ -1,5 +1,5 @@
 <template>
-    <div class="pb-[70px] pt-[40px] px-[60px] mb-4 bg-white ded-lgroun gap-x-4 w-[650px] rounded-xl">
+    <div class="pb-[10px] pt-[40px] px-[60px] mb-4 bg-white ded-lgroun gap-x-4 w-[650px] rounded-xl">
 
         <header>
             <slot name="header" class="mb-6 text-4xl font-bold text-3xl">Cadastrado com sucesso!</slot>
@@ -113,20 +113,13 @@
             </p>
         </div>
         <div>
-            <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold" >
+            <label class="block mt-[20px] text-lg font-montserrat br-16 font-semibold" >
                 Celular:
             </label>
             <p>
                 {{props.FormData.phone}}
             </p>
         </div>
-     
-    
-
-
-
-
-
 
         <slot/>
     </div>
