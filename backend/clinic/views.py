@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from .pagination import SmallPagination
 from django_filters.rest_framework import DjangoFilterBackend
+from users.models import User
 
 class MedicalRecordViewSet(viewsets.ModelViewSet):
     """
@@ -101,10 +102,18 @@ class NotificationViewSet(viewsets.ModelViewSet):
     lookup_field = 'pk'
 
     def get_queryset(self):
-        # para as rotas que nescessitam do user_id
         user_id = self.kwargs.get('user_id')
         if user_id is not None:
-            return Notification.objects.filter(user_id=user_id)
+            return Notification.objects.filter(user_id=user_id).order_by('id')
+
+    def list(self, request, *args, **kwargs):
+        user_id = self.kwargs.get('user_id')
+        user = User.objects.filter(id=user_id).exists()
+
+        if user:
+            return super().list(request, *args, **kwargs)
+        else:
+            return Response({'detail': 'user not exist'}, status=status.HTTP_404_NOT_FOUND)
 
     def retrieve(self, request, *args, **kwargs):
         notification_pk = self.kwargs.get('pk')
