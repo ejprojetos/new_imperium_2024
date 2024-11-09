@@ -51,52 +51,26 @@
                         </div>
                     </div>
 
-                    <!-- Continue with similar pattern for other fields -->
-
                     <h2 class="mt-[30px] mb-4 text-xl font-montserrat text-black font-bold">
-                        Expediente:
+                        Informações Médicas:
                     </h2>
                     <div>
                         <label class="block mt-[20px] mb-2 text-lg font-montserrat">
-                            Dias de Trabalho:
+                            Alergias:
                         </label>
-                        <div class="flex flex-wrap gap-2">
-                            <span
-                                v-for="(day, index) in weekDays"
-                                :key="index"
-                                :class="[
-                                    'px-px-4 py-2 rounded-2xl w-[90px] h-[30px] flex items-center justify-center font-montserrat',
-                                    selectedDays.includes(day)
-                                        ? 'bg-[#00428F] text-white'
-                                        : 'bg-[#DEECFA] text-gray-700'
-                                ]">
-                                {{ day }}
-                            </span>
-                        </div>
+                        <p class="px-2 py-1">{{ FormData.allergies }}</p>
                     </div>
-
-                    <div>
-                        <label class="block mt-[20px] mb-2 text-lg font-montserrat">Turnos:</label>
-                        <div class="flex flex-wrap gap-2">
-                            <span
-                                v-for="(shift, index) in shifts"
-                                :key="index"
-                                :class="[
-                                    'px-px-4 py-2 rounded-2xl w-[90px] h-[30px] flex items-center justify-center font-montserrat',
-                                    selectedShifts.includes(shift)
-                                        ? 'bg-[#00428F] text-white'
-                                        : 'bg-[#DEECFA] text-gray-700'
-                                ]">
-                                {{ shift }}
-                            </span>
-                        </div>
-                    </div>
-
                     <div>
                         <label class="block mt-[20px] mb-2 text-lg font-montserrat">
-                            Disponibilidade para plantões:
+                            Problemas Recorrentes:
                         </label>
-                        <p class="px-2 py-1">{{ FormData.plantoes === 'sim' ? 'Sim' : 'Não' }}</p>
+                        <p class="px-2 py-1">{{ FormData.recurringProblems }}</p>
+                    </div>
+                    <div>
+                        <label class="block mt-[20px] mb-2 text-lg font-montserrat">
+                            Medicação:
+                        </label>
+                        <p class="px-2 py-1">{{ FormData.medication }}</p>
                     </div>
                 </section>
             </div>
@@ -108,18 +82,11 @@
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 import { ref } from 'vue'
 
-const weekDays = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo']
-const shifts = ['Matutino', 'Vespertino', 'Noturno']
-
-const selectedDays = ref<string[]>(['Segunda', 'Quarta', 'Sexta']) // Example data
-const selectedShifts = ref<string[]>(['Matutino', 'Vespertino']) // Example data
-
-// Example data - in real application, this would come from props or API
 const FormData = ref({
-    name: 'João',
+    name: 'Maria',
     lastName: 'Silva',
     dateOfBirth: '1990-01-01',
-    gener: 'Masculino',
+    gener: 'Feminino',
     cpf: '123.456.789-00',
     country: 'Brasil',
     state: 'RN',
@@ -128,9 +95,28 @@ const FormData = ref({
     zipCode: '59000-000',
     street: 'Rua Principal',
     number: '123',
-    email: 'joao.silva@email.com',
+    email: 'maria.silva@email.com',
     phone: '(84) 99999-9999',
-    plantoes: 'sim'
+    allergies: 'Penicilina, Dipirona',
+    recurringProblems: 'Hipertensão',
+    medication: 'Losartana 50mg',
+    appointments: [
+        {
+            date: '2024-03-15',
+            doctor: 'Dr. João Santos',
+            specialty: 'Cardiologia'
+        },
+        {
+            date: '2024-02-20',
+            doctor: 'Dra. Ana Paula',
+            specialty: 'Clínico Geral'
+        },
+        {
+            date: '2024-01-10',
+            doctor: 'Dr. Carlos Silva',
+            specialty: 'Cardiologia'
+        }
+    ]
 })
 </script>
 

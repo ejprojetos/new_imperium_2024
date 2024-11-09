@@ -14,8 +14,7 @@
             </div>
             <div class="p-4 bg-green-100 rounded-lg shadow-lg min-w-56">
                 <h3 class="mb-8 text-xl font-bold">Cadastrar Consultas</h3>
-                <RouterLink to="/dashboard/medicos/cadastrar">
-                </RouterLink>
+                <RouterLink to="/dashboard/medicos/cadastrar"></RouterLink>
                 <button class="w-full py-2 text-xs text-white btn bg-primary hover:bg-primary">
                     Cadastrar
                 </button>
@@ -70,9 +69,11 @@
                     <Phone class="w-6 h-6 mx-auto text-blue-700" />
                     <p class="text-sm text-center">{{ receptionist.phone }}</p>
                 </div>
-                <!-- <button class="w-full px-4 py-2 mt-2 text-white bg-blue-700 rounded-lg">
+                <RouterLink
+                    :to="`/dashboard/medicos/${receptionist.id}`"
+                    class="w-full px-4 py-2 mt-2 text-center text-white bg-blue-700 rounded-lg">
                     Ver Perfil
-                </button> -->
+                </RouterLink>
             </div>
         </div>
     </LayoutDashboard>
@@ -82,8 +83,7 @@
 import { ref } from 'vue'
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 import { Search, Mail, Phone } from 'lucide-vue-next'
-
-import { RouterLink } from 'vue-router';
+import { RouterLink } from 'vue-router'
 
 const receptionists = ref([
     {

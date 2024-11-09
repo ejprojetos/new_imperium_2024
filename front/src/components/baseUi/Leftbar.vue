@@ -7,7 +7,9 @@
                 'px-4 py-4'
             ]"
             class="flex flex-col w-[250px] px-4 py-8 items-center justify-between h-full max-lg:px-4 max-lg:items-start">
-            <img class="w-32" src="../../assets/logo.svg" alt="" srcset="" />
+            <RouterLink to="/dashboard">
+                <img class="w-32" src="../../assets/logo.svg" alt="" srcset="" />
+            </RouterLink>
             <div class="flex flex-col mt-12">
                 <RouterLink v-for="item in navItems" :key="item.name" :to="item.path">
                     <div
