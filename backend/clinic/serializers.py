@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import MedicalRecord, Appointment, Room
+from .models import MedicalRecord, Appointment, Room, Notification
 from users.models import Patient, Doctor
 
 class MedicalRecordSerializer(serializers.ModelSerializer):
@@ -31,3 +31,11 @@ class RoomSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("A room with this number already exists in this clinic.")
         
         return value
+    
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = ['message', 'is_read', 'type', 'datetime', 'user']
+        extra_kwargs = {
+            'user': {'read_only': True}
+        }
