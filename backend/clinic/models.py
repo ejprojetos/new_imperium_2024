@@ -60,7 +60,7 @@ class WorkingHours(models.Model):
     end_time = models.TimeField()
 
     def __str__(self):
-        return f"{self.doctor} - {self.get_day_of_week_display()} from {self.start_time} to {self.end_time}"
+        return f"{self.user} - {self.get_day_of_week_display()} from {self.start_time} to {self.end_time}"
 
 
 class Notification(models.Model):
@@ -108,4 +108,5 @@ class WaitingList(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='waiting_list', blank=True, null=True)
 
     def __str__(self):
-        return f"Waiting List for {self.patient} in {self.clinic} on {self.appointment_date}"
+        return f"Waiting List for {self.patient} in {self.clinic}"
+
