@@ -75,3 +75,49 @@ class WaitingListSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("The doctor is not available at the moment.")
         
         return data
+
+
+class AssignDoctorSerializer(serializers.Serializer):
+    class Meta:
+        model = WaitingList
+        fields = ['doctor']
+
+    doctor_id = serializers.ChoiceField(choices=[])
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Popula o campo doctor_id com opções de médicos disponíveis
+        self.fields['doctor_id'].choices = [
+            (doctor.id, f"{doctor.user.first_name} {doctor.user.last_name}")
+            for doctor in Doctor.objects.all()
+        ]
+
+    def validate_doctor_id(self, doctor_id):
+        try:
+            doctor = Doctor.objects.get(id=doctor_id)
+        except Doctor.DoesNotExist:
+            raise serializers.ValidationError("The specified doctor does not exist.")
+
+        # Verifica se o médico está disponível (validação de horários de trabalho)
+        current_day = timezone.now().isoweekday()
+        current_time = timezone.now().time()
+        working_hours = WorkingHours.objects.filter(
+            user=doctor.user, 
+            day_of_week=current_day,
+            start_time__lte=current_time, 
+            end_time__gte=current_time
+        )
+        if not working_hours.exists():
+            raise serializers.ValidationError("The doctor is not available at the moment.")
+
+        return doctor_id
+
+    def validate(self, data):
+        waiting_list = self.context['waiting_list']
+        
+        # Verifica se o paciente está com status "waiting"
+        if waiting_list.status != "waiting":
+            raise serializers.ValidationError("The patient is not currently waiting.")
+        
+        return data
