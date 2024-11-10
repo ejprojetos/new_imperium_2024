@@ -64,7 +64,7 @@ class WorkingHours(models.Model):
     end_time = models.TimeField()
 
     def __str__(self):
-        return f"{self.doctor} - {self.get_day_of_week_display()} from {self.start_time} to {self.end_time}"
+        return f"{self.user} - {self.get_day_of_week_display()} from {self.start_time} to {self.end_time}"
 
 
 class Notification(models.Model):
@@ -96,6 +96,23 @@ class Room(models.Model):
 
     def __str__(self):
         return self.number
+
+
+class WaitingList(models.Model):
+    STATUS_CHOICES = [
+        ('waiting', 'Waiting'),
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed'),
+    ]
+    
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='waiting_list')
+    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='waiting_list')
+    arrival_datetime = models.DateTimeField()
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='waiting')
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='waiting_list', blank=True, null=True)
+
+    def __str__(self):
+        return f"Waiting List for {self.patient} in {self.clinic}"
 
     def is_available(self, appointment_date, duration=timedelta(hours=1)):
         """Check if the room is available at a specific date and time."""
