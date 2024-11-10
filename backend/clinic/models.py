@@ -3,6 +3,9 @@ from commom.models import Address
 import uuid
 from django.utils import timezone
 from users.models import User, Doctor, Patient
+from django.db.models import Q
+from datetime import timedelta
+
 
 
 class Clinic(models.Model):
@@ -30,6 +33,7 @@ class Appointment(models.Model):
         ('completed', 'Completed'),
     ]
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='scheduled')
+    room = models.ForeignKey('Room', on_delete=models.CASCADE, blank=True, null=True, related_name='appointments')
 
     def __str__(self):
         return f"Appointment for {self.patient} with {self.doctor} on {self.appointment_date}"
@@ -110,3 +114,10 @@ class WaitingList(models.Model):
     def __str__(self):
         return f"Waiting List for {self.patient} in {self.clinic}"
 
+    def is_available(self, appointment_date, duration=timedelta(hours=1)):
+        """Check if the room is available at a specific date and time."""
+        overlapping_appointments = self.appointments.filter(
+            appointment_date__lt=appointment_date + duration,
+            appointment_date__gte=appointment_date
+        )
+        return not overlapping_appointments.exists()

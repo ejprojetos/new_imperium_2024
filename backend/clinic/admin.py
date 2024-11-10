@@ -42,6 +42,8 @@ class WaitingListAdmin(admin.ModelAdmin):
     search_fields = ['patient__user__first_name', 'patient__user__last_name', 'doctor__user__first_name', 'doctor__user__last_name']
     list_filter = ['status']
     ordering = ['arrival_datetime']
+    search_fields = ['user', 'day_of_week', 'start_time', 'end_time']
+    list_per_page = 10
 
 
 admin.site.register(Clinic, ClinicAdmin)
