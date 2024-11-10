@@ -14,9 +14,11 @@
             </div>
             <div class="p-4 bg-green-100 rounded-lg shadow-lg min-w-56">
                 <h3 class="mb-8 text-xl font-bold">Cadastrar Consultas</h3>
-                <button class="w-full py-2 text-xs text-white btn bg-primary hover:bg-primary">
-                    Cadastrar
-                </button>
+                <RouterLink to="/dashboard/pacientes/cadastrar-consulta">
+                    <button class="w-full py-2 text-xs text-white btn bg-primary hover:bg-primary">
+                        Cadastrar
+                    </button>
+                </RouterLink>
             </div>
             <div class="p-4 bg-white rounded-lg shadow-lg min-w-56">
                 <h3 class="mb-8 text-xl font-bold">Cadastrar Pacientes</h3>
@@ -47,10 +49,7 @@
 
         <!-- pacientes -->
         <div v-if="patients.length" class="grid grid-cols-3 gap-4 px-12 mt-8">
-            <div
-                v-for="patient in patients"
-                :key="patient.id"
-                class="flex flex-col p-4 bg-white rounded-lg shadow">
+            <div v-for="patient in patients" :key="patient.id" class="flex flex-col p-4 bg-white rounded-lg shadow">
                 <div class="flex items-center mb-4">
                     <img :src="patient.image" alt="Paciente" class="w-16 h-16 mr-4 rounded-full" />
                     <div>
