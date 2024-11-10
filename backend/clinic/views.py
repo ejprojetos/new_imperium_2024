@@ -2,7 +2,7 @@ from rest_framework import viewsets, status, permissions, filters
 
 from rest_framework.response import Response 
 from .models import MedicalRecord, Appointment, Room, Clinic, Notification, Clinic, WaitingList, Doctor, WorkingHours
-from .serializers import MedicalRecordSerializer, RoomSerializer, NotificationSerializer, AssignDoctorSerializer
+from .serializers import MedicalRecordSerializer, RoomSerializer, NotificationSerializer, AssignDoctorSerializer, WaitingListSerializer
 from users.permissions import IsRoleUser
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
