@@ -1,11 +1,9 @@
 from rest_framework import viewsets, status, permissions
-
 from rest_framework.response import Response 
-from .models import MedicalRecord, Appointment, Room, Clinic
-from .serializers import MedicalRecordSerializer, RoomSerializer
+from .models import MedicalRecord, Appointment, Room, Clinic, WaitingList, Doctor, WorkingHours
+from .serializers import MedicalRecordSerializer, RoomSerializer, WaitingListSerializer
 from users.permissions import IsRoleUser
 from django.shortcuts import get_object_or_404
-from rest_framework.response import Response
 
 class MedicalRecordViewSet(viewsets.ModelViewSet):
     """
@@ -80,4 +78,29 @@ class RoomViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class WaitingListViewSet(viewsets.ModelViewSet):
+    queryset = WaitingList.objects.all()
+    serializer_class = WaitingListSerializer
+    required_roles = ['Recepcionist', 'Doctor']
+    # permission_classes = [IsRoleUser]
+    http_method_names = ['get', 'post', 'delete', 'put']
+    
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [permissions.AllowAny()]
+        return super().get_permissions()
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, *args, **kwargs):
+        waiting_list_item = self.get_object()
+        waiting_list_item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
