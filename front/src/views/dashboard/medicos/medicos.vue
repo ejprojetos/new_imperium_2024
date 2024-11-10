@@ -14,11 +14,14 @@
             </div>
             <div class="p-4 bg-green-100 rounded-lg shadow-lg min-w-56">
                 <h3 class="mb-8 text-xl font-bold">Cadastrar Consultas</h3>
-                <RouterLink to="/dashboard/medicos/cadastrar">
+
+
+                <RouterLink :to="cadastro_consultas.path">
+                    <button class="w-full py-2 text-xs text-white btn bg-primary hover:bg-primary">
+                        Cadastrar
+                    </button>
                 </RouterLink>
-                <button class="w-full py-2 text-xs text-white btn bg-primary hover:bg-primary">
-                    Cadastrar
-                </button>
+
             </div>
             <div class="p-4 bg-white rounded-lg shadow-lg min-w-56">
                 <h3 class="mb-8 text-xl font-bold">Cadastrar Médicos</h3>
@@ -51,14 +54,9 @@
 
         <!-- Receptionists Grid -->
         <div class="grid grid-cols-4 gap-4 px-12 mt-8">
-            <div
-                v-for="receptionist in receptionists"
-                :key="receptionist.id"
+            <div v-for="receptionist in receptionists" :key="receptionist.id"
                 class="flex flex-col items-center p-4 bg-white rounded-lg shadow">
-                <img
-                    :src="receptionist.image"
-                    alt="Recepcionista"
-                    class="w-24 h-24 mx-auto rounded-full" />
+                <img :src="receptionist.image" alt="Recepcionista" class="w-24 h-24 mx-auto rounded-full" />
                 <h4 class="mt-2 font-bold text-center">{{ receptionist.name }}</h4>
                 <p class="text-sm text-center">Atendimento: {{ receptionist.schedule }}</p>
                 <p class="text-sm text-center">Turno: {{ receptionist.shift }}</p>
@@ -82,6 +80,9 @@
 import { ref } from 'vue'
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 import { Search, Mail, Phone } from 'lucide-vue-next'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
 
 import { RouterLink } from 'vue-router';
 
@@ -97,4 +98,11 @@ const receptionists = ref([
     }
     // Add more receptionists here...
 ])
+
+const cadastro_consultas = {
+    name: 'Cadastro de Consultas',
+    path: '/dashboard/medicos/cadastrar-consultas',
+    roles: ['medico']
+}
+
 </script>

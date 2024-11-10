@@ -1,22 +1,20 @@
 <template>
     <Transition name="slide">
-        <div
-            v-if="isLeftbarOpen || !isMobile"
-            :class="[
-                isMobile ? 'fixed bg-white top-0 left-0 z-50 w-[200px] shadow-lg' : '',
-                'px-4 py-4'
-            ]"
+        <div v-if="isLeftbarOpen || !isMobile" :class="[
+            isMobile ? 'fixed bg-white top-0 left-0 z-50 w-[200px] shadow-lg' : '',
+            'px-4 py-4'
+        ]"
             class="flex flex-col w-[250px] px-4 py-8 items-center justify-between h-full max-lg:px-4 max-lg:items-start">
-            <img class="w-32" src="../../assets/logo.svg" alt="" srcset="" />
+            <RouterLink to="/auth/login">
+                <img class="w-32" src="../../assets/logo.svg" alt="" srcset="" />
+            </RouterLink>
+
             <div class="flex flex-col mt-12">
                 <RouterLink v-for="item in navItems" :key="item.name" :to="item.path">
-                    <div
-                        v-if="item.roles.includes(role)"
+                    <div v-if="item.roles.includes(role)"
                         class="flex items-center justify-start mt-4 mb-2 text-sm gap-x-4">
                         <img :src="item.icon" alt="" />
-                        <p
-                            :class="{ 'text-active': isActive(item.path) }"
-                            class="font-bold text-md">
+                        <p :class="{ 'text-active': isActive(item.path) }" class="font-bold text-md">
                             {{ item.name }}
                         </p>
                     </div>
@@ -45,10 +43,7 @@
             </div>
         </div>
     </Transition>
-    <div
-        v-if="isMobile && isLeftbarOpen"
-        class="fixed inset-0 z-40 bg-black bg-opacity-50"
-        @click="closeLeftbar"></div>
+    <div v-if="isMobile && isLeftbarOpen" class="fixed inset-0 z-40 bg-black bg-opacity-50" @click="closeLeftbar"></div>
 </template>
 
 <script setup lang="ts">
@@ -149,7 +144,8 @@ const navItems = [
 
 <style scoped>
 .text-active {
-    color: #ed5575; /* Color for active item name */
+    color: #ed5575;
+    /* Color for active item name */
 }
 
 .slide-enter-active,
@@ -163,9 +159,7 @@ const navItems = [
 }
 
 .leftbar-container.leftbar-closed .menu :where(li > details > summary):after,
-.leftbar-container.leftbar-closed
-    .menu
-    :where(li > .menu-dropdown-toggle.menu-dropdown-show):after {
+.leftbar-container.leftbar-closed .menu :where(li > .menu-dropdown-toggle.menu-dropdown-show):after {
     display: none !important;
 }
 
@@ -175,9 +169,9 @@ const navItems = [
     padding-right: 0.2rem;
 }
 
-.menu li > *:not(ul, .menu-title, details, .btn):active,
-.menu li > *:not(ul, .menu-title, details, .btn).active,
-.menu li > details > summary:active {
+.menu li>*:not(ul, .menu-title, details, .btn):active,
+.menu li>*:not(ul, .menu-title, details, .btn).active,
+.menu li>details>summary:active {
     background-color: unset;
     color: unset;
 }

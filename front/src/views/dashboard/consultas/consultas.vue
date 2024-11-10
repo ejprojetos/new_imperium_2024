@@ -14,15 +14,16 @@
             </div>
             <div class="p-4 bg-green-100 rounded-lg shadow-lg min-w-56 max-lg:w-full">
                 <h3 class="mb-8 text-xl font-bold">Cadastrar Consultas</h3>
-                <button
-                    class="w-full py-2 text-xs text-white min-h-unset btn bg-primary hover:bg-primary">
-                    Cadastrar
-                </button>
+                <router-link to="/dashboard/perfil/recepcionista/cadastrar-consulta">
+                    <button class="w-full py-2 text-xs text-white min-h-unset btn bg-primary hover:bg-primary">
+                        Cadastrar
+                    </button>
+                </router-link>
+
             </div>
             <div class="p-4 bg-white rounded-lg shadow-lg min-w-56 max-lg:w-full">
                 <h3 class="mb-8 text-xl font-bold">Pagamentos</h3>
-                <button
-                    class="w-full py-2 text-xs text-white min-h-unset btn bg-primary hover:bg-primary">
+                <button class="w-full py-2 text-xs text-white min-h-unset btn bg-primary hover:bg-primary">
                     Acessar Asaas
                 </button>
             </div>
@@ -44,9 +45,7 @@
 
         <!-- Appointments List -->
         <div class="px-12 mt-8">
-            <div
-                v-for="appointment in appointments"
-                :key="appointment.name"
+            <div v-for="appointment in appointments" :key="appointment.name"
                 class="flex items-center justify-between p-4 mb-4 bg-white rounded-lg shadow">
                 <div class="flex items-center space-x-4">
                     <div class="flex flex-col text-xs">
@@ -56,9 +55,7 @@
                     <div>
                         <div class="flex gap-x-2">
                             <div class="font-semibold">{{ appointment.name }}</div>
-                            <span
-                                :class="statusClass(appointment.status)"
-                                class="px-2 py-1 text-sm rounded-full">
+                            <span :class="statusClass(appointment.status)" class="px-2 py-1 text-sm rounded-full">
                                 {{ appointment.status }}
                             </span>
                         </div>
@@ -70,7 +67,9 @@
                     <button class="px-4 py-2 text-white bg-blue-700 rounded-lg">
                         Ver Prontuário
                     </button>
-                    <button class="px-4 py-2 text-blue-700 bg-blue-100 rounded-lg">Editar</button>
+                    <RouterLink to="/dashboard/medicos/editar-consultas">
+                        <button class="px-4 py-2 text-blue-700 bg-blue-100 rounded-lg">Editar</button>
+                    </RouterLink>
                 </div>
             </div>
         </div>
@@ -94,6 +93,8 @@
 import { ref } from 'vue'
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 import { Search } from 'lucide-vue-next'
+import { RouterLink } from 'vue-router';
+import router from '@/router';
 
 const appointments = ref([
     {
