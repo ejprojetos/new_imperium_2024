@@ -1,9 +1,11 @@
 from rest_framework import viewsets, status, permissions
 from rest_framework.response import Response 
 from .models import MedicalRecord, Appointment, Room, Clinic, WaitingList, Doctor, WorkingHours
-from .serializers import MedicalRecordSerializer, RoomSerializer, WaitingListSerializer
+from .serializers import MedicalRecordSerializer, RoomSerializer, WaitingListSerializer, AssignDoctorSerializer
 from users.permissions import IsRoleUser
 from django.shortcuts import get_object_or_404
+from rest_framework.decorators import action
+
 
 class MedicalRecordViewSet(viewsets.ModelViewSet):
     """
@@ -55,7 +57,7 @@ class RoomViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             serializer.save(clinic=clinic)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, *args, **kwargs):
@@ -85,13 +87,19 @@ class WaitingListViewSet(viewsets.ModelViewSet):
     queryset = WaitingList.objects.all()
     serializer_class = WaitingListSerializer
     required_roles = ['Recepcionist', 'Doctor']
-    # permission_classes = [IsRoleUser]
-    http_method_names = ['get', 'post', 'delete', 'put']
+    permission_classes = [IsRoleUser]
+    http_method_names = ['post', 'delete', 'put']
     
     def get_permissions(self):
         if self.request.method == 'POST':
             return [permissions.AllowAny()]
         return super().get_permissions()
+    
+    def get_serializer_class(self):
+        # Usar AssignDoctorSerializer apenas para a ação assign_doctor
+        if self.action == 'assign_doctor':
+            return AssignDoctorSerializer
+        return super().get_serializer_class()
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -104,3 +112,17 @@ class WaitingListViewSet(viewsets.ModelViewSet):
         waiting_list_item = self.get_object()
         waiting_list_item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=True, methods=['put'], url_path='assign-doctor')
+    def assign_doctor(self, request, pk=None):
+        waiting_list = self.get_object()  # Obtém a instância da lista de espera
+        serializer = AssignDoctorSerializer(data=request.data, context={'waiting_list': waiting_list})
+
+        if serializer.is_valid():
+            doctor_id = serializer.validated_data['doctor_id']
+            waiting_list.doctor_id = doctor_id
+            waiting_list.status = "in_progress"
+            waiting_list.save()
+            return Response({"detail": "Doctor assigned successfully."}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
