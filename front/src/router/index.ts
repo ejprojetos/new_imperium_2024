@@ -6,8 +6,9 @@ const router = createRouter({
         {
             path: '/',
             name: 'home',
-            // component: () => import('../views/institucional/index.vue'
-            redirect: '/dashboard'
+            component: () => import('../views/institucional/index.vue'),
+            // redirect: '/dashboard',
+            children: []
         },
         {
             path: '/auth/login',
