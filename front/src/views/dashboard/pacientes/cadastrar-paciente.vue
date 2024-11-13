@@ -200,29 +200,10 @@
    
 
 <script setup lang="ts">
-import DaysSelector from '@/components/baseUi/DaysSelector.vue';
 import ModalCadastro from '@/components/baseUi/ModalCadastro.vue';
-import WorkShifts from '@/components/baseUi/WorkShifts.vue';
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 import { reactive, ref } from 'vue';
 import { toast } from 'vue-sonner';
-
-const weekDays = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
-
-const shifts = ['Matutino','Vespertino','Noturno']
-
-const selectedDays = ref<string[]>([]);
-
-const selectedShifts = ref<string[]>([]);
-
-//lista de dias
-const handleSelectedDays = (days: string[]) =>{
-    selectedDays.value = days;
-}
-//Lista de horários 
-const handleSelectedShifts = (shifts: string[]) =>{
-    selectedShifts.value = shifts;
-}
 
 // reactive pq formData é um objeto
 const FormData = reactive({
