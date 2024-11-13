@@ -33,7 +33,7 @@
 			<button class="botao-login">
 				Fazer login
 			</button>
-			<router-link to="/auth/redefinir-senha">
+			<router-link to="/auth/esqueci-senha">
 				<p class="link-recadastro-senha">Esqueceu sua senha ou email cadastrado?</p>
 			</router-link>
 
