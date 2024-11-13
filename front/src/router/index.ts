@@ -26,6 +26,16 @@ const router = createRouter({
             component: () => import('../views/auth/email-enviado.vue')
         },
         {
+            path: '/auth/redefinir-senha',
+            name: 'redefinir-senha',
+            component: () => import('../views/auth/redefinir-senha.vue')
+        },
+        {
+            path: '/auth/senha-redefinida',
+            name: 'senha-redefinida',
+            component: () => import('../views/auth/senha-redefinida.vue')
+        },
+        {
             path: '/dashboard',
             name: 'dashboard',
             component: () => import('../views/dashboard/index.vue')
