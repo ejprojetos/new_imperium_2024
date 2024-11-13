@@ -21,6 +21,11 @@ const router = createRouter({
 
         },
         {
+            path: '/auth/email-enviado',
+            name: 'email-enviado',
+            component: () => import('../views/auth/email-enviado.vue')
+        },
+        {
             path: '/dashboard',
             name: 'dashboard',
             component: () => import('../views/dashboard/index.vue')
