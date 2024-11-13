@@ -14,6 +14,12 @@ const router = createRouter({
             name: 'login',
             component: () => import('../views/auth/login.vue')
         },
+        { 
+            path: '/auth/esqueci-senha', 
+            name: 'esqueci-senha', 
+            component: () => import('../views/auth/esqueci-senha.vue') 
+
+        },
         {
             path: '/dashboard',
             name: 'dashboard',
