@@ -44,6 +44,7 @@
 </template>
 
 <script setup lang="ts">
+import { Route } from 'lucide-vue-next';
 import { RouterLink } from 'vue-router';
 
 RouterLink
@@ -85,11 +86,11 @@ RouterLink
 }
 
 .secao-login {
-	margin-top: 5rem;
+	margin-top: 10rem;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 15rem;
+	gap: 13rem;
 }
 
 .secao-input {
