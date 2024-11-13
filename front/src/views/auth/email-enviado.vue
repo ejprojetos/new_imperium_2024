@@ -14,23 +14,16 @@
 
         <div class="p-6 rounded-lg shadow-lg max-w-[400px] mx-auto p-15 box secao-input"
             style="background-color: #00428F;">
-            <h3 class="text-3xl font-bold text-white titulo-secao">Esqueci minha senha</h3>
+            <h3 class="text-3xl font-bold text-white titulo-secao">EMAIL ENVIADO!</h3>
             <div class="grid grid-cols-1 gap-1">
 
-                <label class="block mb-1 font-semibold text-white texto-label">Digite seu e-mail para redefinir sua
-                    senha:</label>
-                <input type="email" placeholder="" class="input input-bordered w-full  texto-opcoes"
-                    style="background-color: #FAFAFAE5;" />
+                <label class="block mb-1 font-semibold text-white texto-label">Enviamos um email para sua caixa de
+                    entrada acesse-a para redefinir sua senha.</label>
+
 
             </div>
 
-            <div class="secao-botao">
-                <router-link to="/auth/email-enviado">
-                    <button class="botao-login">
-                        ENVIAR EMAIL
-                    </button>
-                </router-link>
-            </div>
+
 
         </div>
     </section>
@@ -95,7 +88,7 @@
 }
 
 .titulo-secao {
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Raleway', sans-serif;
     font-size: 36px;
     text-align: center;
 
@@ -104,9 +97,11 @@
 
 .texto-label {
     font-family: 'Open Sans', sans-serif;
-    font-size: 16px;
+    text-align: center;
+    font-size: 20px;
+    font-style: normal;
     font-weight: 400;
-    color: #FAFAFA;
+    line-height: normal;
 }
 
 .secao-botao {
