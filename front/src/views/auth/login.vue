@@ -33,8 +33,10 @@
 			<button class="botao-login">
 				Fazer login
 			</button>
+			<router-link to="/auth/redefinir-senha">
+				<p class="link-recadastro-senha">Esqueceu sua senha ou email cadastrado?</p>
+			</router-link>
 
-			<p class="link-recadastro-senha">Esqueceu sua senha ou email cadastrado?</p>
 		</div>
 	</section>
 
@@ -42,7 +44,9 @@
 </template>
 
 <script setup lang="ts">
+import { RouterLink } from 'vue-router';
 
+RouterLink
 </script>
 
 <style scoped>
