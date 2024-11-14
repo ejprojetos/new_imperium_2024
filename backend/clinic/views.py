@@ -2,7 +2,7 @@ from rest_framework import viewsets, status, permissions, filters
 
 from rest_framework.response import Response 
 from .models import MedicalRecord, Appointment, Room, Clinic, Notification, Clinic, WaitingList, Doctor, WorkingHours
-from .serializers import MedicalRecordSerializer, RoomSerializer, NotificationSerializer, AssignDoctorSerializer, WaitingListSerializer
+from .serializers import MedicalRecordSerializer, RoomSerializer, NotificationSerializer, AssignDoctorSerializer, WaitingListSerializer, WorkingHoursSerializer
 from users.permissions import IsRoleUser
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
@@ -40,7 +40,8 @@ class MedicalRecordViewSet(viewsets.ModelViewSet):
 
 class RoomViewSet(viewsets.ModelViewSet):
     serializer_class = RoomSerializer
-    permission_classes = [permissions.AllowAny]
+    required_roles = ['Recepcionist', 'Admin']
+    permission_classes = [IsRoleUser]
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     lookup_field = 'uuid'  # Define o campo de busca como 'uuid'
 
@@ -153,11 +154,6 @@ class WaitingListViewSet(viewsets.ModelViewSet):
     permission_classes = [IsRoleUser]
     http_method_names = ['post', 'delete', 'put']
     
-    def get_permissions(self):
-        if self.request.method == 'POST':
-            return [permissions.AllowAny()]
-        return super().get_permissions()
-    
     def get_serializer_class(self):
         # Usar AssignDoctorSerializer apenas para a ação assign_doctor
         if self.action == 'assign_doctor':
@@ -189,3 +185,25 @@ class WaitingListViewSet(viewsets.ModelViewSet):
             return Response({"detail": "Doctor assigned successfully."}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class WorkingHoursViewSet(viewsets.ModelViewSet):
+    queryset = WorkingHours.objects.all()
+    serializer_class = WorkingHoursSerializer
+    required_roles = ['Doctor']
+    permission_classes = [IsRoleUser]
+
+    def get_queryset(self):
+        """
+        Return a list of working hours for the authenticated user.
+        """
+        return WorkingHours.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        """
+        Create a new working hours for the authenticated user.
+        """
+        if not serializer.validated_data.get('user'):
+            serializer.save(user=self.request.user)
+        else:
+            serializer.save()

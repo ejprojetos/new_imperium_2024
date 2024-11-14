@@ -121,3 +121,41 @@ class AssignDoctorSerializer(serializers.Serializer):
             raise serializers.ValidationError("The patient is not currently waiting.")
         
         return data
+
+
+class WorkingHoursSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WorkingHours
+        fields = ['user', 'day_of_week', 'start_time', 'end_time']
+
+    def validate(self, data):
+        start_time = data.get('start_time')
+        end_time = data.get('end_time')
+        user_data = data.get('user')
+        print(user_data)
+
+        # Garantir que end_time seja posterior a start_time
+        if start_time >= end_time:
+            raise serializers.ValidationError("End time must be later than start time.")
+
+        # Pegar o usuário autenticado se 'user' não está em data
+        user = data.get('user') if 'user' in data else self.context['request'].user
+        day_of_week = data.get('day_of_week')
+
+        # Obter todos os horários existentes para o mesmo dia e usuário que se sobreponham ao novo horário
+        conflicting_hours = WorkingHours.objects.filter(
+            user=user,
+            day_of_week=day_of_week,
+            start_time__lt=end_time,   # Início antes do término do novo horário
+            end_time__gt=start_time    # Término depois do início do novo horário
+        )
+        
+        # Ignorar o horário atual (em caso de atualização)
+        if self.instance:
+            conflicting_hours = conflicting_hours.exclude(id=self.instance.id)
+
+        # Verificação final de conflito
+        if conflicting_hours.exists():
+            raise serializers.ValidationError("There is a conflict with existing working hours.")
+
+        return data
