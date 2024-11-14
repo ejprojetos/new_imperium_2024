@@ -21,7 +21,9 @@ module.exports = {
 				lightBlue: '#DEECFA'
 			},
 			fontFamily:{
-				montserrat:['Montserrat', 'sans-serif']
+				montserrat:['Montserrat', 'sans-serif'],
+				openSans:['Open sans'],
+				roboto:['Roboto', 'sans-serif']
 			}
 		},
 	},

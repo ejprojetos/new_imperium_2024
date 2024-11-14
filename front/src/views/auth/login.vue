@@ -33,8 +33,10 @@
 			<button class="botao-login">
 				Fazer login
 			</button>
+			<router-link to="/auth/esqueci-senha">
+				<p class="link-recadastro-senha">Esqueceu sua senha ou email cadastrado?</p>
+			</router-link>
 
-			<p class="link-recadastro-senha">Esqueceu sua senha ou email cadastrado?</p>
 		</div>
 	</section>
 
@@ -42,7 +44,10 @@
 </template>
 
 <script setup lang="ts">
+import { Route } from 'lucide-vue-next';
+import { RouterLink } from 'vue-router';
 
+RouterLink
 </script>
 
 <style scoped>
@@ -81,11 +86,11 @@
 }
 
 .secao-login {
-	margin-top: 5rem;
+	margin-top: 10rem;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 15rem;
+	gap: 13rem;
 }
 
 .secao-input {

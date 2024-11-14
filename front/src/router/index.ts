@@ -6,13 +6,35 @@ const router = createRouter({
         {
             path: '/',
             name: 'home',
-            // component: () => import('../views/institucional/index.vue'
-            redirect: '/dashboard'
+            component: () => import('../views/institucional/index.vue'),
+            // redirect: '/dashboard',
+            children: []
         },
         {
             path: '/auth/login',
             name: 'login',
             component: () => import('../views/auth/login.vue')
+        },
+        { 
+            path: '/auth/esqueci-senha', 
+            name: 'esqueci-senha', 
+            component: () => import('../views/auth/esqueci-senha.vue') 
+
+        },
+        {
+            path: '/auth/email-enviado',
+            name: 'email-enviado',
+            component: () => import('../views/auth/email-enviado.vue')
+        },
+        {
+            path: '/auth/redefinir-senha',
+            name: 'redefinir-senha',
+            component: () => import('../views/auth/redefinir-senha.vue')
+        },
+        {
+            path: '/auth/senha-redefinida',
+            name: 'senha-redefinida',
+            component: () => import('../views/auth/senha-redefinida.vue')
         },
         {
             path: '/dashboard',
