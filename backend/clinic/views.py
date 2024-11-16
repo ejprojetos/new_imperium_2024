@@ -22,8 +22,24 @@ class MedicalRecordViewSet(viewsets.ModelViewSet):
     serializer_class = MedicalRecordSerializer
     required_roles = ['Doctor','Admin']
     permission_classes = [IsRoleUser]
-    http_method_names = ['get', 'post', 'put']
-    
+    http_method_names = ['get', 'post', 'put', 'delete']
+
+    def get_queryset(self):
+        appointment_id = self.kwargs.get('appointment_id')
+        if appointment_id is not None:
+            return MedicalRecord.objects.filter(appointment_id=appointment_id).order_by('id')
+
+        return super().get_queryset()
+        
+    def list(self, request, *args, **kwargs):
+        appointment_id = self.kwargs.get('appointment_id')
+        appointment = Appointment.objects.filter(id=appointment_id).exists()
+
+        if appointment:
+            return super().list(request, *args, **kwargs)
+        else:
+            return Response({'detail': 'appointment not exist'}, status=status.HTTP_404_NOT_FOUND)
+        
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
         
