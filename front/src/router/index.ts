@@ -150,6 +150,41 @@ const router = createRouter({
             path: '/dashboard/medicos/cadastrar',
             name: 'cadastrar-medico',
             component: () => import('../views/dashboard/medicos/cadastrar-medico.vue')
+        },
+        {
+            path: '/dashboard/prontuario/:id',
+            name: 'prontuario',
+            component: () => import('../views/dashboard/prontuario/prontuario.vue')
+        },
+        {
+            path: '/dashboard/suporte/escolher-perfil',
+            name: 'escolher-perfil',
+            component: () => import('../views/dashboard/suporte/escolher_perfil.vue')
+        },
+        {
+            path: '/dashboard/suporte/manuais',
+            name: 'manuais',
+            component: () => import('../views/dashboard/suporte/manuais.vue')
+        },
+        {
+            path: '/dashboard/suporte/politicas',
+            name: 'politicas',
+            component: () => import('../views/dashboard/suporte/politicas.vue')
+        },
+        {
+            path: '/dashboard/suporte/politicas-usuario',
+            name: 'politicas-usuario',
+            component: () => import('../views/dashboard/suporte/politicas_usuario.vue')
+        },
+        {
+            path: '/dashboard/suporte/administrador',
+            name: 'suporte-administrador',
+            component: () => import('../views/dashboard/suporte/suporte_administrador.vue')
+        },
+        {
+            path: '/dashboard/suporte/faq',
+            name: 'faq',
+            component: () => import('../views/dashboard/suporte/faq.vue')
         }
     ]
 })

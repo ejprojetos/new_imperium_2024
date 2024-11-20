@@ -157,30 +157,30 @@ import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 import ChangePasswordModal from '@/components/baseUi/ChangePasswordModal.vue'
 
 interface FormData {
-  profileImage: string;
-  personalInfo: {
-    fullName: string;
-    birthDate: string;
-    gender: string;
-    cpf: string;
-  };
-  addressInfo: {
-    country: string;
-    state: string;
-    city: string;
-    neighborhood: string;
-    zipCode: string;
-    street: string;
-    number: string;
-  };
-  contactInfo: {
-    email: string;
-    phone: string;
-  };
-  education: string;
-  specialty: string;
-  documents: string;
-  crm: string;
+    profileImage: string
+    personalInfo: {
+        fullName: string
+        birthDate: string
+        gender: string
+        cpf: string
+    }
+    addressInfo: {
+        country: string
+        state: string
+        city: string
+        neighborhood: string
+        zipCode: string
+        street: string
+        number: string
+    }
+    contactInfo: {
+        email: string
+        phone: string
+    }
+    education: string
+    specialty: string
+    documents: string
+    crm: string
 }
 
 const isEditing = ref(false)
@@ -191,32 +191,31 @@ const handlePasswordChanged = () => {
 }
 
 const formData = reactive<FormData>({
-  profileImage: '../../../assets/placeholder.png',
-  personalInfo: {
-    fullName: '',
-    birthDate: '',
-    gender: '',
-    cpf: ''
-  },
-  addressInfo: {
-    country: '',
-    state: '',
-    city: '',
-    neighborhood: '',
-    zipCode: '',
-    street: '',
-    number: ''
-  },
-  contactInfo: {
-    email: '',
-    phone: ''
-  },
-  education: '',
-  specialty: '',
-  documents: '',
-  crm: ''
+    profileImage: '../../../assets/placeholder.png',
+    personalInfo: {
+        fullName: '',
+        birthDate: '',
+        gender: '',
+        cpf: ''
+    },
+    addressInfo: {
+        country: '',
+        state: '',
+        city: '',
+        neighborhood: '',
+        zipCode: '',
+        street: '',
+        number: ''
+    },
+    contactInfo: {
+        email: '',
+        phone: ''
+    },
+    education: '',
+    specialty: '',
+    documents: '',
+    crm: ''
 })
-
 
 const personalInfo = {
     fullName: '',
@@ -289,4 +288,3 @@ function saveChanges() {
     isEditing.value = false
 }
 </script>
-

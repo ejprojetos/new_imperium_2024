@@ -96,49 +96,49 @@ const navItems = [
         name: 'Principal',
         icon: principalIcon,
         path: '/dashboard',
-        roles: ['admin', 'superadmin', 'clinica']
+        roles: ['admin', 'superadmin', 'clinica', 'suporte']
     },
     {
         name: 'Institucional',
         icon: institucionalIcon,
         path: '/dashboard/institucional',
-        roles: ['admin', 'superadmin']
+        roles: ['admin', 'superadmin', 'suporte']
     },
     {
         name: 'Clinicas',
         icon: clinicasIcon,
         path: '/dashboard/clinicas',
-        roles: ['admin', 'superadmin']
+        roles: ['admin', 'superadmin', 'suporte']
     },
     {
         name: 'Emails',
         icon: emailIcon,
         path: '/dashboard/emails',
-        roles: ['admin', 'superadmin']
+        roles: ['admin', 'superadmin', 'suporte']
     },
     {
         name: 'Médicos',
         icon: clinicasIcon,
         path: '/dashboard/medicos',
-        roles: ['admin', 'superadmin', 'clinica', 'recepcionista']
+        roles: ['admin', 'superadmin', 'clinica', 'recepcionista', 'suporte']
     },
     {
         name: 'Consultas',
         icon: principalIcon,
         path: '/dashboard/consultas',
-        roles: ['admin', 'superadmin', 'clinica', 'medico', 'recepcionista']
+        roles: ['admin', 'superadmin', 'clinica', 'medico', 'recepcionista', 'suporte']
     },
     {
         name: 'Recepcionistas',
         icon: recepcionistasIcon,
         path: '/dashboard/recepcionistas',
-        roles: ['admin', 'superadmin', 'clinica', 'medico']
+        roles: ['admin', 'superadmin', 'clinica', 'medico', 'suporte']
     },
     {
         name: 'Pacientes',
         icon: pacientesIcon,
         path: '/dashboard/pacientes',
-        roles: ['admin', 'superadmin', 'clinica', 'medico', 'recepcionista']
+        roles: ['admin', 'superadmin', 'clinica', 'medico', 'recepcionista', 'suporte']
     },
     {
         name: 'Minhas Consultas',
