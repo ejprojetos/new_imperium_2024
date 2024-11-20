@@ -193,6 +193,7 @@ class WorkingHoursViewSet(viewsets.ModelViewSet):
     serializer_class = WorkingHoursSerializer
     required_roles = ['Doctor']
     permission_classes = [IsRoleUser]
+    http_method_names = ['get', 'post', 'delete', 'put']
 
     def get_queryset(self):
         """
