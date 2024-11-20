@@ -68,9 +68,11 @@
                     <Phone class="w-6 h-6 mx-auto text-blue-700" />
                     <p class="text-sm text-center">{{ receptionist.phone }}</p>
                 </div>
-                <!-- <button class="w-full px-4 py-2 mt-2 text-white bg-blue-700 rounded-lg">
+                <RouterLink
+                    :to="`/dashboard/medicos/${receptionist.id}`"
+                    class="w-full px-4 py-2 mt-2 text-center text-white bg-blue-700 rounded-lg">
                     Ver Perfil
-                </button> -->
+                </RouterLink>
             </div>
         </div>
     </LayoutDashboard>
@@ -84,7 +86,7 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-import { RouterLink } from 'vue-router';
+import { RouterLink } from 'vue-router'
 
 const receptionists = ref([
     {

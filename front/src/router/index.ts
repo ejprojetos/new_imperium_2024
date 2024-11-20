@@ -15,10 +15,10 @@ const router = createRouter({
             name: 'login',
             component: () => import('../views/auth/login.vue')
         },
-        { 
-            path: '/auth/esqueci-senha', 
-            name: 'esqueci-senha', 
-            component: () => import('../views/auth/esqueci-senha.vue') 
+        {
+            path: '/auth/esqueci-senha',
+            name: 'esqueci-senha',
+            component: () => import('../views/auth/esqueci-senha.vue')
 
         },
         {
@@ -66,6 +66,7 @@ const router = createRouter({
             name: 'perfil_recepcionista',
             component: () => import('../views/dashboard/perfil/recepcionista.vue')
         },
+
         {
             path: '/dashboard/institucional',
             name: 'institucional',
@@ -97,9 +98,20 @@ const router = createRouter({
             component: () => import('../views/dashboard/recepcionistas/recepcionistas.vue')
         },
         {
+            path: '/dashboard/recepcionistas/:id', // visualizar perfil de qualquer recepcionista na lista
+            name: 'visualizar-recepcionista',
+            component: () =>
+                import('../views/dashboard/recepcionistas/visualizar-recepcionista.vue')
+        },
+        {
             path: '/dashboard/medicos',
             name: 'medicos',
             component: () => import('../views/dashboard/medicos/medicos.vue')
+        },
+        {
+            path: '/dashboard/medicos/:id',
+            name: 'visualizar-medico',
+            component: () => import('../views/dashboard/medicos/visualizar-medico.vue')
         },
         {
             path: '/dashboard/medicos/cadastrar-consultas',
@@ -115,6 +127,11 @@ const router = createRouter({
             path: '/dashboard/pacientes',
             name: 'pacientes',
             component: () => import('../views/dashboard/pacientes/pacientes.vue')
+        },
+        {
+            path: '/dashboard/pacientes/:id',
+            name: 'visualizar-paciente',
+            component: () => import('../views/dashboard/pacientes/visualizar-paciente.vue')
         },
         {
             path: '/dashboard/pacientes/cadastrar-consulta',
@@ -176,6 +193,41 @@ const router = createRouter({
             name: 'cadastrar-medico',
             component: () => import('../views/dashboard/medicos/cadastrar-medico.vue')
         },
+        {
+            path: '/dashboard/prontuario/:id',
+            name: 'prontuario',
+            component: () => import('../views/dashboard/prontuario/prontuario.vue')
+        },
+        {
+            path: '/dashboard/suporte/escolher-perfil',
+            name: 'escolher-perfil',
+            component: () => import('../views/dashboard/suporte/escolher_perfil.vue')
+        },
+        {
+            path: '/dashboard/suporte/manuais',
+            name: 'manuais',
+            component: () => import('../views/dashboard/suporte/manuais.vue')
+        },
+        {
+            path: '/dashboard/suporte/politicas',
+            name: 'politicas',
+            component: () => import('../views/dashboard/suporte/politicas.vue')
+        },
+        {
+            path: '/dashboard/suporte/politicas-usuario',
+            name: 'politicas-usuario',
+            component: () => import('../views/dashboard/suporte/politicas_usuario.vue')
+        },
+        {
+            path: '/dashboard/suporte/administrador',
+            name: 'suporte-administrador',
+            component: () => import('../views/dashboard/suporte/suporte_administrador.vue')
+        },
+        {
+            path: '/dashboard/suporte/faq',
+            name: 'faq',
+            component: () => import('../views/dashboard/suporte/faq.vue')
+        }
         {
             path: '/dashboard/perfil/recepcionista/cadastrar-consulta',
             name: 'cadastrar-consulta',
