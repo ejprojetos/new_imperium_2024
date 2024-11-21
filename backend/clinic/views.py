@@ -364,30 +364,3 @@ class AppointmentViewSet(viewsets.ModelViewSet):
             AppointmentSerializer(appointment).data, 
             status=status.HTTP_200_OK
         )
-    
-    def assign_room(self, clinic, appointment_date):
-        """
-        Automatically assign an available room
-        """
-        # Find available rooms in the clinic
-        available_rooms = Room.objects.filter(
-            clinic=clinic, 
-            is_available=True
-        )
-        
-        # Check for rooms already booked during the same time
-        booked_rooms = Appointment.objects.filter(
-            clinic=clinic,
-            appointment_date__date=appointment_date.date(),
-            status__in=['scheduled', 'in_progress']
-        ).values_list('room_id', flat=True)
-        
-        # Filter out booked rooms
-        available_rooms = available_rooms.exclude(id__in=booked_rooms)
-        
-        # If rooms are available, return the first one
-        if available_rooms.exists():
-            return available_rooms.first()
-        
-        # If no rooms are available, raise an exception
-        raise ValidationError("No rooms available for the selected time and clinic")

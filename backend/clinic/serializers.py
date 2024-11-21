@@ -235,10 +235,14 @@ class AppointmentSerializer(serializers.ModelSerializer):
             if patient_conflicts.exists():
                 raise serializers.ValidationError("Patient has a conflicting appointment")
         
-        # If room is not specified, try to automatically assign a room
+        # Try to assign a room automatically if none is specified
         if not room and clinic and appointment_date:
-            room = self.assign_available_room(clinic, appointment_date)
-            data['room'] = room
+            try:
+                room = self.assign_available_room(clinic, appointment_date)
+                data['room'] = room
+            except serializers.ValidationError:
+                # Se não houver salas disponíveis, permite continuar sem sala
+                data['room'] = None
         
         # If a specific room is provided, validate its availability
         elif room:
