@@ -23,7 +23,8 @@ module.exports = {
 			fontFamily:{
 				montserrat:['Montserrat', 'sans-serif'],
 				openSans:['Open sans'],
-				roboto:['Roboto', 'sans-serif']
+				roboto:['Roboto', 'sans-serif'],
+				raleway:['Raleway', 'sans-serif']
 			}
 		},
 	},
