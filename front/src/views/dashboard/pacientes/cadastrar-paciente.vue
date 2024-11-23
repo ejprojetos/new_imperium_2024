@@ -1,6 +1,13 @@
 <template>
     <LayoutDashboard>
-        <div class="p-8">
+        <div class="ml-[60px] mt-[29px]">
+            <router-link to="/dashboard/medicos">
+                <h2 class="text-xl font-semibold text-gray-600 hover:text-gray-800 transition duration-300 ease-in-out">
+                    < Voltar</h2>
+            </router-link> 
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 ml-[145px] mt-[20px]">
             <h1 class="mb-6 text-[50px] font-normal">Cadastrar Paciente</h1>
             <div class="pb-[70px] pt-[40px] px-[60px] mb-4 bg-white ded-lgroun gap-x-4 w-[650px]">
                 <form @submit.prevent="submitForm">

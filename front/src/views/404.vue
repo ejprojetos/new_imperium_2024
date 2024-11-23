@@ -3,9 +3,11 @@
         <ion-content class="ion-padding">
             <div class="not-found-container">
                 <div class="h-[63px] w-[100%] pl-[80px]" style="box-shadow: 0px 4px 4px 0px #00000040;">
-                    <div>
-                        <img src="../assets/logo.svg" alt="" class="w-[58px]">
-                    </div>
+                    <router-link to="/">
+                        <div>
+                            <img src="../assets/logo.svg" alt="" class="w-[58px]">
+                        </div>
+                    </router-link>
                 </div>
                 <div class="mt-[115px] w-[100%] flex flex-col items-center pb-[87px]" style="box-shadow: 0px 4px 4px 0px #00000040;">
                     <img src="../assets/images/pagina-nao-encontrada.png" alt="erro404" class="w-[332px] h-[312px]">

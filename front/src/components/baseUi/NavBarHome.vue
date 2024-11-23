@@ -1,7 +1,9 @@
 <template>
     <nav>
         <div class="container mx-auto px-4 px-[50px] flex justify-between items-center h-[95px]">
-            <img class="w-[203px]" src="../../assets/logo-institucional.svg" alt="logo">
+            <router-link to="/">
+                <img class="w-[203px]" src="../../assets/logo-institucional.svg" alt="logo">
+            </router-link>
 
             <div class="flex items-center space-x-6 ">
                 <a class="font-openSans text-lg text-[#010424] hover:text-[#00428F] cursor-pointer" @click="navigateTo('inicio')">Início</a>
