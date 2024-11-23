@@ -1,7 +1,7 @@
 <template>
-    <NavBarHome/>
+    <NavBarHome class="fixed top-0 left-0 w-full z-50 bg-white"/>
 
-    <section class="banner">
+    <section class="banner" id="inicio">
         <div class="flex justify-between items-center banner h-[655px] bg-cover bg-center bg-no-repeat">
             <div class="flex flex-col items-start ml-[130px]">
                 <h1 class="font-arboria text-[3.125rem] w-[732px]  text-white leading-tight	">Praesent est mi, consequat sed aliquam in, ornare quis neque Integer.</h1>
@@ -17,7 +17,7 @@
 
     <!-- Fluxo de Trabalho -->
 
-    <section class="fluxo-de-trabalho h-[676px] bg-[#F5F9FA] flex flex-col">
+    <section class="fluxo-de-trabalho h-[676px] bg-[#F5F9FA] flex flex-col" id="fluxo-de-trabalho" style="scroll-margin-top: 95px;">
         <div class="flex justify-center">
             <h2 class="font-montserrat text-4xl mt-[60px]">Fluxo de Trabalho</h2>
         </div>
@@ -67,7 +67,7 @@
     </section>
 
     <!-- Features -->
-    <section class="h-[875px] bg-[#F5F9FA] flex flex-col items-center">
+    <section class="h-[875px] bg-[#F5F9FA] flex flex-col items-center" id="features" style="scroll-margin-top: 95px;">
         <div class="max-w-screen-lg flex flex-col items-center">
             <img src="../../assets/rectangle-features.svg">
             <h2 class="font-montserrat text-4xl mt-[60px]">Features</h2>
@@ -105,7 +105,7 @@
     </section>
 
     <!-- Depoimentos -->
-    <section class="h-[611px] bg-[#DEECFA] pt-[70px]">
+    <section class="h-[611px] bg-[#DEECFA] pt-[70px]" id="depoimentos" style="scroll-margin-top: 95px;">
         <div class="flex justify-center">
             <h2 class="font-montserrat text-4xl">Depoimentos</h2>
         </div>
@@ -117,7 +117,7 @@
 
     <!-- Contato -->
 
-    <section class="contato h-[839px] pt-[91px] flex flex-col items-center">
+    <section class="contato h-[839px] pt-[91px] flex flex-col items-center" id="contato" style="scroll-margin-top: 95px;">
         <div class="flex justify-center">
             <h2 class="font-montserrat text-4xl">Contato</h2>
         </div>

@@ -227,7 +227,12 @@ const router = createRouter({
             path: '/dashboard/suporte/faq',
             name: 'faq',
             component: () => import('../views/dashboard/suporte/faq.vue')
-        }
+        },
+        {
+            path: '/dashboard/perfil/recepcionista/cadastrar-consulta',
+            name: 'cadastrar-consulta',
+            component: () => import('../views/dashboard/recepcionistas/cadastrar-consulta.vue')
+        },
         {
             path: '/dashboard/perfil/recepcionista/cadastrar-consulta',
             name: 'cadastrar-consulta',
