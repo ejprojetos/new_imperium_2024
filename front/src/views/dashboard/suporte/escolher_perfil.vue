@@ -4,7 +4,7 @@
             <h1 class="text-2xl font-bold text-center text-blue-900 mb-12">Escolha o perfil</h1>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                <RouterLink to="/dashboard/admin" class="profile-card">
+                <RouterLink to="/dashboard/suporte/administrador" class="profile-card">
                     <div class="flex flex-col items-center p-6">
                         <img :src="administradorIcon" alt="Administrador" class="w-20 h-20 mb-4" />
                         <span class="text-lg font-medium">Administrador</span>
