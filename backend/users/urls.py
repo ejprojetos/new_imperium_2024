@@ -10,9 +10,7 @@ router.register(r'admins', AdminViewSet, basename='users/admin')
 router.register(r'doctors', DoctorViewSet, basename='users/doctor')
 router.register(r'patients', PatientViewSet, basename='users/patient')
 router.register(r'receptionists', ReceptionistViewSet, basename='users/receptionist')
-router.register(r'medical-records', MedicalRecordViewSet, basename='medical-records')
 router.register(r'waiting-list', WaitingListViewSet, basename='waiting-list')
-
 
 urlpatterns = [
     path('', include(router.urls)),
