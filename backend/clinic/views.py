@@ -2,9 +2,10 @@ from rest_framework import viewsets, status, permissions, filters
 
 from rest_framework.response import Response 
 from .models import MedicalRecord, Appointment, Room, Clinic, Notification, Clinic, WaitingList, Doctor, WorkingHours
-from .serializers import MedicalRecordSerializer, RoomSerializer, NotificationSerializer, AssignDoctorSerializer, WaitingListSerializer
+from .serializers import MedicalRecordSerializer, RoomSerializer, NotificationSerializer, AssignDoctorSerializer, WaitingListSerializer, WorkingHoursSerializer, AppointmentSerializer
 from users.permissions import IsRoleUser
 from django.shortcuts import get_object_or_404
+from django.core.exceptions import ValidationError
 from rest_framework.response import Response
 from .pagination import SmallPagination
 from django_filters.rest_framework import DjangoFilterBackend
@@ -56,7 +57,8 @@ class MedicalRecordViewSet(viewsets.ModelViewSet):
 
 class RoomViewSet(viewsets.ModelViewSet):
     serializer_class = RoomSerializer
-    permission_classes = [permissions.AllowAny]
+    required_roles = ['Recepcionist', 'Admin']
+    permission_classes = [IsRoleUser]
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     lookup_field = 'uuid'  # Define o campo de busca como 'uuid'
 
@@ -172,11 +174,6 @@ class WaitingListViewSet(viewsets.ModelViewSet):
     permission_classes = [IsRoleUser]
     http_method_names = ['post', 'delete', 'put']
     
-    def get_permissions(self):
-        if self.request.method == 'POST':
-            return [permissions.AllowAny()]
-        return super().get_permissions()
-    
     def get_serializer_class(self):
         # Usar AssignDoctorSerializer apenas para a ação assign_doctor
         if self.action == 'assign_doctor':
@@ -208,3 +205,181 @@ class WaitingListViewSet(viewsets.ModelViewSet):
             return Response({"detail": "Doctor assigned successfully."}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class WorkingHoursViewSet(viewsets.ModelViewSet):
+    queryset = WorkingHours.objects.all()
+    serializer_class = WorkingHoursSerializer
+    required_roles = ['Doctor']
+    permission_classes = [IsRoleUser]
+    http_method_names = ['get', 'post', 'delete', 'put']
+
+    def get_queryset(self):
+        """
+        Return a list of working hours for the authenticated user.
+        """
+        return WorkingHours.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        """
+        Create a new working hours for the authenticated user.
+        """
+        if not serializer.validated_data.get('user'):
+            serializer.save(user=self.request.user)
+        else:
+            serializer.save()
+
+
+class AppointmentViewSet(viewsets.ModelViewSet):
+    queryset = Appointment.objects.all()
+    serializer_class = AppointmentSerializer
+    lookup_field = 'uuid'
+    http_method_names = ['get', 'post', 'delete', 'put']
+    
+    def validate_appointment(self, patient, doctor, appointment_date):
+        """
+        Comprehensive validation for appointment creation/update
+        """
+        # Check doctor's availability
+        day_of_week = appointment_date.weekday() + 1  # Django model uses 1-7
+        
+        try:
+            # Check working hours
+            working_hours = WorkingHours.objects.get(
+                user=doctor.user, 
+                day_of_week=day_of_week
+            )
+            
+            # Validate appointment time is within working hours
+            if not (working_hours.start_time <= appointment_date.time() <= working_hours.end_time):
+                raise ValidationError(f"Doctor is not available at the selected time. Working hours are {working_hours.start_time} to {working_hours.end_time}")
+            
+        except WorkingHours.DoesNotExist:
+            raise ValidationError("Doctor does not have defined working hours for this day")
+        
+        # Check for existing appointments
+        conflicting_appointments = Appointment.objects.filter(
+            doctor=doctor,
+            appointment_date__date=appointment_date.date(),
+            status__in=['scheduled', 'in_progress']
+        )
+        
+        # Check for time conflicts (1-hour buffer)
+        for appt in conflicting_appointments:
+            if abs((appt.appointment_date - appointment_date).total_seconds()) < 3600:
+                raise ValidationError("Doctor has a conflicting appointment")
+        
+        # Check patient's appointment conflicts
+        patient_conflicts = Appointment.objects.filter(
+            patient=patient,
+            appointment_date__date=appointment_date.date(),
+            status__in=['scheduled', 'in_progress']
+        )
+        
+        if patient_conflicts.exists():
+            raise ValidationError("Patient has a conflicting appointment")
+    
+    def create(self, request, *args, **kwargs):
+        """
+        Custom create method with additional validation
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        try:
+            # Extract validated data
+            patient = serializer.validated_data['patient']
+            doctor = serializer.validated_data['doctor']
+            appointment_date = serializer.validated_data['appointment_date']
+            clinic = serializer.validated_data['clinic']
+            reason = serializer.validated_data['reason']
+            room = serializer.validated_data.get('room')
+            
+            # Validate appointment
+            self.validate_appointment(patient, doctor, appointment_date)
+            
+            # Create appointment
+            appointment = Appointment.objects.create(
+                patient=patient,
+                doctor=doctor,
+                clinic=clinic,
+                appointment_date=appointment_date,
+                reason=reason,
+                room=room
+            )
+            
+            
+            return Response(
+                self.get_serializer(appointment).data, 
+                status=status.HTTP_201_CREATED
+            )
+        
+        except ValidationError as e:
+            return Response(
+                {'error': str(e)}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+    
+    def update(self, request, *args, **kwargs):
+        """
+        Custom update method with availability checks
+        """
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        
+        # Check if appointment can be updated
+        if instance.status == 'completed':
+            return Response(
+                {'error': 'Completed appointments cannot be modified'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        serializer = self.get_serializer(
+            instance, 
+            data=request.data, 
+            partial=partial
+        )
+        serializer.is_valid(raise_exception=True)
+        
+        try:
+            # Extract validated data
+            patient = serializer.validated_data.get('patient', instance.patient)
+            doctor = serializer.validated_data.get('doctor', instance.doctor)
+            appointment_date = serializer.validated_data.get('appointment_date', instance.appointment_date)
+            
+            # Validate appointment
+            self.validate_appointment(patient, doctor, appointment_date)
+            
+            # Perform update
+            self.perform_update(serializer)
+            return Response(serializer.data)
+        
+        except ValidationError as e:
+            return Response(
+                {'error': str(e)}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+    
+    @action(detail=True, methods=['post'])
+    def cancel(self, request, uuid=None):
+        """
+        Custom action to cancel an appointment
+        """
+        appointment = self.get_object()
+        
+        # Check if appointment is already completed or canceled
+        if appointment.status in ['completed', 'canceled']:
+            return Response(
+                {'error': 'Appointment cannot be canceled'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Update status to canceled
+        appointment.status = 'canceled'
+        appointment.save()
+        
+        
+        return Response(
+            AppointmentSerializer(appointment).data, 
+            status=status.HTTP_200_OK
+        )
