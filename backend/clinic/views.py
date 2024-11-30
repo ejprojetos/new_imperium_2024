@@ -13,6 +13,42 @@ from rest_framework.decorators import action
 from users.models import User
 from commom.tasks import send_email
 
+def create_notification(**kwargs):
+    """
+        function to send the email asynchronously
+
+        - arguments:
+            - type: notification type
+            - user: user to whom the email will be sent
+            - type_user: type of user to whom the email will be sent
+            - room: consultation room
+            - doctor: consultation doctor
+    """
+    #create notifications
+    data_notification = {
+        'type': kwargs['type'],
+        'user': kwargs['user'].user.id,
+    }
+
+    if kwargs['type_user'] == "patient":
+        data_notification['message'] = f'olá {kwargs['user'].user.first_name}! sua consulta foi agendada para a sala {kwargs['room'].number} no dia {kwargs['appointment_date']} com o doutor {kwargs['doctor'].user.first_name}'
+    else:
+        data_notification['message'] = f'olá {kwargs['user'].user.first_name}! você agendou uma consulta para a sala {kwargs['room'].number} no dia {kwargs['appointment_date']}'
+
+
+    data_notification_serial = NotificationSerializer(data=data_notification)
+    if data_notification_serial.is_valid(raise_exception=True):
+    #data_notification_serial.validate()
+        data_notification_serial.save()
+    #send notifications
+        data_email = {
+            'recipient_email': kwargs['user'].user.email,
+            'subject': 'NOTIFICAÇÃO DE CONSULTA',
+            'message': data_notification["message"]
+        }
+        send_email.delay(data_email)
+
+
 class MedicalRecordViewSet(viewsets.ModelViewSet):
     """
         The `MedicalRecordViewSet` allows doctors and administrators to view, create medical records. 
@@ -309,24 +345,12 @@ class AppointmentViewSet(viewsets.ModelViewSet):
                 room=room
             )
 
-            #create notifications
-            data_notification = {
-                'message': f'olá {patient.user.first_name}! sua consulta foi agendada para a sala {room.number} no dia {appointment_date}',
-                'type': 'info',
-                'user': patient.user.id,
-            }
-            data_notification_serial = NotificationSerializer(data=data_notification)
-            if data_notification_serial.is_valid(raise_exception=True):
-            #data_notification_serial.validate()
-                data_notification_serial.save()
-            #send notifications
-                data_email = {
-                    'recipient_email': patient.user.email,
-                    'subject': 'NOTIFICAÇÃO DE CONSULTA',
-                    'message': data_notification["message"]
-                }
-                send_email.delay(data_email)
-                
+            #notification for patient
+            create_notification(type="info", user=patient, type_user="patient", room=room, appointment_date=appointment_date, doctor=doctor)
+
+            #notification for doctor
+            create_notification(type="info", user=doctor, type_user="doctor", room=room, appointment_date=appointment_date)
+
             return Response(
                 self.get_serializer(appointment).data, 
                 status=status.HTTP_201_CREATED
