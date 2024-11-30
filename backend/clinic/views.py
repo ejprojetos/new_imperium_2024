@@ -11,6 +11,7 @@ from .pagination import SmallPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from users.models import User
+from commom.tasks import send_email
 
 class MedicalRecordViewSet(viewsets.ModelViewSet):
     """
@@ -307,8 +308,25 @@ class AppointmentViewSet(viewsets.ModelViewSet):
                 reason=reason,
                 room=room
             )
-            
-            
+
+            #create notifications
+            data_notification = {
+                'message': f'olá {patient.user.first_name}! sua consulta foi agendada para a sala {room.number} no dia {appointment_date}',
+                'type': 'info',
+                'user': patient.user.id,
+            }
+            data_notification_serial = NotificationSerializer(data=data_notification)
+            if data_notification_serial.is_valid(raise_exception=True):
+            #data_notification_serial.validate()
+                data_notification_serial.save()
+            #send notifications
+                data_email = {
+                    'recipient_email': patient.user.email,
+                    'subject': 'NOTIFICAÇÃO DE CONSULTA',
+                    'message': data_notification["message"]
+                }
+                send_email.delay(data_email)
+                
             return Response(
                 self.get_serializer(appointment).data, 
                 status=status.HTTP_201_CREATED

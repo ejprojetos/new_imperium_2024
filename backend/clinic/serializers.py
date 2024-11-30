@@ -41,9 +41,9 @@ class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = ['message', 'is_read', 'type', 'datetime', 'user']
-        extra_kwargs = {
-            'user': {'read_only': True}
-        }
+        #extra_kwargs = {
+            #'user': {'read_only': True}
+        #}
 
 
 class WaitingListSerializer(serializers.ModelSerializer):
@@ -186,17 +186,22 @@ class AppointmentSerializer(serializers.ModelSerializer):
         doctor = data.get('doctor', self.instance.doctor if self.instance else None)
         appointment_date = data.get('appointment_date', self.instance.appointment_date if self.instance else None)
         room = data.get('room', self.instance.room if self.instance else None)
+
+       
         
         # Check doctor's availability
         if doctor and appointment_date:
             day_of_week = appointment_date.weekday() + 1
+            print(day_of_week)
             
             try:
+                print("testando!")
                 # Check working hours
                 working_hours = WorkingHours.objects.get(
                     user=doctor.user, 
                     day_of_week=day_of_week
                 )
+                print(working_hours)
                 
                 # Validate appointment time is within working hours
                 if not (working_hours.start_time <= appointment_date.time() <= working_hours.end_time):
