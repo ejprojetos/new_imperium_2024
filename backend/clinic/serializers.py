@@ -133,7 +133,6 @@ class WorkingHoursSerializer(serializers.ModelSerializer):
         start_time = data.get('start_time')
         end_time = data.get('end_time')
         user_data = data.get('user')
-        print(user_data)
 
         # Garantir que end_time seja posterior a start_time
         if start_time >= end_time:
@@ -192,16 +191,13 @@ class AppointmentSerializer(serializers.ModelSerializer):
         # Check doctor's availability
         if doctor and appointment_date:
             day_of_week = appointment_date.weekday() + 1
-            print(day_of_week)
             
             try:
-                print("testando!")
                 # Check working hours
                 working_hours = WorkingHours.objects.get(
                     user=doctor.user, 
                     day_of_week=day_of_week
                 )
-                print(working_hours)
                 
                 # Validate appointment time is within working hours
                 if not (working_hours.start_time <= appointment_date.time() <= working_hours.end_time):
