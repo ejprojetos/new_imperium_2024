@@ -1,4 +1,5 @@
 <template>
+    <NavBarHome />
     <section class="secao-login">
         <div class="secao-texto">
             <h1 class="texto-bem-vindos"> REDEFINIR SENHA</h1>
@@ -34,12 +35,13 @@
 
         </div>
     </section>
-
+    <Footer />
 
 </template>
 
 <script setup lang="ts">
-
+import NavBarHome from '@/components/baseUi/NavBarHome.vue'
+import Footer from '@/components/baseUi/Footer.vue'
 </script>
 
 <style scoped>
@@ -83,6 +85,7 @@
     align-items: center;
     justify-content: center;
     gap: 8rem;
+    margin-bottom: 12rem;
 }
 
 .secao-input {
