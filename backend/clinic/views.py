@@ -12,6 +12,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from users.models import User
 from commom.tasks import send_notifications
+from users.serializers import PatientSerializer
 
 class MedicalRecordViewSet(viewsets.ModelViewSet):
     """
@@ -309,13 +310,8 @@ class AppointmentViewSet(viewsets.ModelViewSet):
                 room=room
             )
 
-            appointment_serial = self.get_serializer(appointment).data
-
             #notification for patient accept appointment
-            send_notifications.delay(type_notification="alert", subtype_notification='confirmation', appointment=appointment_serial, flag_email=True)
-
-            #create notification for 
-            send_notifications.delay(type_notification="info", subtype_notification='assignment', appointment=appointment_serial, flag_email=False)
+            send_notifications.delay(users=[patient.user.id],type_notification="alert", subtype_notification='confirmation')
 
             return Response(
                 self.get_serializer(appointment).data, 
@@ -386,7 +382,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         appointment.status = 'canceled'
         appointment.save()
 
-        send_notifications.delay(type_notification="info", subtype_notification='canceled', appointment=appointment, flag_email=True)
+        send_notifications.delay(users=[appointment.doctor.user.id, appointment.clinic.id], type_notification="info", subtype_notification='canceled', appointment=appointment)
 
         
         
