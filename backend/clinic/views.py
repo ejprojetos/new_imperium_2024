@@ -10,6 +10,8 @@ from .pagination import SmallPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from users.models import User
+from .tasks import send_notifications
+from users.models import Patient
 
 class MedicalRecordViewSet(viewsets.ModelViewSet):
     """
