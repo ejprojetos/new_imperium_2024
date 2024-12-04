@@ -8,10 +8,14 @@
                 <div class="bg-white rounded-lg shadow-md p-6 flex flex-col items-center">
                     <img :src="administradorIcon" alt="Administrador" class="w-20 h-20 mb-4" />
                     <span class="text-lg font-medium mb-4">Administrador</span>
-                    <button
-                        class="bg-blue-600 text-white px-6 py-1 rounded-full text-sm hover:bg-blue-600 transition-colors">
-                        Editar
-                    </button>
+
+                    <RouterLink to="/dashboard/suporte/editar-politicas">
+
+                        <button
+                            class="bg-blue-600 text-white px-6 py-1 rounded-full text-sm hover:bg-blue-600 transition-colors">
+                            Editar
+                        </button>
+                    </RouterLink>
                 </div>
 
                 <!-- Paciente -->
