@@ -48,7 +48,7 @@
                 </div>
 
                 <div class="grid grid-cols-1 gap-4 mb-6">
-                    <label class="text-black font-montserrat text-lg font-light leading-none">Manual:</label>
+                    <label class="text-black font-montserrat text-lg font-light leading-none">Editar manual:</label>
                     <label
                         class="input input-bordered flex items-center gap-2 w-full rounded-[100px] border border-black flex h-[35px] items-center gap-[10px] self-stretch my-1">
                         <input type="text" class="w-full px-2 items-center self-stretch" placeholder="Manual"
