@@ -236,6 +236,11 @@ const router = createRouter({
             component: () => import('../views/dashboard/politicas/politicas_usuario_pag.vue'),
         },
         {
+            path: '/dashboard/politicas/politicas-publicacao',
+            name: 'politicas-publicacao',
+            component: () => import('../views/dashboard/politicas/politicas_publicacao.vue'),
+        },
+        {
             path: '/dashboard/suporte/administrador',
             name: 'suporte-administrador',
             component: () => import('../views/dashboard/suporte/suporte_administrador.vue')
