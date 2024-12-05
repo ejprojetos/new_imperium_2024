@@ -37,8 +37,8 @@
             <div class="flex flex-col items-start w-full">
                 <p class="text-sm font-bold">Ajuda</p>
                 <RouterLink class="text-sm" to="/dashboard/suporte/escolher-perfil">Suporte</RouterLink>
-                <RouterLink class="text-sm" to="/contatos">Contatos</RouterLink>
-                <RouterLink class="text-sm" to="/dashboard/suporte/politicas">Políticas</RouterLink>
+                <RouterLink class="text-sm" to="/dashboard/suporte/contatos">Contatos</RouterLink>
+                <RouterLink class="text-sm" to="/dashboard/politicas/politicas">Políticas</RouterLink>
             </div>
         </div>
     </Transition>
