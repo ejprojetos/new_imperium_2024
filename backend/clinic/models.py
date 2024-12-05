@@ -72,12 +72,18 @@ class Notification(models.Model):
         ('alert', 'Alert'),
         ('reminder', 'Reminder'),
     ]
+
+    STATUS_MODES = [
+        ('accept', 'Accept'),
+        ('refuse', 'Refuse'),
+    ]
     
     message = models.TextField()
     is_read = models.BooleanField(default=False)
     type = models.CharField(max_length=20, choices=MESSAGE_TYPES)
     datetime = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    status = models.CharField(max_length=20, choices=STATUS_MODES, null=True)
 
     def __str__(self):
         return f"Notification for {self.user.email} - {self.get_type_display()}"

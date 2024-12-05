@@ -160,8 +160,8 @@ class NotificationViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        is_read_req = serializer.validated_data.get('is_read')
-        if is_read_req:
+        is_read_req = serializer.validated_data.get('status')
+        if is_read_req == 'accept':
             # create notification for confirmation
             send_notifications.delay(users=[notification.user.id],type_notification="info", subtype_notification='confirmation')
 
