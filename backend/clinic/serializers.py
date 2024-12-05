@@ -40,7 +40,7 @@ class RoomSerializer(serializers.ModelSerializer):
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
-        fields = ['message', 'is_read', 'type', 'datetime', 'user']
+        fields = ['id', 'message', 'is_read', 'type', 'datetime', 'user']
         #extra_kwargs = {
             #'user': {'read_only': True}
         #}

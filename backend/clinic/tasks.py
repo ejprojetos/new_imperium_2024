@@ -9,6 +9,12 @@ from users.models import User
 
 @shared_task
 def send_email(data):
+    """
+        asynchronous function to send emails
+
+        - arguments:
+            - data: dictionary with the information necessary to send the email: recipient_email, subject and message
+    """
     try:
         recipient_email = validar_email(data["recipient_email"])
         subject = data["subject"]
@@ -18,30 +24,32 @@ def send_email(data):
         return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
 @shared_task
-def send_notifications(users, type_notification, subtype_notification, flag_email=False):
+def send_notifications(users, type_notification, subtype_notification, flag_email=False, **kwargs):
     """
-        base function to call the helper functions 'generate_notification_data' and 'save_notification_and_send_email'
+        asynchronous function to create notifications
 
-        - kwargs: 
-            - users: users for create notifications
-            - type_notification, 
-            - subtype_notification
-            - appointment
-            - flag_email: true -> send email, false -> not send email
-        
-        - return: None
+        -args:
+            - users: users who will have notifications assigned
+            - type_notification: notification type
+            - subtype_notification: notification subtype
+            - flag_email: true -> the email is sent to the user
     """
+
+    room = kwargs.get('room', None)
+    clinic = kwargs.get('clinic', None)
 
     messages = {
         'info': {
             'confirmation': 'solicitação aceita pelo paciente!',
             'canceled': 'consulta cancelada com sucesso!',
+            'room': f'A consulta foi agendada para a sala {room}'
         },
         'warning': {
             
         },
         'alert': {
-            'confirmation': 'você precisa confirmar sua consulta!'
+            'confirmation_clinic': f'solicitação recebida da clinica {clinic}',
+            'confirmation_appointment': 'você precisa confirmar sua consulta!'
         },
         'reminder': {
             

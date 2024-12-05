@@ -11,8 +11,7 @@ from .pagination import SmallPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from users.models import User
-from commom.tasks import send_notifications
-from users.serializers import PatientSerializer
+from .tasks import send_notifications
 
 class MedicalRecordViewSet(viewsets.ModelViewSet):
     """
@@ -160,6 +159,12 @@ class NotificationViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(notification, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
+        is_read_req = serializer.validated_data.get('is_read')
+        if is_read_req:
+            # create notification for confirmation
+            send_notifications.delay(users=[notification.user.id],type_notification="info", subtype_notification='confirmation')
+
         return Response(serializer.data, status=status.HTTP_200_OK)
         
     def destroy(self, request, *args, **kwargs):
@@ -311,7 +316,10 @@ class AppointmentViewSet(viewsets.ModelViewSet):
             )
 
             #notification for patient accept appointment
-            send_notifications.delay(users=[patient.user.id],type_notification="alert", subtype_notification='confirmation')
+            send_notifications.delay(users=[patient.user.id],type_notification="alert", subtype_notification='confirmation_appointment', flag_email=True)
+
+            #notification for Room assignment logic for consultation
+            send_notifications.delay(users=[patient.user.id, doctor.user.id],type_notification="info", subtype_notification='room', room=room.number)
 
             return Response(
                 self.get_serializer(appointment).data, 
@@ -382,10 +390,9 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         appointment.status = 'canceled'
         appointment.save()
 
-        send_notifications.delay(users=[appointment.doctor.user.id, appointment.clinic.id], type_notification="info", subtype_notification='canceled', appointment=appointment)
+        # create notification for canceled appointment
+        send_notifications.delay(users=[appointment.doctor.user.id, appointment.patient.user.id], type_notification="info", subtype_notification='canceled')
 
-        
-        
         return Response(
             AppointmentSerializer(appointment).data, 
             status=status.HTTP_200_OK
