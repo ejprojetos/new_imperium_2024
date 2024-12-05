@@ -18,7 +18,8 @@ module.exports = {
 			colors: {
 				primary: '#00428F',
 				lightGreen: '#BBFAE4',
-				lightBlue: '#DEECFA'
+				lightBlue: '#DEECFA',
+				DeepBlue: '#26438B',
 			},
 			fontFamily:{
 				montserrat:['Montserrat', 'sans-serif'],
