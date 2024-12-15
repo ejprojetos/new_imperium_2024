@@ -1,8 +1,8 @@
 from rest_framework import viewsets, status, permissions, filters
 
 from rest_framework.response import Response 
-from .models import MedicalRecord, Appointment, Room, Clinic, Notification, Clinic, WaitingList, Doctor, WorkingHours
-from .serializers import MedicalRecordSerializer, RoomSerializer, NotificationSerializer, AssignDoctorSerializer, WaitingListSerializer, WorkingHoursSerializer, AppointmentSerializer
+from .models import MedicalRecord, Appointment, Room, Clinic, Notification, Clinic, WaitingList, Doctor, WorkingHours, Clinic
+from .serializers import MedicalRecordSerializer, RoomSerializer, NotificationSerializer, AssignDoctorSerializer, WaitingListSerializer, WorkingHoursSerializer, AppointmentSerializer, ClinicSerializer
 from users.permissions import IsRoleUser
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
@@ -13,6 +13,11 @@ from rest_framework.decorators import action
 from users.models import User
 from .tasks import send_notifications
 from users.models import Patient
+
+
+class ClinicViewSet(viewsets.ModelViewSet):
+    queryset = Clinic.objects.all()
+    serializer_class = ClinicSerializer
 
 
 class MedicalRecordViewSet(viewsets.ModelViewSet):

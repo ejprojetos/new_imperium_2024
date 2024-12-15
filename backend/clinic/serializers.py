@@ -1,10 +1,16 @@
 from rest_framework import serializers
-from .models import MedicalRecord, Appointment, Room, Notification
+from .models import MedicalRecord, Appointment, Room, Notification, Clinic
 from users.models import Patient, Doctor
 from .models import WaitingList, WorkingHours
 from django.utils import timezone
 from django.db.models import Q
 from datetime import timedelta
+
+
+class ClinicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Clinic
+        fields = '__all__'
 
 
 class MedicalRecordSerializer(serializers.ModelSerializer):
