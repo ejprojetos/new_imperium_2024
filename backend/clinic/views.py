@@ -14,6 +14,7 @@ from users.models import User
 from .tasks import send_notifications
 from users.models import Patient
 
+
 class MedicalRecordViewSet(viewsets.ModelViewSet):
     """
         The `MedicalRecordViewSet` allows doctors and administrators to view, create medical records. 
@@ -160,6 +161,12 @@ class NotificationViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(notification, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
+        is_read_req = serializer.validated_data.get('status')
+        if is_read_req == 'accept':
+            # create notification for confirmation
+            send_notifications.delay(users=[notification.user.id],type_notification="info", subtype_notification='confirmation')
+
         return Response(serializer.data, status=status.HTTP_200_OK)
         
     def destroy(self, request, *args, **kwargs):
@@ -309,8 +316,12 @@ class AppointmentViewSet(viewsets.ModelViewSet):
                 reason=reason,
                 room=room
             )
-            
-            
+
+            #notification for patient accept appointment
+            send_notifications.delay(users=[patient.user.id],type_notification="alert", subtype_notification='confirmation_appointment', flag_email=True)
+
+            #notification for Room assignment logic for consultation
+            send_notifications.delay(users=[patient.user.id, doctor.user.id],type_notification="info", subtype_notification='room', room=room.number)
             return Response(
                 self.get_serializer(appointment).data, 
                 status=status.HTTP_201_CREATED
@@ -379,8 +390,10 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         # Update status to canceled
         appointment.status = 'canceled'
         appointment.save()
-        
-        
+
+        # create notification for canceled appointment
+        send_notifications.delay(users=[appointment.doctor.user.id, appointment.patient.user.id], type_notification="info", subtype_notification='canceled')
+
         return Response(
             AppointmentSerializer(appointment).data, 
             status=status.HTTP_200_OK

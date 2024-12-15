@@ -24,7 +24,8 @@ def send_email(data):
         return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
 @shared_task
-def send_notifications(users, type_notification, subtype_notification, flag_email=False):
+def send_notifications(users, type_notification, subtype_notification, flag_email=False, **kwargs):
+
     """
         asynchronous function to create notifications
 
@@ -35,15 +36,21 @@ def send_notifications(users, type_notification, subtype_notification, flag_emai
             - flag_email: true -> the email is sent to the user
     """
 
+    room = kwargs.get('room', None)
+    clinic = kwargs.get('clinic', None)
+
     messages = {
         'info': {
             'confirmation': 'solicitação aceita pelo paciente!',
             'canceled': 'consulta cancelada com sucesso!',
+            'room': f'A consulta foi agendada para a sala {room}'
         },
         'warning': {
             
         },
         'alert': {
+            'confirmation_clinic': f'solicitação recebida da clinica {clinic}',
+            'confirmation_appointment': 'você precisa confirmar sua consulta!'
             'confirmation': 'você precisa confirmar sua consulta!'
         },
         'reminder': {

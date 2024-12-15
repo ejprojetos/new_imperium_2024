@@ -40,7 +40,8 @@ class RoomSerializer(serializers.ModelSerializer):
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
-        fields = ['message', 'is_read', 'type', 'datetime', 'user']
+        fields = ['id', 'message', 'is_read', 'type', 'datetime', 'user', 'status']
+
 
 
 class WaitingListSerializer(serializers.ModelSerializer):
@@ -130,7 +131,7 @@ class WorkingHoursSerializer(serializers.ModelSerializer):
         start_time = data.get('start_time')
         end_time = data.get('end_time')
         user_data = data.get('user')
-        print(user_data)
+
 
         # Garantir que end_time seja posterior a start_time
         if start_time >= end_time:
