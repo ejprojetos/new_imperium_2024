@@ -76,9 +76,11 @@
                         <p class="text-sm">{{ patient.lastAppointment.doctor }}</p>
                     </div>
                 </div>
-                <button class="w-full px-4 py-2 mt-4 text-white bg-blue-700 rounded-lg">
+                <RouterLink
+                    :to="`/dashboard/pacientes/${patient.id}`"
+                    class="w-full px-4 py-2 mt-4 text-white bg-blue-700 rounded-lg">
                     Ver Perfil
-                </button>
+                </RouterLink>
             </div>
         </div>
 

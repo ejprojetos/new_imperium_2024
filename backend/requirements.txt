@@ -22,6 +22,9 @@ prometheus_client==0.21.1
 prompt_toolkit==3.0.48
 PyJWT==2.9.0
 python-dateutil==2.9.0.post0
+packaging==24.2
+PyJWT==2.9.0
+python-decouple==3.8
 pytz==2024.2
 PyYAML==6.0.2
 redis==5.2.0

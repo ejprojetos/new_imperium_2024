@@ -6,13 +6,35 @@ const router = createRouter({
         {
             path: '/',
             name: 'home',
-            // component: () => import('../views/institucional/index.vue'
-            redirect: '/dashboard'
+            component: () => import('../views/institucional/index.vue'),
+            // redirect: '/dashboard',
+            children: []
         },
         {
             path: '/auth/login',
             name: 'login',
             component: () => import('../views/auth/login.vue')
+        },
+        {
+            path: '/auth/esqueci-senha',
+            name: 'esqueci-senha',
+            component: () => import('../views/auth/esqueci-senha.vue')
+
+        },
+        {
+            path: '/auth/email-enviado',
+            name: 'email-enviado',
+            component: () => import('../views/auth/email-enviado.vue')
+        },
+        {
+            path: '/auth/redefinir-senha',
+            name: 'redefinir-senha',
+            component: () => import('../views/auth/redefinir-senha.vue')
+        },
+        {
+            path: '/auth/senha-redefinida',
+            name: 'senha-redefinida',
+            component: () => import('../views/auth/senha-redefinida.vue')
         },
         {
             path: '/dashboard',
@@ -44,6 +66,7 @@ const router = createRouter({
             name: 'perfil_recepcionista',
             component: () => import('../views/dashboard/perfil/recepcionista.vue')
         },
+
         {
             path: '/dashboard/institucional',
             name: 'institucional',
@@ -75,9 +98,20 @@ const router = createRouter({
             component: () => import('../views/dashboard/recepcionistas/recepcionistas.vue')
         },
         {
+            path: '/dashboard/recepcionistas/:id', // visualizar perfil de qualquer recepcionista na lista
+            name: 'visualizar-recepcionista',
+            component: () =>
+                import('../views/dashboard/recepcionistas/visualizar-recepcionista.vue')
+        },
+        {
             path: '/dashboard/medicos',
             name: 'medicos',
             component: () => import('../views/dashboard/medicos/medicos.vue')
+        },
+        {
+            path: '/dashboard/medicos/:id',
+            name: 'visualizar-medico',
+            component: () => import('../views/dashboard/medicos/visualizar-medico.vue')
         },
         {
             path: '/dashboard/medicos/cadastrar-consultas',
@@ -93,6 +127,11 @@ const router = createRouter({
             path: '/dashboard/pacientes',
             name: 'pacientes',
             component: () => import('../views/dashboard/pacientes/pacientes.vue')
+        },
+        {
+            path: '/dashboard/pacientes/:id',
+            name: 'visualizar-paciente',
+            component: () => import('../views/dashboard/pacientes/visualizar-paciente.vue')
         },
         {
             path: '/dashboard/pacientes/cadastrar-consulta',
@@ -155,8 +194,90 @@ const router = createRouter({
             component: () => import('../views/dashboard/medicos/cadastrar-medico.vue')
         },
         {
+            path: '/dashboard/prontuario/:id',
+            name: 'prontuario',
+            component: () => import('../views/dashboard/prontuario/prontuario.vue')
+        },
+        {
+            path: '/dashboard/suporte/escolher-perfil',
+            name: 'escolher-perfil',
+            component: () => import('../views/dashboard/suporte/escolher_perfil.vue')
+        },
+        {
+            path: '/dashboard/suporte/manuais',
+            name: 'manuais',
+            component: () => import('../views/dashboard/suporte/manuais.vue')
+        },
+        {
+            path: '/dashboard/suporte/editar-manuais',
+            name: 'editar-manuais',
+            component: () => import('../views/dashboard/suporte/editar-manuais.vue')
+        },
+        
+        {
+            path: '/dashboard/politicas/politicas',
+            name: 'politicas',
+            component: () => import('../views/dashboard/politicas/politicas.vue')
+        },
+        {
+            path: '/dashboard/suporte/editar-politicas',
+            name: 'editar-politicas',
+            component: () => import('../views/dashboard/suporte/editar-politicas.vue')
+        },
+        
+        {
+            path: '/dashboard/politicas/politicas-usuario',
+            name: 'politicas-usuario',
+            component: () => import('../views/dashboard/politicas/politicas_usuario.vue')
+        },
+        {
+            path: '/dashboard/politicas/politicas-usuario-pag',
+            name: 'politicas-usuario-pag',
+            component: () => import('../views/dashboard/politicas/politicas_usuario_pag.vue'),
+        },
+        {
+            path: '/dashboard/politicas/politicas-publicacao',
+            name: 'politicas-publicacao',
+            component: () => import('../views/dashboard/politicas/politicas_publicacao.vue'),
+        },
+        {
+            path: '/dashboard/suporte/administrador',
+            name: 'suporte-administrador',
+            component: () => import('../views/dashboard/suporte/suporte_administrador.vue')
+        },
+        {
+            path: '/dashboard/suporte/suporte-usuario',
+            name: 'suporte-usuario',
+            component: () => import('../views/dashboard/suporte/suporte_usuario.vue')
+        },
+        {
+            path: '/dashboard/suporte/contatos',
+            name: 'contatos',
+            component: () => import('../views/dashboard/suporte/contatos.vue')
+        },
+        {
+            path: '/dashboard/suporte/cadastrar-pergunta',
+            name: 'cadastrar-pergunta',
+            component: () => import('../views/dashboard/faqs/cadastrar_pergunta.vue')
+        },
+        {
+            path: '/dashboard/suporte/editar-pergunta',
+            name: 'editar-pergunta',
+            component: () => import('../views/dashboard/faqs/editar_pergunta.vue')
+        },
+        {
+            path: '/dashboard/suporte/faq',
+            name: 'faq',
+            component: () => import('../views/dashboard/faqs/faq.vue')
+        },
+        {
+            path: '/dashboard/suporte/editar_faq',
+            name: 'editar-faq',
+            component: () => import('../views/dashboard/faqs/editar_faq.vue')
+        },
+        {
             path: '/dashboard/perfil/recepcionista/cadastrar-consulta',
-            name: 'cadastrar-consulta',
+            name: 'cadastrar-consulta-recepcionista',
             component: () => import('../views/dashboard/recepcionistas/cadastrar-consulta.vue')
         }
     ]

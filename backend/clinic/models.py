@@ -41,8 +41,6 @@ class Appointment(models.Model):
 
 class MedicalRecord(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    #patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='medical_records')
-    #doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='medical_records')
     appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE, related_name='medical_records')
     allergies = models.TextField(blank=True)
     issues = models.TextField(blank=True)

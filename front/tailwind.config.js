@@ -18,10 +18,14 @@ module.exports = {
 			colors: {
 				primary: '#00428F',
 				lightGreen: '#BBFAE4',
-				lightBlue: '#DEECFA'
+				lightBlue: '#DEECFA',
+				DeepBlue: '#26438B',
 			},
 			fontFamily:{
-				montserrat:['Montserrat', 'sans-serif']
+				montserrat:['Montserrat', 'sans-serif'],
+				openSans:['Open sans'],
+				roboto:['Roboto', 'sans-serif'],
+				raleway:['Raleway', 'sans-serif']
 			}
 		},
 	},

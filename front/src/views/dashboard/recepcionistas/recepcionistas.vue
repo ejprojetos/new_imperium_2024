@@ -53,10 +53,12 @@
                 v-for="receptionist in receptionists"
                 :key="receptionist.id"
                 class="flex flex-col items-center p-4 bg-white rounded-lg shadow">
-                <img
-                    :src="receptionist.image"
-                    alt="Recepcionista"
-                    class="w-24 h-24 mx-auto rounded-full" />
+                <RouterLink :to="`/dashboard/recepcionistas/${receptionist.id}`">
+                    <img
+                        :src="receptionist.image"
+                        alt="Recepcionista"
+                        class="w-24 h-24 mx-auto rounded-full cursor-pointer" />
+                </RouterLink>
                 <h4 class="mt-2 font-bold text-center">{{ receptionist.name }}</h4>
                 <p class="text-sm text-center">Atendimento: {{ receptionist.schedule }}</p>
                 <p class="text-sm text-center">Turno: {{ receptionist.shift }}</p>
@@ -80,7 +82,7 @@
 import { ref } from 'vue'
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 import { Search, Mail, Phone } from 'lucide-vue-next'
-import { RouterLink } from 'vue-router';
+import { RouterLink } from 'vue-router'
 
 const receptionists = ref([
     {

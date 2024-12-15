@@ -6,14 +6,15 @@
                     < Voltar</h2>
             </router-link>
 
-            <h1 class="w-1/2 mx-auto titulo-cadastro">Editar Consulta</h1>
-            <div class="p-6 bg-white rounded-lg shadow-lg max-w-[1000px] mx-auto p-10 box">
+            <h1 class="w-2/3 mx-auto titulo-cadastro">Editar Consulta</h1>
+            <div class="p-6 bg-white rounded-lg shadow-lg w-2/3 mx-auto align-center">
 
                 <div class="grid grid-cols-1 gap-4">
 
                     <div>
                         <label for="fullName" class="block mb-1 font-semibold titulo-label">Nome do Paciente:</label>
-                        <select class="select select-bordered w-full texto-opcoes" v-model="optionSelected.fullName">
+                        <select class="select select-bordered w-full texto-opcoes border-black"
+                            v-model="optionSelected.fullName">
                             <option v-for="option in formData.fullName" :key="option">
                                 {{ option }}
                             </option>
@@ -21,7 +22,7 @@
                     </div>
                     <div>
                         <label for="consultation" class="block mb-1 font-semibold titulo-label">Consulta:</label>
-                        <select class="select select-bordered w-full texto-opcoes"
+                        <select class="select select-bordered w-full texto-opcoes border-black"
                             v-model="optionSelected.consultation">
                             <option v-for="option in formData.consultation" :key="option">
                                 {{ option }}
@@ -30,7 +31,8 @@
                     </div>
                     <div>
                         <label for="specialty" class="block mb-1 font-semibold titulo-label">Especialidade:</label>
-                        <select class="select select-bordered w-full texto-opcoes" v-model="optionSelected.specialty">
+                        <select class="select select-bordered w-full texto-opcoes border-black"
+                            v-model="optionSelected.specialty">
                             <option v-for="option in formData.specialty" :key="option">
                                 {{ option }}
                             </option>
@@ -38,7 +40,8 @@
                     </div>
                     <div>
                         <label for="medicName" class="block mb-1 font-semibold titulo-label">Nome do Médico:</label>
-                        <select class="select select-bordered w-full texto-opcoes" v-model="optionSelected.medicName">
+                        <select class="select select-bordered w-full texto-opcoes border-black"
+                            v-model="optionSelected.medicName">
                             <option v-for="option in formData.medicName" :key="option">
                                 {{ option }}
                             </option>
@@ -46,7 +49,8 @@
                     </div>
                     <div>
                         <label for="room" class="block mb-1 font-semibold titulo-label">Local:</label>
-                        <select class="select select-bordered w-full texto-opcoes" v-model="optionSelected.room">
+                        <select class="select select-bordered w-full texto-opcoes border-black"
+                            v-model="optionSelected.room">
                             <option v-for="option in formData.room" :key="option">
                                 {{ option }}
                             </option>
@@ -56,7 +60,8 @@
 
                         <label class="block mb-1 font-semibold">Motivo da consulta:</label>
                         <input type="text" placeholder="Digite o motivo da consulta"
-                            class="input input-bordered w-full rounded-full texto-opcoes" v-model="motivo" />
+                            class="input input-bordered w-full rounded-full texto-opcoes border-black"
+                            v-model="motivo" />
 
                     </div>
                     <div class="grid grid-cols-2 gap-1">
@@ -65,12 +70,12 @@
                             <label for="dateInput" class="block mb-1 font-semibold ">Selecione uma
                                 data:</label>
                             <input type="date" id="dateInput" v-model="selectedDate" @change="handleDateChange"
-                                class="input input-bordered rounded-full w-3/6 input-group" />
+                                class="input input-bordered rounded-full w-3/6 input-group border-black" />
                         </div>
                         <div class="grid grid-cols-1 gap-1">
                             <label for="timeInput" class="block mb-1 font-semibold">Selecione uma hora:</label>
                             <input type="time" id="timeInput" v-model="selectedTime" @change="handleTimeChange"
-                                class="input input-bordered rounded-full w-2/5 px-5 input-group" />
+                                class="input input-bordered rounded-full w-2/5 px-5 input-group border-black" />
                         </div>
 
                     </div>
@@ -80,8 +85,17 @@
                         <label for="">1º</label>
 
                     </div>
-                    <button class="btn btn-active btn-neutral w-1/6 text-white p-1 hover:bg-blue"
-                        style="background-color: #00428F;" onclick="my_modal_2.showModal()">Cadastrar</button>
+
+                    <div class="grid grid-cols-1 gap-4 mb-6">
+                        <label class="block mb-1 font-semibold">Canal de comunicação:</label>
+                        <textarea
+                            placeholder="Por aqui, você pode agrndar, remarcar e cancelar conusltas e exames. Ah, e muito mais!"
+                            class="textarea textarea-bordered textarea-lg w-full border border-black"
+                            v-model="canal"></textarea>
+                    </div>
+
+                    <button class="btn btn-active btn-neutral w-1/2 max-w-[6rem] text-white p-1 hover:bg-blue"
+                        style="background-color: #00428F;" onclick="my_modal_2.showModal()">Salvar</button>
 
 
                     <dialog id="my_modal_2" class="modal">
@@ -124,7 +138,8 @@
                                 </div>
                             </div>
                             <div class="grid grid-cols-1">
-
+                                <label for="" class="font-semibold"> {{ labels.chanel }}:</label>
+                                <label> {{ canal }}</label>
                             </div>
 
                             <label for="timeInput" class="block mb-1 font-semibold">Fila: 1º</label>
@@ -151,13 +166,15 @@
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 import { ref, reactive, computed } from 'vue'
 const motivo = ref('')
+const canal = ref('')
 
 const optionSelected = ref({
     fullName: 'N/D',
     consultation: 'N/D',
     specialty: 'N/D',
     medicName: 'N/D',
-    room: 'N/D'
+    room: 'N/D',
+    chanel: 'N/D'
 })
 const formData = reactive({
     profileImage: '../../../assets/placeholder.png',
@@ -232,7 +249,8 @@ const labels = {
     street: 'Logradouro',
     number: 'Número',
     email: 'Email',
-    phone: 'Celular'
+    phone: 'Celular',
+    chanel: 'Canal'
 }
 const selectedDate = ref(null);
 
