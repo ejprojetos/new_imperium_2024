@@ -41,9 +41,6 @@ class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = ['message', 'is_read', 'type', 'datetime', 'user']
-        extra_kwargs = {
-            'user': {'read_only': True}
-        }
 
 
 class WaitingListSerializer(serializers.ModelSerializer):
