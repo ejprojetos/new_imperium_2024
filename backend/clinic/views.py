@@ -111,6 +111,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
         and manage the status of each notification (marking them as read or unread).
     """
 
+    queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
     permission_classes = [permissions.IsAuthenticated]
     http_method_names = ['get','put','delete']
@@ -124,6 +125,8 @@ class NotificationViewSet(viewsets.ModelViewSet):
         user_id = self.kwargs.get('user_id')
         if user_id is not None:
             return Notification.objects.filter(user_id=user_id).order_by('id')
+        else:
+            return super().get_queryset()
 
     def list(self, request, *args, **kwargs):
         user_id = self.kwargs.get('user_id')
