@@ -11,7 +11,7 @@
                     </div>
                 </RouterLink>
 
-                <RouterLink to="/dashboard/paciente" class="profile-card">
+                <RouterLink to="/dashboard/suporte/suporte-usuario" class="profile-card">
                     <div class="flex flex-col items-center p-6">
                         <img :src="pacienteIcon" alt="Paciente" class="w-20 h-20 mb-4" />
                         <span class="text-lg font-medium">Paciente</span>

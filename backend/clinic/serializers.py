@@ -41,9 +41,7 @@ class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = ['id', 'message', 'is_read', 'type', 'datetime', 'user', 'status']
-        #extra_kwargs = {
-            #'user': {'read_only': True}
-        #}
+
 
 
 class WaitingListSerializer(serializers.ModelSerializer):
@@ -134,6 +132,7 @@ class WorkingHoursSerializer(serializers.ModelSerializer):
         end_time = data.get('end_time')
         user_data = data.get('user')
 
+
         # Garantir que end_time seja posterior a start_time
         if start_time >= end_time:
             raise serializers.ValidationError("End time must be later than start time.")
@@ -185,8 +184,6 @@ class AppointmentSerializer(serializers.ModelSerializer):
         doctor = data.get('doctor', self.instance.doctor if self.instance else None)
         appointment_date = data.get('appointment_date', self.instance.appointment_date if self.instance else None)
         room = data.get('room', self.instance.room if self.instance else None)
-
-       
         
         # Check doctor's availability
         if doctor and appointment_date:

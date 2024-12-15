@@ -1,4 +1,5 @@
 <template>
+	<NavBarHome />
 	<section class="secao-login">
 		<div class="secao-texto">
 			<h1 class="texto-bem-vindos"> BEM VINDOS</h1>
@@ -40,12 +41,16 @@
 		</div>
 	</section>
 
+	<Footer />
+
 
 </template>
 
 <script setup lang="ts">
 import { Route } from 'lucide-vue-next';
 import { RouterLink } from 'vue-router';
+import NavBarHome from '@/components/baseUi/NavBarHome.vue'
+import Footer from '@/components/baseUi/Footer.vue'
 
 RouterLink
 </script>
@@ -61,7 +66,7 @@ RouterLink
 	font-family: 'Open Sans', sans-serif;
 	font-size: 75px;
 	position: relative;
-	bottom: -130px;
+	bottom: -150px;
 }
 
 .secao-bem-vindos {
@@ -91,6 +96,7 @@ RouterLink
 	align-items: center;
 	justify-content: center;
 	gap: 13rem;
+	margin-bottom: 5rem;
 }
 
 .secao-input {

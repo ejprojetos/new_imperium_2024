@@ -12,6 +12,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from users.models import User
 from .tasks import send_notifications
+from users.models import Patient
+
 
 class MedicalRecordViewSet(viewsets.ModelViewSet):
     """
@@ -320,7 +322,6 @@ class AppointmentViewSet(viewsets.ModelViewSet):
 
             #notification for Room assignment logic for consultation
             send_notifications.delay(users=[patient.user.id, doctor.user.id],type_notification="info", subtype_notification='room', room=room.number)
-
             return Response(
                 self.get_serializer(appointment).data, 
                 status=status.HTTP_201_CREATED

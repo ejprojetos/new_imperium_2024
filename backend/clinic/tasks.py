@@ -25,6 +25,7 @@ def send_email(data):
     
 @shared_task
 def send_notifications(users, type_notification, subtype_notification, flag_email=False, **kwargs):
+
     """
         asynchronous function to create notifications
 
@@ -50,6 +51,7 @@ def send_notifications(users, type_notification, subtype_notification, flag_emai
         'alert': {
             'confirmation_clinic': f'solicitação recebida da clinica {clinic}',
             'confirmation_appointment': 'você precisa confirmar sua consulta!'
+            'confirmation': 'você precisa confirmar sua consulta!'
         },
         'reminder': {
             
