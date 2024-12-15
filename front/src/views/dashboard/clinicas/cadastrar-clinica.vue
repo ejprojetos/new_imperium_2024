@@ -142,12 +142,12 @@
                             class="px-4 py-2 text-white bg-blue-600 rounded">
                             Salvar e adicionar outra(o)
                         </button>
-                        <button
+                        <!-- <button
                             type="button"
                             @click="saveAndContinueEditing"
                             class="px-4 py-2 text-white bg-blue-600 rounded">
                             Salvar e continuar editando
-                        </button>
+                        </button> -->
                         <button type="submit" class="px-4 py-2 text-white rounded bg-primary">
                             Salvar
                         </button>
@@ -160,9 +160,14 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 import { toast } from 'vue-sonner'
+import { useClinicStore } from '@/stores/clinic/clinic.store'
+import type { Clinic } from '@/types/clinic.types'
 
+const router = useRouter()
+const clinicStore = useClinicStore()
 const fileInput = ref<HTMLInputElement | null>(null)
 const selectedImage = ref<File | null>(null)
 
@@ -191,21 +196,62 @@ const handleImageUpload = (event: Event) => {
     }
 }
 
+// formata os dados da clínica para o formato esperado pelo backend
+const formatClinicData = (): Partial<Clinic> => {
+    return {
+        name: formData.clinicName,
+        cnpj: formData.cnpj,
+        is_active: true,
+        address: {
+            country: formData.country,
+            state: formData.state,
+            city: formData.city,
+            neighborhood: formData.neighborhood,
+            zipCode: formData.zipCode,
+            street: formData.street,
+            number: formData.number
+        }
+    }
+}
+
 const triggerFileInput = () => {
     fileInput.value?.click()
 }
 
-const submitForm = () => {
-    console.log('Form submitted:', formData)
-    console.log('Selected image:', selectedImage.value)
-    toast.success('Salvo com sucesso!')
+const submitForm = async () => {
+    try {
+        const clinicData = formatClinicData()
+        await clinicStore.createClinic(clinicData)
+        toast.success('Clínica cadastrada com sucesso!')
+        router.push('/dashboard/clinicas')
+    } catch (error) {
+        toast.error('Erro ao cadastrar clínica')
+        console.error(error)
+    }
 }
 
-const saveAndAddAnother = () => {
-    submitForm()
+const saveAndAddAnother = async () => {
+    try {
+        await submitForm()
+        // apaga os dados do formulário
+        Object.keys(formData).forEach((key) => {
+            formData[key as keyof typeof formData] = ''
+        })
+        selectedImage.value = null
+    } catch (error) {
+        console.error(error)
+    }
 }
 
-const saveAndContinueEditing = () => {
-    submitForm()
-}
+// const saveAndContinueEditing = async () => {
+//     try {
+//         const clinicData = formatClinicData()
+//         const newClinic = await clinicStore.createClinic(clinicData)
+//         toast.success('Clínica cadastrada com sucesso!')
+//         router.push(`/dashboard/clinicas/editar/${newClinic.uuid}`)
+//     } catch (error) {
+//         toast.error('Erro ao cadastrar clínica')
+//         console.error(error)
+//     }
+// }
 </script>
