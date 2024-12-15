@@ -13,7 +13,6 @@ from .validators import validar_email
 from users.models import User
 from commom.serializers import PasswordResetRequestSerializer, PasswordResetConfirmSerializer
 
-
 class EmailAPIView(APIView):
     """
         view for sending an email, passing the sender, recipient, subject and body of the email as parameters in the request
