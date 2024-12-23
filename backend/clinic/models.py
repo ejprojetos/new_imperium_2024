@@ -7,12 +7,18 @@ from django.db.models import Q
 from datetime import timedelta
 
 
-
 class Clinic(models.Model):
+    image = models.ImageField()
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     name = models.CharField(max_length=255)
     cnpj = models.CharField(max_length=14)
+    telefone_responsavel = models.CharField(max_length=255)
+    email_responsavel = models.EmailField()
+    cpf_responsavel = models.CharField(max_length=255)
+    nome_responsavel = models.CharField(max_length=255)
+    rg_responsavel = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
+    
     address = models.ForeignKey(Address, on_delete=models.CASCADE)
     admin_clinic = models.OneToOneField(User, on_delete=models.CASCADE, related_name='admin_clinic')
 

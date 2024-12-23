@@ -18,6 +18,13 @@ from users.models import Patient
 class ClinicViewSet(viewsets.ModelViewSet):
     queryset = Clinic.objects.all()
     serializer_class = ClinicSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_serializer_context(self):
+        # Passando o contexto com o request para o serializer
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
 
 
 class MedicalRecordViewSet(viewsets.ModelViewSet):

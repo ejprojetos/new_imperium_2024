@@ -5,12 +5,47 @@ from .models import WaitingList, WorkingHours
 from django.utils import timezone
 from django.db.models import Q
 from datetime import timedelta
+from commom.models import Address
+
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        fields = '__all__'
 
 
 class ClinicSerializer(serializers.ModelSerializer):
+    country = serializers.CharField(source='address.country')
+    state = serializers.CharField(source='address.state')
+    city = serializers.CharField(source='address.city')
+    zip_code = serializers.CharField(source='address.zip_code')
+    street = serializers.CharField(source='address.street')
+    number = serializers.CharField(source='address.number')
+
     class Meta:
         model = Clinic
-        fields = '__all__'
+        fields = ['name', 'image', 'cnpj', 'telefone_responsavel', 'email_responsavel', 'cpf_responsavel', 'nome_responsavel', 'rg_responsavel' , 'country', 'state', 'city', 'zip_code', 'street', 'number']
+
+    def create(self, validated_data):
+        # Extraindo os dados do endereço
+        address_data = {
+            'country': validated_data.pop('address')['country'],
+            'state': validated_data.pop('address')['state'],
+            'city': validated_data.pop('address')['city'],
+            'zip_code': validated_data.pop('address')['zip_code'],
+            'street': validated_data.pop('address')['street'],
+            'number': validated_data.pop('address')['number'],
+        }
+
+        # Criando o endereço
+        address = Address.objects.create(**address_data)
+
+        # Adicionando o usuário logado como admin_clinic
+        request = self.context.get('request')
+        admin_clinic = request.user if request else None
+
+        # Criando a clínica associada ao endereço e ao admin_clinic
+        clinic = Clinic.objects.create(address=address, admin_clinic=admin_clinic, **validated_data)
+        return clinic
 
 
 class MedicalRecordSerializer(serializers.ModelSerializer):
