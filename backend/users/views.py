@@ -1,7 +1,8 @@
 from rest_framework import viewsets, status, permissions
 from drf_spectacular.utils import extend_schema
-from rest_framework.response import Response 
-from .serializers import AdminSerializer, DoctorSerializer, PatientSerializer, ReceptionistSerializer
+from rest_framework.response import Response
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import AdminSerializer, DoctorSerializer, PatientSerializer, ReceptionistSerializer, CustomTokenObtainPairSerializer
 from rest_framework.decorators import action
 from .models import Admin, Doctor, Patient, Receptionist
 
@@ -212,3 +213,7 @@ class ReceptionistViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer

@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import Admin, Role, User, Doctor, Patient, Receptionist
 
 class RoleSerializer(serializers.ModelSerializer):
@@ -201,3 +202,14 @@ class ReceptionistSerializer(serializers.ModelSerializer):
         receptionist.save()
         
         return receptionist
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        
+        # Adicionar os papéis (roles) do usuário
+        roles = self.user.roles.values_list('name', flat=True)
+        data['user_role'] = list(roles)
+        
+        return data
