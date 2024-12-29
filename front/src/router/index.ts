@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { authGuard, roleGuard } from './guards'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,7 +20,6 @@ const router = createRouter({
             path: '/auth/esqueci-senha',
             name: 'esqueci-senha',
             component: () => import('../views/auth/esqueci-senha.vue')
-
         },
         {
             path: '/auth/email-enviado',
@@ -213,7 +213,7 @@ const router = createRouter({
             name: 'editar-manuais',
             component: () => import('../views/dashboard/suporte/editar-manuais.vue')
         },
-        
+
         {
             path: '/dashboard/politicas/politicas',
             name: 'politicas',
@@ -224,7 +224,7 @@ const router = createRouter({
             name: 'editar-politicas',
             component: () => import('../views/dashboard/suporte/editar-politicas.vue')
         },
-        
+
         {
             path: '/dashboard/politicas/politicas-usuario',
             name: 'politicas-usuario',
@@ -233,12 +233,12 @@ const router = createRouter({
         {
             path: '/dashboard/politicas/politicas-usuario-pag',
             name: 'politicas-usuario-pag',
-            component: () => import('../views/dashboard/politicas/politicas_usuario_pag.vue'),
+            component: () => import('../views/dashboard/politicas/politicas_usuario_pag.vue')
         },
         {
             path: '/dashboard/politicas/politicas-publicacao',
             name: 'politicas-publicacao',
-            component: () => import('../views/dashboard/politicas/politicas_publicacao.vue'),
+            component: () => import('../views/dashboard/politicas/politicas_publicacao.vue')
         },
         {
             path: '/dashboard/suporte/administrador',
@@ -281,6 +281,23 @@ const router = createRouter({
             component: () => import('../views/dashboard/recepcionistas/cadastrar-consulta.vue')
         }
     ]
+})
+
+router.beforeEach(authGuard)
+
+router.beforeEach((to, from, next) => {
+    switch (to.path) {
+        case '/dashboard/clinicas':
+        case '/dashboard/institucional':
+            return roleGuard(['admin'])(to, from, next)
+        case '/dashboard/medicos':
+        case '/dashboard/consultas/cadastrar':
+            return roleGuard(['medico', 'admin'])(to, from, next)
+        case '/dashboard/recepcionistas':
+            return roleGuard(['admin', 'recepcionista'])(to, from, next)
+        default:
+            next()
+    }
 })
 
 export default router

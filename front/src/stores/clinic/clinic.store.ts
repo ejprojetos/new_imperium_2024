@@ -21,6 +21,18 @@ export const useClinicStore = defineStore('clinic', () => {
         }
     }
 
+    const fetchSingleClinic = async (id: string) => {
+        try {
+            loading.value = true
+            currentClinic.value = await clinicService.getClinic(id)
+        } catch (err) {
+            error.value = 'Erro ao buscar clínica'
+            console.error(err)
+        } finally {
+            loading.value = false
+        }
+    }
+
     const createClinic = async (clinicData: Partial<Clinic>) => {
         try {
             loading.value = true
@@ -76,6 +88,7 @@ export const useClinicStore = defineStore('clinic', () => {
         fetchClinics,
         createClinic,
         updateClinic,
-        deleteClinic
+        deleteClinic,
+        fetchSingleClinic
     }
 })
