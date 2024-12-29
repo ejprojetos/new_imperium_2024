@@ -47,15 +47,17 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import type { Clinic } from '@/types/clinica.types'
+
+const props = defineProps<{
+	clinicas: Clinic[]
+}>()
 
 const router = useRouter()
 const modalEdit = ref<HTMLDialogElement>()
 const modalDelete = ref<HTMLDialogElement>()
 
-interface Clinica {
-	id: number
-	name: string
-}
+
 
 //const clinicas = ref<Clinica[]>([
 //	{ id: 1, name: 'Clínica Dr. Alexandre' },
