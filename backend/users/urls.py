@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import AdminViewSet, DoctorViewSet, PatientViewSet, ReceptionistViewSet
+from .views import AdminViewSet, DoctorViewSet, PatientViewSet, ReceptionistViewSet, CustomTokenObtainPairView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from clinic.views import MedicalRecordViewSet, WaitingListViewSet, WorkingHoursViewSet, AppointmentViewSet
@@ -17,6 +17,6 @@ router.register(r'appointments', AppointmentViewSet, basename='appointments')
 
 urlpatterns = [
     path('users/', include(router.urls)),
-    path('auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('auth/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('auth/refresh/', TokenRefreshView.as_view(), name='token_refresh')
 ]

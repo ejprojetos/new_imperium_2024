@@ -19,6 +19,8 @@ class ClinicViewSet(viewsets.ModelViewSet):
     queryset = Clinic.objects.all()
     serializer_class = ClinicSerializer
     permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'id'
+    lookup_url_kwarg = 'clinic_id'
 
     def get_serializer_context(self):
         # Passando o contexto com o request para o serializer
