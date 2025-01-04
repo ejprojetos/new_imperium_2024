@@ -1,21 +1,21 @@
 <template>
     <LayoutDashboard>
-        <div class="ml-[60px] mt-[29px]">
+        <div class="sm:ml-[60px] mt-[29px]">
             <router-link to="/dashboard/medicos">
-                <h2 class="text-xl font-semibold text-gray-600 hover:text-gray-800 transition duration-300 ease-in-out">
+                <h2 class="text-lg font-semibold text-gray-600 hover:text-gray-800 transition duration-300 ease-in-out sm:text-xl">
                     < Voltar</h2>
             </router-link> 
         </div>
 
-        <div class="grid grid-cols-1 gap-4 ml-[145px] mt-[20px]">
-            <h1 class="mb-6 text-[50px] font-normal">Cadastrar Recepcionista</h1>
-            <div class="pb-[70px] pt-[40px] px-[60px] mb-4 bg-white ded-lgroun gap-x-4 w-[650px]">
+        <div class="grid grid-cols-1 gap-4 ml-[25px] sm:ml-[145px] mt-[20px]">
+            <h1 class="mb-6 text-[1.75rem] font-normal sm:text-[3.125rem] sm:font-montserrat">Cadastrar Recepcionista</h1>
+            <div class="rounded-xl sm:rounded-none pb-[70px] pt-[29px] sm:pt-[40px] px-[20px] sm:px-[60px] mb-4 bg-white ded-lgroun gap-x-4 sm:w-[650px]" style="box-shadow: 0px 4px 4px 0px #00000040; box-shadow: 0px 4px 4px 0px #00000040; box-shadow: 0px -2px 0px 0px #00000040;">
                 <form @submit.prevent="submitForm">
                     <h2 class="mb-4 text-xl font-montserrat text-black font-bold">Dados Pessoais</h2>
         
                     <div class="grid grid-cols-1 gap-4">
                         <div>
-                            <label class="block mb-2 text-lg font-montserrat">
+                            <label class="text-sm sm:text-lg block mb-2 font-montserrat">
                                 Nome:
                             </label>
                             <input 
@@ -25,7 +25,7 @@
                             />
                         </div>
                         <div>
-                            <label class="block mb-2 text-lg font-montserrat br-16">
+                            <label class="block mb-2 text-sm sm:text-lg font-montserrat br-16">
                                 Sobrenome:
                             </label>
                             <input 
@@ -34,9 +34,9 @@
                             class="w-full px-2 py-1 border rounded-2xl"
                             />
                         </div>
-                        <div class="flex gap-[80px]">
+                        <div class="sm:flex flex-coll gap-[80px]">
                             <div>
-                                <label class="block mb-2 text-lg font-montserrat br-16">
+                                <label class="block mb-2 text-sm sm:text-lg font-montserrat br-16">
                                     Data de Nascimento:
                                 </label>
                                 <input 
@@ -46,7 +46,7 @@
                                 />
                             </div>
                             <div>
-                                <label class="block mb-2 text-lg font-montserrat br-16">
+                                <label class="mt-[20px] sm:mt-0 block mb-2 text-sm sm:text-lg font-montserrat br-16">
                                     Gênero:
                                 </label>
                                 <select 
@@ -59,7 +59,7 @@
                             </div>
                         </div>
                         <div>
-                            <label class="block mb-2 text-lg font-montserrat br-16">
+                            <label class="block mb-2 text-sm sm:text-lg font-montserrat br-16">
                                 CPF:
                             </label>
                             <input 
@@ -73,7 +73,7 @@
                     <h2 class="mb-4 text-xl font-montserrat text-black mt-[30px] font-bold">Endereço:</h2>
                     <div class="flex gap-[40px]">
                         <div>
-                            <label class="block mb-2 text-lg font-montserrat br-16">
+                            <label class="block mb-2 text-sm sm:text-lg font-montserrat br-16">
                                 País:
                             </label>
                             <select 
@@ -85,7 +85,7 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block mb-2 text-lg font-montserrat br-16">
+                            <label class="block mb-2 text-sm sm:text-lg font-montserrat br-16">
                                 Estado:
                             </label>
                             <select 
@@ -97,9 +97,9 @@
                             </select>
                         </div>
                     </div>
-                    <div class="flex gap-[10px] mt-3">
+                    <div class="flex-coll sm:flex gap-[10px] mt-3">
                         <div>
-                            <label class="block mb-2 text-lg font-montserrat br-16">
+                            <label class="block mb-2 text-sm sm:text-lg font-montserrat br-16">
                                 Cidade:
                             </label>
                             <input 
@@ -110,7 +110,7 @@
                             />
                         </div>
                         <div>
-                            <label class="block mb-2 text-lg font-montserrat br-16">
+                            <label class=" mt-[20px] sm:mt-0 block mb-2 text-sm sm:text-lg font-montserrat br-16">
                                 Bairro:
                             </label>
                             <input 
@@ -122,7 +122,7 @@
                         </div>
                     </div>
                     <div>
-                        <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16">
+                        <label class="block mt-[20px] mb-2 text-sm sm:text-lg font-montserrat br-16">
                             CEP:
                         </label>
                         <input 
@@ -132,20 +132,20 @@
                         placeholder="00000-000"
                         />
                     </div>
-                    <div class="flex gap-[10px]">
+                    <div class="flex-coll sm:flex gap-[10px]">
                         <div>
-                            <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16">
+                            <label class="block mt-[20px] mb-2 text-sm sm:text-lg font-montserrat br-16">
                                 Logradouro:
                             </label>
                             <input 
                             v-model="FormData.street"
                             type="text"
-                            class="w-[432px] px-2 py-1 border rounded-2xl"
+                            class="w-full sm:w-[432px] px-2 py-1 border rounded-2xl"
                             placeholder="Av. Maria Lacerda Montenegro"
                             />
                         </div>
                         <div>
-                            <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16">
+                            <label class="block mt-[20px] mb-2 text-sm sm:text-lg font-montserrat br-16">
                                 Número:
                             </label>
                             <input 
@@ -158,18 +158,18 @@
                     </div>
                     <h2 class="mt-[30px] mb-4 text-xl font-montserrat text-black font-bold">Contato</h2>
                     <div>
-                        <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16">
+                        <label class="block mt-[20px] mb-2 text-sm sm:text-lg font-montserrat br-16">
                             Email:
                         </label>
                         <input 
                         v-model="FormData.email"
                         type="email"
-                        class="w-[432px] px-2 py-1 border rounded-2xl"
+                        class="w-full sm:w-[432px] px-2 py-1 border rounded-2xl"
                         placeholder="exemplo99@email.com"
                         />
                     </div>
                     <div>
-                        <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16">
+                        <label class="block mt-[20px] mb-2 text-sm sm:text-lg font-montserrat br-16">
                             Celular:
                         </label>
                         <input 
@@ -181,7 +181,7 @@
                     </div>
                     <h2 class="mt-[30px] mb-4 text-xl font-montserrat text-black font-bold">Expediente:</h2>
                     <div>
-                        <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16">
+                        <label class="block mt-[20px] mb-2 text-sm sm:text-lg font-montserrat br-16">
                             Dias de Trabalho (Selecione os dias):
                         </label>
                         <DaysSelector 
@@ -189,14 +189,14 @@
                         />
                     </div>
                     <div>
-                        <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16">
+                        <label class="block mt-[20px] mb-2 text-sm sm:text-lg font-montserrat br-16">
                             Turnos:
                         </label>
                         <WorkShifts :selectedShifts="selectedShifts"
                         @update:selected-shifts="handleSelectedShifts"/>
                     </div>
                     <div class="flex flex-col">
-                        <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16">
+                        <label class="block mt-[20px] mb-2 text-sm sm:text-lg font-montserrat br-16">
                             Disponibilidade para plantões:
                         </label>
                         <label class="cursor-pointer flex items-center gap-2">
@@ -215,11 +215,15 @@
                         </label>
                     </div>
 
-                    <!-- <button class="mt-[40px] bg-[#00428F] text-white w-[104px] h-[42px] rounded-lg btn"  @click="submitForm">Cadastrar</button> -->
-                    <!-- You can open the modal using ID.showModal() method -->
                     <button class="mt-[40px] bg-[#00428F] text-white w-[104px] h-[42px] rounded-lg btn"  @click="submitForm" onclick="my_modal_4.showModal() ">Cadastrar</button>
                     <dialog id="my_modal_4" class="modal" ref="modal" @click.self="closeModal">
-                    <div class="modal-box w-[750px] max-w-5xl">
+                    
+                    <div class="modal-box w-[310px] sm:w-[750px] max-w-5xl">
+
+                        <div>
+                            <h1 class="font-montserrat text-[1.375rem] font-semibold text-center">Recepcionista cadastrado com sucesso!</h1>
+                        </div>
+
                         <ModalCadastro :FormData="FormData">
                             <template v-slot:header>
                                 <h1 class="mb-6 font-bold text-[30px] w-[640px] text-h1 font-montserrat">Recepcionista cadastrado com sucesso!</h1>
@@ -288,7 +292,7 @@
                         </ModalCadastro>
                         <div class="modal-action flex flex-col justify-between">
                             
-                            <div class="flex w-full pl-[50px]">
+                            <div class="flex w-full pl-[50px] justify-center sm:justify-start">
                                 
                                 <form method="dialog">
                                     <!-- if there is a button, it will close the modal -->

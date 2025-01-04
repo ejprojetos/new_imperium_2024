@@ -6,7 +6,7 @@
                 <img class="w-[203px]" src="../../assets/logo-institucional.svg" alt="logo" />
             </router-link>
 
-            <div class="flex items-center space-x-6 ">
+            <!-- <div class="flex items-center space-x-6 ">
                 <a class="font-openSans text-lg text-[#010424] hover:text-[#00428F] cursor-pointer"
                     @click="navigateTo('inicio')">Início</a>
                 <a class="font-openSans text-lg text-[#010424] hover:text-[#00428F] cursor-pointer"
@@ -21,7 +21,7 @@
                 <button class="bg-[#00428F] text-white w-[119px] h-[41px] rounded-md">
                     Login
                 </button>
-                </router-link>
+                </router-link> -->
             <div class="flex items-center space-x-6">
                 <a
                     class="font-openSans text-lg text-[#010424] hover:text-[#00428F] cursor-pointer"

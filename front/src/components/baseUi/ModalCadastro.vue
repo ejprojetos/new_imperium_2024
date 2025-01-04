@@ -1,5 +1,5 @@
 <template>
-    <div class="pb-[10px] pt-[40px] px-[60px] mb-4 bg-white ded-lgroun gap-x-4 w-[650px] rounded-xl">
+    <div class="pb-[10px] pt-[40px] px-[60px] mb-4 bg-white ded-lgroun gap-x-4 w-[650px] rounded-xl hidden sm:block">
 
         <header>
             <slot name="header" class="mb-6 text-4xl font-bold text-3xl">Cadastrado com sucesso!</slot>
