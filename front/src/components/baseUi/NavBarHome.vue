@@ -17,9 +17,11 @@
                     @click="navigateTo('depoimentos')">Depoimentos</a>
                 <a class="font-openSans text-lg text-[#010424] hover:text-[#00428F] cursor-pointer"
                     @click="navigateTo('contato')">Contato</a>
+                <router-link to="/auth/login">
                 <button class="bg-[#00428F] text-white w-[119px] h-[41px] rounded-md">
                     Login
                 </button>
+                </router-link>
             </div>
 
         </div>

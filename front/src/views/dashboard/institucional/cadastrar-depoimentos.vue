@@ -64,6 +64,11 @@ import { toast } from 'vue-sonner'
 const fileInput = ref<HTMLInputElement | null>(null)
 const selectedImage = ref<File | null>(null)
 
+
+
+
+
+
 const phrase = ref('')
 
 const handleImageUpload = (event: Event) => {

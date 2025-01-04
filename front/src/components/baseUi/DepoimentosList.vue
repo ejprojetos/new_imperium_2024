@@ -2,11 +2,13 @@
     <div class="overflow-hidden bg-white shadow-lg rounded-3xl">
         <div class="flex items-center justify-between p-4 text-white bg-primary">
             <h2 class="text-xl font-semibold">Depoimentos</h2>
-            <button
-                @click="navigateToAddDepoimento"
-                class="px-4 py-2 text-blue-600 transition-colors bg-white rounded-md hover:bg-blue-100">
-                Adicionar
-            </button>
+            <RouterLink to="/dashboard/institucional/cadastrar-depoimentos">
+                <button
+                    @click="navigateToAddDepoimento"
+                    class="px-4 py-2 text-blue-600 transition-colors bg-white rounded-md hover:bg-blue-100">
+                    Adicionar
+                </button>
+            </RouterLink>
         </div>
         <ul>
             <li
