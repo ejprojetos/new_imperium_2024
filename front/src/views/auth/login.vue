@@ -2,57 +2,67 @@
 	<NavBarHome />
 	<section class="secao-login">
 		<div class="secao-texto">
-			<h1 class="texto-bem-vindos"> BEM VINDOS</h1>
+			<h1 class="texto-bem-vindos">BEM VINDOS</h1>
 		</div>
 		<div>
-			<div class="secao-bem-vindos primeira-div">
-
-			</div>
-			<div class="secao-bem-vindos segunda-div">
-
-			</div>
+			<div class="secao-bem-vindos primeira-div"></div>
+			<div class="secao-bem-vindos segunda-div"></div>
 		</div>
 
 		<div class="p-6 rounded-lg shadow-lg max-w-[400px] mx-auto p-15 box secao-input"
-			style="background-color: #00428F;">
+			style="background-color: #00428f">
 			<h3 class="text-3xl font-bold text-white titulo-secao">Faça seu login</h3>
 			<div class="grid grid-cols-1 gap-1">
-
-				<label class="block mb-1 font-semibold text-white texto-label">Digite seu email:</label>
-				<input type="text" placeholder="" class="input input-bordered w-full  texto-opcoes"
-					style="background-color: #FAFAFAE5;" />
-
+				<label class="block mb-1 font-semibold text-white texto-label">
+					Digite seu email:
+				</label>
+				<input type="text" v-model="email" placeholder="" class="w-full input input-bordered texto-opcoes"
+					style="background-color: #fafafae5" />
 			</div>
 			<div class="grid grid-cols-1 gap-1">
-
 				<label class="block mb-1 font-semibold text-white texto-label">Senha:</label>
-				<input type="text" placeholder="" class="input input-bordered w-full  texto-opcoes"
-					style="background-color: #FAFAFAE5;" />
-
+				<input type="password" placeholder="" v-model="password"
+					class="w-full input input-bordered texto-opcoes" style="background-color: #fafafae5" />
 			</div>
 
-			<button class="botao-login">
-				Fazer login
-			</button>
+			<button class="botao-login" @click="login">Fazer login</button>
 			<router-link to="/auth/esqueci-senha">
 				<p class="link-recadastro-senha">Esqueceu sua senha ou email cadastrado?</p>
 			</router-link>
-
 		</div>
 	</section>
 
 	<Footer />
-
-
+	<Toaster position="bottom-right" richColors />
 </template>
 
 <script setup lang="ts">
-import { Route } from 'lucide-vue-next';
-import { RouterLink } from 'vue-router';
 import NavBarHome from '@/components/baseUi/NavBarHome.vue'
 import Footer from '@/components/baseUi/Footer.vue'
+import { authService } from '@/services/auth.service'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { toast, Toaster } from 'vue-sonner'
 
-RouterLink
+const router = useRouter()
+
+const email = ref('')
+const password = ref('')
+
+async function login() {
+	try {
+		const response = await authService.login({
+			email: email.value,
+			password: password.value
+		})
+
+		toast.success('Login realizado com sucesso')
+		router.push('/dashboard')
+	} catch (error) {
+		toast.error(error.message)
+		console.error(error)
+	}
+}
 </script>
 
 <style scoped>
@@ -70,7 +80,7 @@ RouterLink
 }
 
 .secao-bem-vindos {
-	background-color: #00428F80;
+	background-color: #00428f80;
 	width: 900px;
 	height: 780px;
 	border-radius: 69px;
@@ -87,7 +97,6 @@ RouterLink
 	transform: rotate(-132deg);
 	left: -350px;
 	top: -73px;
-
 }
 
 .secao-login {
@@ -105,7 +114,6 @@ RouterLink
 	display: flex;
 	flex-direction: column;
 	gap: 2rem;
-
 }
 
 .titulo-secao {
@@ -120,12 +128,12 @@ RouterLink
 	font-family: 'Open Sans', sans-serif;
 	font-size: 16px;
 	font-weight: 400;
-	color: #FAFAFA;
+	color: #fafafa;
 }
 
 .botao-login {
-	background-color: #E1E7EF;
-	color: #002A5C;
+	background-color: #e1e7ef;
+	color: #002a5c;
 	padding: 10px 20px;
 	border: none;
 	border-radius: 5px;
@@ -135,6 +143,6 @@ RouterLink
 }
 
 .link-recadastro-senha {
-	color: #FAFAFA;
+	color: #fafafa;
 }
 </style>
