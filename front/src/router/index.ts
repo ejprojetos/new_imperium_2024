@@ -171,7 +171,8 @@ const router = createRouter({
         {
             path: '/dashboard/emails/:id',
             name: 'cadastrar-email',
-            component: () => import('../views/dashboard/emails/view-email.vue')
+            component: () => import('../views/dashboard/emails/view-email.vue'),
+            props: true,
         },
         {
             path: '/:pathMatch(.*)*',

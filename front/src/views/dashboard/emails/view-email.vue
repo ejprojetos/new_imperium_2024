@@ -1,8 +1,8 @@
 <template>
     <LayoutDashboard>
         <div class="p-8">
-            <h1 class="text-4xl font-bold">{{ emailInfo.userName }}</h1>
-            <p class="mb-6 text-xl">Recebido dia {{ emailInfo.recebidoDate }}</p>
+            <h1 class="text-4xl font-bold">{{ emailInfo.nome }}</h1>
+            <p class="mb-6 text-xl">Recebido dia {{ emailInfo.respondido_data }}</p>
 
             <div class="min-h-[60vh] p-6 mb-4 bg-white rounded-lg shadow-lg">
                 <div class="flex flex-col mb-6 gap-y-4">
@@ -14,7 +14,8 @@
 
                     <div class="flex items-center gap-x-2">
                         <p class="text-xl font-bold">Assunto:</p>
-                        <p class="text-md">{{ emailInfo.subject }}</p>
+                        <!-- <p class="text-md">{{ emailInfo.subject }}</p> -->
+                         <p>Assunto</p>
                     </div>
 
                     <div class="flex items-center gap-x-2">
@@ -24,7 +25,7 @@
 
                     <div class="flex items-center gap-x-2">
                         <p class="text-xl font-bold">Mensagem:</p>
-                        <p class="text-md">{{ emailInfo.message }}</p>
+                        <p class="text-md">{{ emailInfo.mensagem }}</p>
                     </div>
                 </div>
             </div>
@@ -33,22 +34,51 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
-import { toast } from 'vue-sonner'
 import { useRoute } from 'vue-router'
+import { fetchContatoById } from '@/services/contato.service'
+import type { Contato } from '@/types/contato.types'
 
 const route = useRoute()
 const emailId = route.params.id
 
-const emailInfo = reactive({
-    id: emailId,
-    userName: 'Beatriz',
-    recebidoDate: '28/04/2022',
-    email: 'beatriz@gmail.com',
-    subject: 'Consulta de Paciente',
-    message: 'Olá, tudo bem?',
-    telefone: '(11) 99999-9999',
-    status: 'Não lida'
+const emailInfo = reactive<Contato>({
+    id:0,
+    nome:'',
+    email:'',
+    telefone:'',
+    mensagem:'',
+    respondido: false,
+    respondido_data:'',
 })
+
+onMounted(async () =>{
+    try{
+        if(emailId){
+            const contato = await fetchContatoById(emailId as string);
+            emailInfo.id = contato.id;
+            emailInfo.nome = contato.nome;
+            emailInfo.email = contato.email;
+            emailInfo.telefone = contato.telefone;
+            emailInfo.mensagem = contato.mensagem;
+            emailInfo.respondido_data = contato.respondido_data;
+            emailInfo.respondido = contato.respondido;
+        }
+    }catch (error){
+        console.error("Erro ao buscar dados", error)
+    }
+})
+
+    
+// const emailInfo = reactive({
+//     id: emailId,
+//     userName: 'Beatriz',
+//     recebidoDate: '28/04/2022',
+//     email: 'beatriz@gmail.com',
+//     subject: 'Consulta de Paciente',
+//     message: 'Olá, tudo bem?',
+//     telefone: '(11) 99999-9999',
+//     status: 'Não lida'
+// })
 </script>

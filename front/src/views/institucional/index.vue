@@ -130,7 +130,7 @@
                                 Nome:
                             </label>
                             <input 
-                            v-model="FormData.name"
+                            v-model="FormData.nome"
                             type="text"
                             class="w-full px-2 py-1 border border-[#00428F] rounded-lg"
                             />
@@ -142,7 +142,7 @@
                             Celular:
                         </label>
                         <input 
-                        v-model="FormData.phone"
+                        v-model="FormData.telefone"
                         type="tel"
                         class="w-full px-2 py-1 border border-[#00428F] rounded-lg "
                         />
@@ -162,7 +162,7 @@
                             Mensagem:
                         </label>
                         <textarea 
-                        v-model="FormData.mensage"
+                        v-model="FormData.mensagem"
                         type="email"
                         class="w-full h-[146px] px-2 py-1 border border-[#00428F] rounded-lg"
                         />
@@ -185,24 +185,38 @@ import NavBarHome from '@/components/baseUi/NavBarHome.vue';
 import Footer from '@/components/baseUi/Footer.vue';
 import CarroselInstitucional from '@/components/baseUi/CarroselInstitucional.vue';
 
-import { reactive, ref } from 'vue';
+import { reactive } from 'vue';
 import { toast } from 'vue-sonner';
+import { submitContato } from '@/services/contato.service'; // Adjust the path as necessary
+import type { Contato } from '@/types/contato.types';
 
 
-const FormData = reactive({
-    name: '',
-    phone: '',
+const FormData = reactive<Contato>({
+    id: 0,
+    nome: '',
+    telefone: '',
     email: '',
-    mensage:''
+    mensagem: '',
+    respondido: false,
+    respondido_data: new Date().toISOString().split('T')[0]
 })
 
-const submitForm = () => {
+// const submitForm = () => {
     
-    console.log('Form submitted', FormData)
-    toast.success('Salvo com sucesso!')
+//     console.log('Form submitted', FormData)
+//     toast.success('Salvo com sucesso!')
 
-};
+// };
 
+const submitForm = async () => {
+    try{
+        await submitContato(FormData);
+        toast.success('Formulário enviado com sucesso!')
+    } catch (error){
+        console.error('Erro ao enviar formulário:', error);
+        toast.error('Ocorreu um erro ao enviar o formulário.')
+    }
+}
 </script>
 
 <style scoped>
