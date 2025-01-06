@@ -33,7 +33,8 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 'first_name', 'last_name', 'email', 'cpf', 'date_birth',
-            'password', 'roles', 'address', 'clinics'
+            'password', 'roles', 'address', 'clinics', 'gender',
+            'formacao', 'crm', 'attach_document'
         ]
         read_only_fields = ['id']
 

@@ -59,6 +59,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     roles = models.ManyToManyField(Role, related_name='users')
     clinics = models.ManyToManyField("clinic.Clinic", blank=True)
     specialty = models.CharField(max_length=255, null=True, blank=True)
+    gender = models.CharField(max_length=255, null=True, blank=True)
+    formacao = models.CharField(max_length=255, null=True, blank=True)
+    crm = models.CharField(max_length=255, null=True, blank=True)
+    attach_document = models.FileField(upload_to='attach',null=True, blank=True)
 
     objects = UserManager()
 
