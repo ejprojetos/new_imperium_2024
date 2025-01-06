@@ -2,13 +2,12 @@ from django.db import models
 from commom.models import Address
 import uuid
 from django.utils import timezone
-from users.models import User, Doctor, Patient
-from django.db.models import Q
+from users.models import User
 from datetime import timedelta
 
 
 class Clinic(models.Model):
-    image = models.ImageField()
+    image = models.ImageField(null=True, blank=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     name = models.CharField(max_length=255)
     cnpj = models.CharField(max_length=14)
@@ -20,7 +19,7 @@ class Clinic(models.Model):
     is_active = models.BooleanField(default=True)
     
     address = models.ForeignKey(Address, on_delete=models.CASCADE)
-    admin_clinic = models.OneToOneField(User, on_delete=models.CASCADE, related_name='admin_clinic')
+    admin_clinic = models.ForeignKey(User, on_delete=models.CASCADE, related_name='admin_clinic')
 
     def __str__(self):
         return self.name
@@ -28,9 +27,9 @@ class Clinic(models.Model):
 
 class Appointment(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='appointments')
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='appointments')
-    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='appointments')
+    patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='appointments_patient')
+    doctor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='appointments_doctor')
+    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='appointments_clinic')
     appointment_date = models.DateTimeField()
     reason = models.CharField(max_length=255)
     STATUS_CHOICES = [
@@ -115,11 +114,11 @@ class WaitingList(models.Model):
         ('completed', 'Completed'),
     ]
     
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='waiting_list')
-    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='waiting_list')
+    patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='waiting_list_patient')
+    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='waiting_list_clinic')
     arrival_datetime = models.DateTimeField()
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='waiting')
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='waiting_list', blank=True, null=True)
+    doctor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='waiting_list_doctor', blank=True, null=True)
 
     def __str__(self):
         return f"Waiting List for {self.patient} in {self.clinic}"

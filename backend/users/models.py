@@ -2,10 +2,22 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from commom.models import Address
+from enum import Enum
+
+class RoleEnum(Enum):
+    ADMIN = "admin"
+    DOCTOR = "doctor"
+    PATIENT = "patient"
+    RECEPTIONIST = "receptionist"
+
+    @classmethod
+    def choices(cls):
+        return [(role.name, role.value) for role in cls]
 
 
 class Role(models.Model):
-    name = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=20, choices=RoleEnum.choices())
     description = models.TextField(blank=True)
 
     def __str__(self):
@@ -43,9 +55,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(default=timezone.now)
     cpf = models.CharField(max_length=11)
     date_birth = models.DateField()
-
+    address = models.ForeignKey(Address, on_delete=models.CASCADE, null=True, blank=True)
     roles = models.ManyToManyField(Role, related_name='users')
     clinics = models.ManyToManyField("clinic.Clinic", blank=True)
+    specialty = models.CharField(max_length=255, null=True, blank=True)
 
     objects = UserManager()
 
@@ -61,6 +74,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_short_name(self):
         return self.first_name
+    
+    def has_role(self, role_name):
+        """Verifica se o usuário tem um determinado papel."""
+        return self.roles.filter(name=role_name).exists()
 
 
 class Patient(models.Model):
