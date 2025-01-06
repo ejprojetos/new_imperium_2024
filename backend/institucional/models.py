@@ -83,6 +83,7 @@ class Depoimento(models.Model):
 
 
 class Contato(models.Model):
+    assunto             = models.CharField(max_length = 100, verbose_name = 'Nome')
     nome                = models.CharField(max_length = 50, verbose_name = 'Nome')
     telefone            = models.CharField(max_length = 20, verbose_name = 'Telefone')
     email               = models.EmailField(verbose_name = 'E-mail')
