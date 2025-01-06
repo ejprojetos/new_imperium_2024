@@ -2,7 +2,7 @@
     <LayoutDashboard>
         <div class="p-8">
             <h1 class="text-4xl font-bold">{{ emailInfo.nome }}</h1>
-            <p class="mb-6 text-xl">Recebido dia {{ emailInfo.respondido_data }}</p>
+            <p class="mb-6 text-xl">Recebido dia {{ formatDate(emailInfo.respondido_data) }}</p>
 
             <div class="min-h-[60vh] p-6 mb-4 bg-white rounded-lg shadow-lg">
                 <div class="flex flex-col mb-6 gap-y-4">
@@ -42,6 +42,13 @@ import type { Contato } from '@/types/contato.types'
 
 const route = useRoute()
 const emailId = route.params.id
+
+
+function formatDate(data: string): string{
+    if(!data) return '';
+    const date = new Date(data);
+    return isNaN(date.getTime())?'': date.toLocaleDateString('pt-BR')
+}
 
 const emailInfo = reactive<Contato>({
     id:0,
