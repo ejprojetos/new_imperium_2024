@@ -73,6 +73,7 @@ class Depoimento(models.Model):
         upload_to = 'depoimento/%Y',
         null = True, blank = True,
         verbose_name = 'Imagem da pessoa')
+    ativo = models.BooleanField(default=False)
 
     class Meta:
         verbose_name        = 'Depoimento'
