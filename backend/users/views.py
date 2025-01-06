@@ -1,218 +1,102 @@
-from rest_framework import viewsets, status, permissions
-from drf_spectacular.utils import extend_schema
+from .models import User
+from .serializers import UserSerializer
+from rest_framework import permissions
+from rest_framework.decorators import action, permission_classes
 from rest_framework.response import Response
-from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import AdminSerializer, DoctorSerializer, PatientSerializer, ReceptionistSerializer, CustomTokenObtainPairSerializer
+
+from rest_framework import permissions, viewsets, status
+from rest_framework.response import Response
 from rest_framework.decorators import action
-from .models import Admin, Doctor, Patient, Receptionist
+from rest_framework.exceptions import PermissionDenied
+from .models import User, Role
+from .serializers import UserSerializer, CustomTokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 
-class AdminViewSet(viewsets.ModelViewSet):
-    queryset = Admin.objects.all()
-    serializer_class = AdminSerializer
-    permission_classes = [permissions.IsAuthenticated]
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    # permission_classes = [permissions.IsAuthenticated]
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
-
-    def get_permissions(self):
-        if self.request.method == 'POST':
-            return [permissions.AllowAny()]
-        return super().get_permissions()
-
-    @extend_schema(exclude=True)
-    def list(self, request, *args, **kwargs):
-
-        return Response(
-            {"detail": "Method 'GET' not allowed."},
-            status=status.HTTP_405_METHOD_NOT_ALLOWED
-        )
-
-    def get_queryset(self):
-        """Limit queryset to admins within the same clinic if needed."""
-        user = self.request.user
-        if user.is_superuser: 
-            return Admin.objects.all()
-        return Admin.objects.all()
-
-    def create(self, request, *args, **kwargs):
-        """Override to create an Admin instance along with a User."""
-        serializer = self.get_serializer(data=request.data)
-        
-        if serializer.is_valid():
-            admin = serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=True, methods=['patch'])
-    def assign_roles(self, request, pk=None):
-        """Custom action to assign roles to an admin."""
-        admin = self.get_object()
-        serializer = self.get_serializer(admin, data=request.data, partial=True)
-        
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def update(self, request, *args, **kwargs):
-        """Override to support partial updates if needed."""
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        """Custom delete method to remove an admin and unassign roles if necessary."""
-        instance = self.get_object()
-        instance.roles.clear()
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class DoctorViewSet(viewsets.ModelViewSet):
-    queryset = Doctor.objects.all()
-    serializer_class = DoctorSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
-
-    def get_permissions(self):
-        if self.request.method == 'POST':
-            return [permissions.AllowAny()]
-        return super().get_permissions()
-
-    def get_queryset(self):
-        user = self.request.user
-        if user.is_superuser:
-            return Doctor.objects.all()
-        return Doctor.objects.all()
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        
-        if serializer.is_valid():
-            doctor = serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=True, methods=['patch'])
-    def assign_specialties(self, request, pk=None):
-        doctor = self.get_object()
-        serializer = self.get_serializer(doctor, data=request.data, partial=True)
-        
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        instance.specialties.clear()
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
     
-
-class PatientViewSet(viewsets.ModelViewSet):
-    queryset = Patient.objects.all()
-    serializer_class = PatientSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
-
     def get_permissions(self):
-        if self.request.method == 'POST':
+        if self.action in ['list', 'destroy']:
+            return [permissions.IsAuthenticated()]
+        elif self.action in ['retrieve', 'create']:
             return [permissions.AllowAny()]
         return super().get_permissions()
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_superuser:
-            return Patient.objects.all()
-        return Patient.objects.all()
+        if user.is_staff:  # Admin pode visualizar usuários de todas as clínicas
+            return User.objects.filter(clinics__in=user.clinics.all())
+        return User.objects.filter(clinics__in=user.clinics.all())  # Usuários podem ver somente da clínica associada
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        
-        if serializer.is_valid():
-            patient = serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        
-        if serializer.is_valid():
-            serializer.save()
+    def list_users_from_clinic(self, request):
+        user = request.user
+        if user.is_staff or user.has_role('RECEPTIONIST'):  # Verifica se o usuário é admin ou receptionist
+            clinic_users = self.get_queryset()
+            serializer = self.get_serializer(clinic_users, many=True)
             return Response(serializer.data)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"detail": "Você não tem permissão para visualizar os usuários."}, status=403)
 
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class ReceptionistViewSet(viewsets.ModelViewSet):
-    queryset = Receptionist.objects.all()
-    serializer_class = ReceptionistSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
-
-    def get_permissions(self):
-        if self.request.method == 'POST':
-            return [permissions.AllowAny()]
-        return super().get_permissions()
-
-    def get_queryset(self):
+    def perform_destroy(self, instance):
         user = self.request.user
-        if user.is_superuser:
-            return Receptionist.objects.all()
-        return Receptionist.objects.all()
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        
+        if user.is_staff or user.has_role('RECEPTIONIST'):  # Admin e receptionist podem deletar
+            if user.is_staff or instance in user.clinics.all():  # receptionist só pode excluir da própria clínica
+                instance.delete()
+            else:
+                raise PermissionDenied("Você não tem permissão para excluir esse usuário.")
+        else:
+            raise PermissionDenied("Somente admins ou receptionists podem excluir usuários.")
+    
+    def create_user(self, request):
+        serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
-            receptionist = serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
+            # Validação adicional ou criação de roles pode ser feita aqui, se necessário
+            user = serializer.save()
+            return Response({"detail": "Usuário criado com sucesso."}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        role = serializer.validated_data.get('roles')
+        role = role[0]['name']
+        
+        if role in ('ADMIN'):
+            serializer.save()
+        elif self.request.user.is_authenticated and role in ('DOCTOR', 'RECEPTIONIST', 'PATIENT'):
+            if user.has_role('RECEPTIONIST') or user.has_role('ADMIN'):
+                serializer.save()
+            else:
+                raise PermissionDenied("Você não tem permissão para criar esse tipo de usuário.")
+        else:
+            raise PermissionDenied("Somente administradores ou recepcionistas podem criar doctores, receptionists e patients.")
 
     def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        user = request.user
+        if user.is_staff:  # Admin pode atualizar qualquer usuário
+            return super().update(request, *args, **kwargs)
+        elif user.id == kwargs['pk']:  # Usuário pode editar apenas seus próprios dados
+            return super().update(request, *args, **kwargs)
+        else:
+            raise PermissionDenied("Você não tem permissão para editar este usuário.")
 
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    @action(detail=True, methods=['patch'])
+    def update_roles(self, request, pk=None):
+        user = self.get_object()
+        current_user = request.user
+        if current_user.is_staff:  # Apenas admins podem alterar os papéis
+            roles_data = request.data.get('roles')
+            if roles_data:
+                roles = Role.objects.filter(id__in=roles_data)
+                user.roles.set(roles)
+                user.save()
+                return Response({"detail": "Papéis atualizados com sucesso."})
+            else:
+                return Response({"detail": "Nenhum papel fornecido."}, status=400)
+        else:
+            raise PermissionDenied("Somente administradores podem alterar papéis.")
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):

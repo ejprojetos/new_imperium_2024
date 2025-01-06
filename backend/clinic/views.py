@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status, permissions, filters
 
 from rest_framework.response import Response 
-from .models import MedicalRecord, Appointment, Room, Clinic, Notification, Clinic, WaitingList, Doctor, WorkingHours, Clinic
+from .models import MedicalRecord, Appointment, Room, Clinic, Notification, Clinic, WaitingList, WorkingHours, Clinic
 from .serializers import MedicalRecordSerializer, RoomSerializer, NotificationSerializer, AssignDoctorSerializer, WaitingListSerializer, WorkingHoursSerializer, AppointmentSerializer, ClinicSerializer
 from users.permissions import IsRoleUser
 from django.shortcuts import get_object_or_404
@@ -12,8 +12,6 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from users.models import User
 from .tasks import send_notifications
-from users.models import Patient
-
 
 class ClinicViewSet(viewsets.ModelViewSet):
     queryset = Clinic.objects.all()
@@ -23,10 +21,13 @@ class ClinicViewSet(viewsets.ModelViewSet):
     lookup_url_kwarg = 'clinic_id'
 
     def get_serializer_context(self):
-        # Passando o contexto com o request para o serializer
         context = super().get_serializer_context()
         context['request'] = self.request
         return context
+    
+    def get_queryset(self):
+        user = self.request.user
+        return super().get_queryset().filter(admin_clinic=user)
 
 
 class MedicalRecordViewSet(viewsets.ModelViewSet):
