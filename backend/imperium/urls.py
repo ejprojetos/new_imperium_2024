@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from commom.views import EmailAPIView, PasswordResetRequestView, PasswordResetConfirmView
+from django.conf.urls.static import static
+from django.conf import settings
 
 
 urlpatterns = [
@@ -16,3 +18,6 @@ urlpatterns = [
     path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     path('api/institucional/', include('institucional.urls')),
 ]
+
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
