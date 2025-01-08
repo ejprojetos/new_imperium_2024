@@ -45,6 +45,8 @@ import { useUIStore } from '@/stores/ui/useUIStore'
 import { useUserStore } from '@/stores/user/useUserStore'
 import { useRoute } from 'vue-router'
 import { RouterLink } from 'vue-router'
+import { ref, onMounted } from 'vue'
+
 
 const { isMobile } = useScreenSize()
 const { toggleLeftbar } = useUIStore()
@@ -62,11 +64,26 @@ const profile = [
 ]
 
 const getProfileRoute = () => {
+    const profileRoute = profile.find((p) => p.name === role.value)
+    return profileRoute ? profileRoute.nameRoute : 'perfil_paciente'
     //return profile.find((p) => p.name === role.value).nameRoute
-    return 'perfil_paciente'
+    //return 'perfil_paciente'
 }
 
 const updateRole = (event) => {
-    setRole(event.target.value)
+    // setRole(event.target.value)
+    const newRole = event.target.value
+    setRole(newRole)
+    localStorage.setItem('role', newRole)
 }
+
+onMounted(() =>{
+    const storedRole = localStorage.getItem('role')
+    if(storedRole){
+        setRole(storedRole)
+    }else{
+        setRole('paciente')
+    }
+})
+
 </script>

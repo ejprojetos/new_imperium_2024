@@ -12,9 +12,17 @@ export interface Clinic {
     uuid: string
     name: string
     cnpj: string
-    is_active: boolean
+    //Acrescentado após modificação no endpoint
+    image:string
+    telefone_responsavel: string
+    email_responsavel:string
+    cpf_responsavel: string
+    nome_responsavel: string
+    rg_responsavel: string
+
+    //is_active: boolean
     address: Address
-    admin_clinic: string // user ID
+    //admin_clinic: string // user ID
 }
 
 export interface Room {

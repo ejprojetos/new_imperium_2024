@@ -149,7 +149,7 @@ const router = createRouter({
             component: () => import('../views/dashboard/institucional/depoimentos.vue')
         },
         {
-            path: '/dashboard/institucional/cadastrar-depoimentos',
+            path: '/dashboard/institucional/cadastrar-depoimentos/:id?',
             name: 'cadastrar-depoimentos',
             component: () => import('../views/dashboard/institucional/cadastrar-depoimentos.vue')
         },
