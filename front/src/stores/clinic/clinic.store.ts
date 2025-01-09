@@ -33,6 +33,7 @@ export const useClinicStore = defineStore('clinic', () => {
         }
     }
 
+    
     const createClinic = async (clinicData: Partial<Clinic>) => {
         try {
             loading.value = true
