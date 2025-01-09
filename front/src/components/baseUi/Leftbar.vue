@@ -83,61 +83,68 @@ const closeLeftbar = () => {
 	uiStore.toggleLeftbar()
 }
 
+interface NavItem {
+	name: string
+	icon: any
+	path: string
+	roles: Array<'ADMIN' | 'DOCTOR' | 'PATIENT' | 'RECEPTIONIST'>
+}
 
-const navItems = [
+
+const navItems: NavItem[] = [
 	{
 		name: 'Principal',
 		icon: principalIcon,
 		path: '/dashboard',
-		roles: ['admin', 'superadmin', 'clinica', 'suporte']
+		roles: ['ADMIN', 'DOCTOR', 'PATIENT', 'RECEPTIONIST']
 	},
 	{
 		name: 'Institucional',
 		icon: institucionalIcon,
 		path: '/dashboard/institucional',
-		roles: ['admin', 'superadmin', 'suporte']
+		roles: ['ADMIN']
 	},
 	{
 		name: 'Clinicas',
 		icon: clinicasIcon,
 		path: '/dashboard/clinicas',
-		roles: ['admin', 'superadmin', 'suporte']
+		roles: ['ADMIN']
 	},
 	{
 		name: 'Emails',
 		icon: emailIcon,
 		path: '/dashboard/emails',
-		roles: ['admin', 'superadmin', 'suporte']
+		roles: ['ADMIN']
 	},
 	{
 		name: 'Médicos',
 		icon: clinicasIcon,
 		path: '/dashboard/medicos',
-		roles: ['admin', 'superadmin', 'clinica', 'recepcionista', 'suporte']
+		roles: ['ADMIN', 'DOCTOR', 'RECEPTIONIST']
 	},
 	{
 		name: 'Consultas',
 		icon: principalIcon,
 		path: '/dashboard/consultas',
-		roles: ['admin', 'superadmin', 'clinica', 'medico', 'recepcionista', 'suporte']
+		roles: ['ADMIN', 'DOCTOR', 'RECEPTIONIST']
 	},
 	{
 		name: 'Recepcionistas',
 		icon: recepcionistasIcon,
 		path: '/dashboard/recepcionistas',
-		roles: ['admin', 'superadmin', 'clinica', 'medico', 'suporte']
+		roles: ['ADMIN', 'RECEPTIONIST']
 	},
 	{
 		name: 'Pacientes',
 		icon: pacientesIcon,
 		path: '/dashboard/pacientes',
-		roles: ['admin', 'superadmin', 'clinica', 'medico', 'recepcionista', 'suporte']
+		roles: ['ADMIN', 'PATIENT']
 	},
 	{
 		name: 'Minhas Consultas',
 		icon: principalIcon,
 		path: '/dashboard/minhas-consultas',
-		roles: ['admin', 'superadmin', 'paciente']
+		roles: ['ADMIN', 'PATIENT']
 	}
 ]
 </script>
@@ -145,7 +152,6 @@ const navItems = [
 <style scoped>
 .text-active {
 	color: #ed5575;
-	/* Color for active item name */
 }
 
 .slide-enter-active,

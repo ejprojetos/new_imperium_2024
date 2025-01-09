@@ -35,14 +35,22 @@ export function authGuard(
     next()
 }
 
-export function roleGuard(allowedRoles: string[]) {
-    return (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
-        const userRole = localStorage.getItem('user_role')
-        
+export function roleGuard(allowedRoles: Array<'ADMIN' | 'DOCTOR' | 'PATIENT' | 'RECEPTIONIST'>) {
+    return (
+        to: RouteLocationNormalized,
+        from: RouteLocationNormalized,
+        next: NavigationGuardNext
+    ) => {
+        const userRole = localStorage.getItem('user_role') as
+            | 'ADMIN'
+            | 'DOCTOR'
+            | 'PATIENT'
+            | 'RECEPTIONIST'
+
         if (!userRole || !allowedRoles.includes(userRole)) {
             return next('/dashboard')
         }
-        
+
         next()
     }
 }

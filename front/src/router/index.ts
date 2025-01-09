@@ -172,7 +172,7 @@ const router = createRouter({
             path: '/dashboard/emails/:id',
             name: 'cadastrar-email',
             component: () => import('../views/dashboard/emails/view-email.vue'),
-            props: true,
+            props: true
         },
         {
             path: '/:pathMatch(.*)*',
@@ -290,12 +290,12 @@ router.beforeEach((to, from, next) => {
     switch (to.path) {
         case '/dashboard/clinicas':
         case '/dashboard/institucional':
-            return roleGuard(['admin'])(to, from, next)
+            return roleGuard(['ADMIN'])(to, from, next)
         case '/dashboard/medicos':
         case '/dashboard/consultas/cadastrar':
-            return roleGuard(['medico', 'admin'])(to, from, next)
+            return roleGuard(['DOCTOR', 'ADMIN'])(to, from, next)
         case '/dashboard/recepcionistas':
-            return roleGuard(['admin', 'recepcionista'])(to, from, next)
+            return roleGuard(['ADMIN', 'RECEPTIONIST'])(to, from, next)
         default:
             next()
     }
