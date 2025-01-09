@@ -1,17 +1,6 @@
 import { fetcher } from './fetcher.service'
 import { useRouter } from 'vue-router'
-
-export interface LoginData {
-    email: string
-    password: string
-}
-
-export interface LoginResponse {
-    access: string
-    refresh: string
-    detail: string | null
-    role?: string
-}
+import type { LoginData, LoginResponse } from '@/types/auth.types'
 
 export const authService = {
     login: async (data: LoginData) => {
@@ -29,13 +18,10 @@ export const authService = {
             if (response.access) {
                 localStorage.setItem('access_token', response.access)
                 localStorage.setItem('refresh_token', response.refresh)
-                localStorage.setItem('user_role', 'admin') // TODO: remover quando a api voltar o role corretamente
-                if (response.role) {
-                    localStorage.setItem('user_role', response.role)
-                }
+                localStorage.setItem('user_role', response.user_role[0])
             }
 
-            return response
+            return response as LoginResponse
         } catch (error) {
             console.error(error)
             throw error
@@ -56,8 +42,8 @@ export const authService = {
         const router = useRouter()
         router.push('/auth/login')
 
-        return fetcher('/auth/logout/', {
-            method: 'POST'
-        })
+        //return fetcher('/auth/logout/', {
+        //    method: 'POST'
+        //})
     }
 }

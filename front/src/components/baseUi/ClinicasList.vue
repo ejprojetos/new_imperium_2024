@@ -45,13 +45,37 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import type { Clinic } from '@/types/clinica.types'
+import { clinicService } from '@/services/clinic.service';
 
-const props = defineProps<{
-	clinicas: Clinic[]
-}>()
+
+const clinicas = ref<Clinic[]>([])
+onMounted( async () =>{
+	try{
+		const response = await clinicService.getAllClinics();
+		console.log('Clinicas:',response)
+
+		if(Array.isArray(response)){
+			clinicas.value = response.map(clinica => ({
+				...clinica,
+				image:clinica.image?.startsWith('http')
+				? clinica.image
+				: `http://172.105.155.145${clinica.image.startsWith('/')?'' : '/'}${clinica.image}`
+			}))
+		} else {
+			console.error("Formato de resposta inválido", response)
+		}
+	} catch(error){
+		console.error('Erro ao buscar clinicas', error)
+	}
+})
+
+
+// const props = defineProps<{
+// 	clinicas: Clinic[]
+// }>()
 
 const router = useRouter()
 const modalEdit = ref<HTMLDialogElement>()

@@ -56,8 +56,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { fetchContatos } from '@/services/contato.service'
-import { Contato } from '@/types/contato.types'
+import { contatoService } from '@/services/contato.service'
 
 
 const router = useRouter()
@@ -74,53 +73,42 @@ interface Email {
 }
 
 
-
-// const respondedEmails = ref<Email[]>([
-//     { id: 1, name: 'Norma Andrade Silva', respondedDate: '28/02/20', receivedDate: '28/02/20' },
-//     { id: 2, name: 'Eduardo Maxado de Assis', respondedDate: '28/02/20', receivedDate: '28/02/20' },
-//     {
-//         id: 3,
-//         name: 'Roberta Nunes Brito de Fa...',
-//         respondedDate: '28/02/20',
-//         receivedDate: '28/02/20'
-//     },
-//     { id: 4, name: 'Ana Claudia Barbosa', respondedDate: '28/02/20', receivedDate: '28/02/20' }
-// ])
-
 const respondedEmails = ref<Email[]>([]);
 const pendingEmails = ref<Email[]>([]);
 const error = ref<string | null>(null);
-// const pendingEmails = ref<Email[]>([
-//     { id: 5, name: 'Beatriz Guedes', receivedDate: '28/02/20' },
-//     { id: 6, name: 'Andre Luis da Silva', receivedDate: '28/02/20' },
-//     { id: 7, name: 'Alexandre de Castro', receivedDate: '28/02/20' }
-// ])
 
 const openEmail = (id: number) => {
+    console.log("Abrindo email com id:", id)
     router.push(`/dashboard/emails/${id}`)
 }
 
-
+const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    const day = date.getUTCDate().toString().padStart(2, '0');
+    const month = (date.getUTCMonth() + 1).toString().padStart(2, '0'); 
+    const year = date.getUTCFullYear();
+    return `${day}/${month}/${year}`;
+};
 
 //Requisição HTTP
 
 onMounted(async () => {
     try{
-        const contatos = await fetchContatos();
+        const contatos = await contatoService.getAllContatos();
 
         //Mapear dados
 
         respondedEmails.value = contatos.filter((contato) => contato.respondido).map((contato) => ({
             id: contato.id,
             nome: contato.nome,
-            respondido_data: new Date().toLocaleDateString(),
-            envio_data: new Date().toLocaleDateString(),
+            respondido_data: formatDate(contato.respondido_data),
+            envio_data: formatDate(contato.envio_data),
         }))
 
         pendingEmails.value = contatos.filter((contato) => !contato.respondido).map((contato) => ({
             id: contato.id,
             nome: contato.nome,
-            envio_data: new Date().toLocaleDateString(),
+            envio_data: formatDate(contato.envio_data),
         }));
     } catch(err){
         error.value = 'Erro ao carregar emails';

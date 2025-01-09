@@ -104,6 +104,8 @@
         </div>
     </section>
 
+    
+
     <!-- Depoimentos -->
     <section class="h-[611px] bg-[#DEECFA] pt-[70px]" id="depoimentos" style="scroll-margin-top: 95px;">
         <div class="flex justify-center">
@@ -138,7 +140,7 @@
                     </div>
                     
                     <div>
-                        <label class="block mt-[20px] mb-2 text-base font-montserrat br-16 text-[#010424] ">
+                        <label class="block mt-[15px] mb-2 text-base font-montserrat br-16 text-[#010424] ">
                             Celular:
                         </label>
                         <input 
@@ -148,7 +150,7 @@
                         />
                     </div>
                     <div>
-                        <label class="block mt-[20px] mb-2 text-base font-montserrat br-16 text-[#010424] ">
+                        <label class="block mt-[15px] mb-2 text-base font-montserrat br-16 text-[#010424] ">
                             Email:
                         </label>
                         <input 
@@ -158,17 +160,27 @@
                         />
                     </div>
                     <div>
-                        <label class="block mt-[20px] mb-2 text-base font-montserrat br-16 text-[#010424] ">
+                        <label class="block mt-[15px] mb-2 text-base font-montserrat br-16 text-[#010424] ">
+                            Assunto:
+                        </label>
+                        <input 
+                        v-model="FormData.assunto"
+                        type="text"
+                        class="w-full px-2 py-1 border border-[#00428F] rounded-lg "
+                        />
+                    </div>
+                    <div>
+                        <label class="block mt-[15px] mb-2 text-base font-montserrat br-16 text-[#010424] ">
                             Mensagem:
                         </label>
                         <textarea 
                         v-model="FormData.mensagem"
                         type="email"
                         class="w-full h-[146px] px-2 py-1 border border-[#00428F] rounded-lg"
-                        />
+                        style="resize:none"/>
                     </div>
 
-                    <button  class="w-full px-2 py-1 border border-[#00428F] rounded-lg bg-[#00428F] text-[#FAFAFA] mt-[51px] transition-transform transform active:scale-95 focus:outline-none" style="box-shadow: 0px 4px 4px 0px #00000040; ">Enviar</button>
+                    <button  class="w-full px-2 py-1 border border-[#00428F] rounded-lg bg-[#00428F] text-[#FAFAFA] mt-[45px] transition-transform transform active:scale-95 focus:outline-none" style="box-shadow: 0px 4px 4px 0px #00000040; ">Enviar</button>
                 </form>
     </section>
 
@@ -187,8 +199,8 @@ import CarroselInstitucional from '@/components/baseUi/CarroselInstitucional.vue
 
 import { reactive } from 'vue';
 import { toast } from 'vue-sonner';
-import { submitContato } from '@/services/contato.service'; // Adjust the path as necessary
 import type { Contato } from '@/types/contato.types';
+import { contatoService } from '@/services/contato.service';
 
 
 const FormData = reactive<Contato>({
@@ -196,26 +208,33 @@ const FormData = reactive<Contato>({
     nome: '',
     telefone: '',
     email: '',
+    assunto:'',
     mensagem: '',
     respondido: false,
+    envio_data:'',
     respondido_data: new Date().toISOString().split('T')[0]
 })
 
-// const submitForm = () => {
-    
-//     console.log('Form submitted', FormData)
-//     toast.success('Salvo com sucesso!')
 
-// };
 
 const submitForm = async () => {
     try{
-        await submitContato(FormData);
-        toast.success('Formulário enviado com sucesso!')
+        await contatoService.submiteContato(FormData);
+        toast.success('Formulário enviado com sucesso!');
+        resetForm()
     } catch (error){
         console.error('Erro ao enviar formulário:', error);
         toast.error('Ocorreu um erro ao enviar o formulário.')
     }
+}
+
+const resetForm =() => {
+    FormData.nome = '';
+    FormData.telefone = '';
+    FormData.email = '';
+    FormData.mensagem = '';
+    FormData.assunto = '';
+    
 }
 </script>
 
