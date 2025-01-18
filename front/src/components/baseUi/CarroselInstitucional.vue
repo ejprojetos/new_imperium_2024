@@ -12,11 +12,14 @@
       :navigation="false"
     >
       <!-- Gerando os slides dinamicamente usando v-for -->
-      <swiper-slide v-for="(item, index) in slides" :key="index" class="h-full flex justify-center items-center rounded-lg mt-[75px]">
+      <swiper-slide v-for="(item, index) in slides" 
+      :key="index" 
+      class="h-full flex justify-center items-center rounded-lg mt-[75px]"
+      >
         <div class="flex flex-col items-center text-center h-[390px]">
-          <img v-if="item.image" :src="item.image" class="w-[150px] h-[150px] object-cover rounded-full" />
+          <img v-if="item.imagem" :src="item.imagem" class="w-[150px] h-[150px] object-cover rounded-full" />
           <div>
-              <p class="font-roboto mt-[30px] w-[1196px]">{{ item.description }}</p>
+              <p class="font-roboto mt-[30px] w-[1196px]">{{ item.depoimento }}</p>
           </div>
         </div>
       </swiper-slide>
@@ -24,14 +27,15 @@
   </template>
   
   <script lang="ts">
-  import { defineComponent } from "vue";
+  import { defineComponent, onMounted, ref } from "vue";
   import { Swiper, SwiperSlide } from "swiper/vue";
   import 'swiper/swiper-bundle.css';
   import 'swiper/css/pagination'; 
   import "swiper/css/navigation";
   import SwiperCore from "swiper";
   import { Pagination, Navigation, Autoplay } from "swiper/modules";
-  
+  import { depoimentoService } from "@/services/depoimentos.service";
+
   SwiperCore.use([Autoplay, Pagination, Navigation]);
   
   export default defineComponent({
@@ -40,18 +44,44 @@
       Swiper,
       SwiperSlide
     },
-    data() {
-      return {
-        // Lista de slides
-        slides: [
-          {description: "Praesent est mi, consequat sed aliquam in, ornare quis neque. Integer euismod libero eu nibh blandit molestie. Sed faucibus, est ac tincidunt feugiat, eros ligula varius nibh, nec vestibulum nunc orci sit amet odio.. ", image: "../src/assets/images/romulo.png" },
-          {description: "Praesent est mi, consequat sed aliquam in, ornare quis neque. Integer euismod libero eu nibh blandit molestie. Sed faucibus, est ac tincidunt feugiat, eros ligula varius nibh, nec vestibulum nunc orci sit amet odio.", image: "../src/assets/images/pedro.png" },
-          {description: "Praesent est mi, consequat sed aliquam in, ornare quis neque. Integer euismod libero eu nibh blandit molestie. Sed faucibus, est ac tincidunt feugiat, eros ligula varius nibh, nec vestibulum nunc orci sit amet odio.", image: "../src/assets/images/depoiments.png" },
-          {description: "Praesent est mi, consequat sed aliquam in, ornare quis neque. Integer euismod libero eu nibh blandit molestie. Sed faucibus, est ac tincidunt feugiat, eros ligula varius nibh, nec vestibulum nunc orci sit amet odio.", image: "../src/assets/images/depoiments.png" },
-          {description: "Praesent est mi, consequat sed aliquam in, ornare quis neque. Integer euismod libero eu nibh blandit molestie. Sed faucibus, est ac tincidunt feugiat, eros ligula varius nibh, nec vestibulum nunc orci sit amet odio.", image: "../src/assets/images/depoiments.png" }
-        ]
+
+    setup(){
+      const slides = ref([]);
+
+      const carregarDepoimentos = async () =>{
+        try{
+          const response = await depoimentoService.getAllDepoimentos();
+          slides.value = response.map((depoimento) =>({
+            depoimento: depoimento.depoimento,
+            imagem: depoimento.imagem
+          }));
+        }catch(error){
+          console.error("Erro ao carregar depoimentos", error);
+        }
       };
+
+      onMounted(() =>{
+        carregarDepoimentos()
+      });
+
+      return{
+        slides,
+      }
     }
+
+
+    // data() {
+    //   return {
+    //     // Lista de slides
+    //     slides: [
+    //       {description: "Praesent est mi, consequat sed aliquam in, ornare quis neque. Integer euismod libero eu nibh blandit molestie. Sed faucibus, est ac tincidunt feugiat, eros ligula varius nibh, nec vestibulum nunc orci sit amet odio.. ", image: "../src/assets/images/romulo.png" },
+    //       {description: "Praesent est mi, consequat sed aliquam in, ornare quis neque. Integer euismod libero eu nibh blandit molestie. Sed faucibus, est ac tincidunt feugiat, eros ligula varius nibh, nec vestibulum nunc orci sit amet odio.", image: "../src/assets/images/pedro.png" },
+    //       {description: "Praesent est mi, consequat sed aliquam in, ornare quis neque. Integer euismod libero eu nibh blandit molestie. Sed faucibus, est ac tincidunt feugiat, eros ligula varius nibh, nec vestibulum nunc orci sit amet odio.", image: "../src/assets/images/depoiments.png" },
+    //       {description: "Praesent est mi, consequat sed aliquam in, ornare quis neque. Integer euismod libero eu nibh blandit molestie. Sed faucibus, est ac tincidunt feugiat, eros ligula varius nibh, nec vestibulum nunc orci sit amet odio.", image: "../src/assets/images/depoiments.png" },
+    //       {description: "Praesent est mi, consequat sed aliquam in, ornare quis neque. Integer euismod libero eu nibh blandit molestie. Sed faucibus, est ac tincidunt feugiat, eros ligula varius nibh, nec vestibulum nunc orci sit amet odio.", image: "../src/assets/images/depoiments.png" }
+    //     ]
+    //   };
+    // }
   });
   </script>
   

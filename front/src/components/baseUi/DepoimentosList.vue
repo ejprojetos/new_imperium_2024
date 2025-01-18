@@ -16,7 +16,7 @@
                 :key="depoimento.id"
                 class="border-b last:border-b-0">
                 <div class="flex items-center justify-between p-4 hover:bg-blue-200">
-                    <span>{{ depoimento.name }}</span>
+                    <span>{{ depoimento.nome }}</span>
                     <div class="max-lg:flex max-lg:flex-col max-lg:space-y-1">
                         <button
                             @click="editDepoimento(depoimento.id)"
@@ -53,25 +53,30 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import type { Depoimento } from '@/types/depoimentos.types'
+import { depoimentoService } from '@/services/depoimentos.service'
 
 const router = useRouter()
 const modalEdit = ref<HTMLDialogElement>()
 const modalDelete = ref<HTMLDialogElement>()
 
-interface Depoimento {
-    id: number
-    name: string
-}
+const depoimentos = ref<Depoimento[]>([])
 
-const depoimentos = ref<Depoimento[]>([
-    { id: 1, name: 'Depoimento 1' },
-    { id: 2, name: 'Depoimento 2' },
-    { id: 3, name: 'Depoimento 3' },
-    { id: 4, name: 'Depoimento 4' },
-    { id: 5, name: 'Depoimento 5' }
-])
+
+onMounted(async () =>{
+    try{
+        const response = await depoimentoService.getAllDepoimentos()
+        // const response = await getDepoimentos();
+        console.log('Depoimentos:', response)
+        depoimentos.value = response;
+        // depoimentos.value = response;
+    } catch(error){
+        console.error('Erro ao buscar depoimento', error)
+    }
+})
+
 
 const closeModalDelete = () => {
     modalDelete.value?.close()
@@ -86,7 +91,7 @@ const navigateToAddDepoimento = () => {
 }
 
 const editDepoimento = (id: number) => {
-    console.log('Editar depoimento')
+    router.push(`/dashboard/institucional/cadastrar-depoimentos/${id}`)
 }
 
 const deleteDepoimento = (id: number) => {

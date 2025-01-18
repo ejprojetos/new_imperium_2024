@@ -14,8 +14,8 @@
 
                     <div class="flex items-center gap-x-2">
                         <p class="text-xl font-bold">Assunto:</p>
-                        <!-- <p class="text-md">{{ emailInfo.subject }}</p> -->
-                         <p>Assunto</p>
+                        <p class="text-md">{{ emailInfo.assunto }}</p>
+                         <!-- <p>Assunto</p> -->
                     </div>
 
                     <div class="flex items-center gap-x-2">
@@ -37,8 +37,9 @@
 import { ref, reactive, onMounted } from 'vue'
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 import { useRoute } from 'vue-router'
-import { fetchContatoById } from '@/services/contato.service'
+// import { fetchContatoById } from '@/services/contato.service'
 import type { Contato } from '@/types/contato.types'
+import { contatoService } from '@/services/contato.service'
 
 const route = useRoute()
 const emailId = route.params.id
@@ -55,37 +56,22 @@ const emailInfo = reactive<Contato>({
     nome:'',
     email:'',
     telefone:'',
+    assunto:'',
     mensagem:'',
     respondido: false,
     respondido_data:'',
+    envio_data: ''
 })
 
 onMounted(async () =>{
     try{
         if(emailId){
-            const contato = await fetchContatoById(emailId as string);
-            emailInfo.id = contato.id;
-            emailInfo.nome = contato.nome;
-            emailInfo.email = contato.email;
-            emailInfo.telefone = contato.telefone;
-            emailInfo.mensagem = contato.mensagem;
-            emailInfo.respondido_data = contato.respondido_data;
-            emailInfo.respondido = contato.respondido;
+            const contato = await contatoService.getContato(emailId as string)
+            Object.assign(emailInfo, contato)
         }
     }catch (error){
         console.error("Erro ao buscar dados", error)
     }
 })
 
-    
-// const emailInfo = reactive({
-//     id: emailId,
-//     userName: 'Beatriz',
-//     recebidoDate: '28/04/2022',
-//     email: 'beatriz@gmail.com',
-//     subject: 'Consulta de Paciente',
-//     message: 'Olá, tudo bem?',
-//     telefone: '(11) 99999-9999',
-//     status: 'Não lida'
-// })
 </script>

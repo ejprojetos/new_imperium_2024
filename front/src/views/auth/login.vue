@@ -43,8 +43,11 @@ import { authService } from '@/services/auth.service'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { toast, Toaster } from 'vue-sonner'
+import { useUserStore } from '@/stores/user/useUserStore'
+import { set } from '@vueuse/core'
 
 const router = useRouter()
+const { setUser } = useUserStore()
 
 const email = ref('')
 const password = ref('')
@@ -55,7 +58,7 @@ async function login() {
 			email: email.value,
 			password: password.value
 		})
-
+		setUser(response.user_role[0], response.name)
 		toast.success('Login realizado com sucesso')
 		router.push('/dashboard')
 	} catch (error) {

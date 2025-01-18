@@ -12,7 +12,9 @@ export const useClinicStore = defineStore('clinic', () => {
     const fetchClinics = async () => {
         try {
             loading.value = true
-            clinics.value = await clinicService.getAllClinics()
+            if (!clinics.value.length) {
+                clinics.value = await clinicService.getAllClinics()
+            }
         } catch (err) {
             error.value = 'Erro ao buscar clínicas'
             console.error(err)

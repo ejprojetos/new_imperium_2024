@@ -61,6 +61,18 @@
         <div class="grid grid-cols-1 gap-4 px-12 mt-12 max-lg:px-2 md:grid-cols-2">
             <!--Cards-->
             <div
+                v-for="clinica in clinicas"
+                :key="clinica.name"
+                class="flex p-8 bg-white shadow-lg cursor-pointer rounded-2xl min-w-56 gap-x-6">
+                <img class="aspect-square w-24 h-24 rounded-full object-cover" 
+                :src="clinica.image || '../../../src/assets/placeholder.png'" 
+                alt="Imagem da clínica" />
+                <div class="flex flex-col items-start">
+                    <h3 class="text-2xl font-bold">{{ clinica.name }}</h3>
+                    <p class="text-lg">{{ clinica.address.street }}</p>
+                </div>
+            </div>
+            <!-- <div
                 v-for="card in cards"
                 :key="card.title"
                 class="flex p-8 bg-white shadow-lg cursor-pointer rounded-2xl min-w-56 gap-x-6">
@@ -69,7 +81,7 @@
                     <h3 class="text-2xl font-bold">{{ card.title }}</h3>
                     <p class="text-lg">{{ card.street }}</p>
                 </div>
-            </div>
+            </div> -->
         </div>
     </LayoutDashboard>
 </template>
@@ -78,6 +90,32 @@
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 import { Search } from 'lucide-vue-next'
 import { RouterLink } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import type { Clinic } from '@/types/clinic.types'
+import { clinicService } from '@/services/clinic.service'
+
+
+const clinicas = ref<Clinic[]>([])
+
+onMounted(async () =>{
+    try{
+        const response = await clinicService.getAllClinics();
+        console.log('Clinicas: ', response)
+
+        if(Array.isArray(response)){
+            clinicas.value = response.map(clinica =>({
+                ...clinica,
+                image:clinica.image?.startsWith('http')
+                ? clinica.image
+                :`http://172.105.155.145${clinica.image.startsWith('/')?'' : '/'}${clinica.image}`
+            }))
+        }else{
+            console.error('Formato de resposta invalido', response)
+        }
+    }catch(error){
+        console.error('Erro ao buscar clinicas', error)
+    }
+})
 
 const cards = [
     {
