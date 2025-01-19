@@ -151,3 +151,9 @@ class ViewGetUsersPacientes(APIView):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+
+    
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from .serializers import CustomRefreshObtainPairSerializer
+class CustomTokenRefreshView(TokenRefreshView):
+    serializer_class = CustomRefreshObtainPairSerializer
