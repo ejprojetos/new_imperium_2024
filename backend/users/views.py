@@ -120,5 +120,21 @@ class ViewGetUsersDoctors(APIView):
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+@extend_schema(
+    summary="List Doctors",
+    description="Returns a list of users with the 'DOCTOR' role.",
+    responses={
+        200: UserSerializer(many=True),
+        401: "Authentication credentials were not provided.",
+    }
+)
+class ViewGetUsersRecepcionistas(APIView):
+    def get(self, request, *args, **kwargs):
+        users = User.objects.filter(roles__name='RECEPTIONIST')
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
