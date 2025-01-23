@@ -55,31 +55,43 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { contatoService } from '@/services/contato.service'
+import type { Contato } from '@/types/institucional.types'
+import { useContatoStore } from '@/stores/contato/contato.store'
+import router from '@/router';
 
 
-const router = useRouter()
+const email = ref<Contato | null>(null)
 
-interface Email {
-    id: number
-    nome: string
-    telefone?: string
-    email?: string
-    mensagem?: string
-    respondido?: boolean
-    envio_data?: string
-    respondido_data?:string
-}
+// interface Email {
+//     id: number
+//     nome: string
+//     telefone?: string
+//     email?: string
+//     mensagem?: string
+//     respondido?: boolean
+//     envio_data?: string
+//     respondido_data?:string
+// }
 
 
-const respondedEmails = ref<Email[]>([]);
-const pendingEmails = ref<Email[]>([]);
+const respondedEmails = ref<Contato[]>([]);
+const pendingEmails = ref<Contato[]>([]);
 const error = ref<string | null>(null);
 
-const openEmail = (id: number) => {
-    console.log("Abrindo email com id:", id)
-    router.push(`/dashboard/emails/${id}`)
+const contatos = ref<Contato[]>([])
+const contatoStore = useContatoStore()
+
+const openEmail = async (id: string) => {
+    try{
+        await contatoStore.fetchSingleContato(id)
+        email.value = contatoStore.currentContato
+
+        router.push(`/dashboard/emails/${id}`)
+    } catch(err){
+        error.value = 'Erro ao abrir email';
+        console.error(err)
+    }
+
 }
 
 const formatDate = (dateString: string): string => {
@@ -94,20 +106,19 @@ const formatDate = (dateString: string): string => {
 
 onMounted(async () => {
     try{
-        const contatos = await contatoService.getAllContatos();
+        await contatoStore.fetchContatos()
+        contatos.value = contatoStore.contatos
 
         //Mapear dados
 
-        respondedEmails.value = contatos.filter((contato) => contato.respondido).map((contato) => ({
-            id: contato.id,
-            nome: contato.nome,
+        respondedEmails.value = contatos.value.filter((contato) => contato.respondido).map((contato) => ({
+            ...contato,
             respondido_data: formatDate(contato.respondido_data),
             envio_data: formatDate(contato.envio_data),
         }))
 
-        pendingEmails.value = contatos.filter((contato) => !contato.respondido).map((contato) => ({
-            id: contato.id,
-            nome: contato.nome,
+        pendingEmails.value = contatos.value.filter((contato) => !contato.respondido).map((contato) => ({
+            ...contato,
             envio_data: formatDate(contato.envio_data),
         }));
     } catch(err){
