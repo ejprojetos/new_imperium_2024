@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 from .models import Role, User
 from commom.models import Address
 from clinic.models import Clinic
@@ -22,17 +22,16 @@ class UserSerializer(serializers.ModelSerializer):
     roles = RoleSerializer(many=True, required=False)
     clinics = serializers.PrimaryKeyRelatedField(queryset=Clinic.objects.all(), many=True, required=False)
     
-    first_name = serializers.CharField(required=True)
-    last_name = serializers.CharField(required=True)
-    email = serializers.EmailField(required=True)
-    cpf = serializers.CharField(required=True)
-    date_birth = serializers.DateField(required=True)
+    # first_name = serializers.CharField(required=True)
+    # email = serializers.EmailField(required=True)
+    # cpf = serializers.CharField(required=True)
+    # date_birth = serializers.DateField(required=True)
     password = serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = User
         fields = [
-            'id', 'first_name', 'last_name', 'email', 'cpf', 'date_birth',
+            'id', 'first_name', 'email', 'cpf', 'date_birth',
             'password', 'roles', 'address', 'clinics', 'gender',
             'formacao', 'crm', 'attach_document'
         ]
@@ -74,4 +73,31 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         roles = self.user.roles.values_list('name', flat=True)
         data['user_role'] = list(roles)
         
+        return data
+
+
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+class CustomRefreshObtainPairSerializer(TokenRefreshSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        
+        # Decodificar o token de atualização para obter os dados do usuário
+        refresh = RefreshToken(attrs['refresh'])
+        user_id = refresh['user_id']
+        
+        # Obter o usuário a partir do ID
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("User not found.")
+
+        # Recuperar as roles do usuário
+        roles = user.roles.values_list('name', flat=True)
+        data['user_role'] = list(roles)
+
         return data

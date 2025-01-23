@@ -2,7 +2,7 @@
 	<LayoutDashboard>
 		<div class="p-8">
 			<h1 class="mb-6 text-4xl font-bold">Clínicas</h1>
-			<ClinicasList :clinics="clinics" />
+			<ClinicasList :key="clinics.length" :clinics="clinics" />
 		</div>
 	</LayoutDashboard>
 </template>
@@ -17,10 +17,9 @@ import { ref, onMounted } from 'vue';
 const clinicStore = useClinicStore()
 const { clinics } = storeToRefs(clinicStore)
 
-
-onMounted(async () => {
-	await clinicStore.fetchClinics()
-})
-
+//console.log(clinics.value)
+//onMounted(async () => {
+//	await clinicStore.fetchClinics()
+//})
 
 </script>

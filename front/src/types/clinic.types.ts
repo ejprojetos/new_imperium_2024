@@ -3,25 +3,25 @@ export interface Address {
     state: string
     city: string
     neighborhood: string
-    zipCode: string
+    zip_code: string
     street: string
     number: string
 }
 
 export interface Clinic {
-    uuid: string
+    uuid?: string
     name: string
     cnpj: string
     //Acrescentado após modificação no endpoint
-    image:string
+    image: string | null
     telefone_responsavel: string
-    email_responsavel:string
+    email_responsavel: string
     cpf_responsavel: string
     nome_responsavel: string
     rg_responsavel: string
-
     //is_active: boolean
     address: Address
+
     //admin_clinic: string // user ID
 }
 
