@@ -3,5 +3,6 @@ export interface Depoimento{
     nome: string;
     depoimento: string;
     imagem: string;
+    // autor: string;
     ativo: boolean;
 }

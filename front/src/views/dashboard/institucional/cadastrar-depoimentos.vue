@@ -26,12 +26,12 @@
                     v-model="autor"
                     placeholder="Digite aqui o autor"
                     class="w-full px-2 py-1 border rounded"
-                    type="text">
+                    type="text"/>
                     
                     <h2 class="mt-5 mb-4 text-xl font-semibold">Depoimento:</h2>
                     <div>
                         <textarea
-                            v-model="phrase"
+                            v-model="depoimento"
                             placeholder="Digite aqui a frase"
                             type="text"
                             class="w-full px-2 py-1 border rounded"
@@ -64,119 +64,95 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted} from 'vue'
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
-import { getDepoimentoById } from '@/services/depoimentos.service'
 import { useRoute } from 'vue-router'
-//import { submitDepoimento } from '@/services/depoimentos.service'
-import { depoimentoService } from '@/services/depoimentos.service'
+import { useDepoimentoStore } from '@/stores/institucional/depoiment.store'
 import { toast } from 'vue-sonner'
-import { autoResetRef } from '@vueuse/core'
+
 
 const fileInput = ref<HTMLInputElement | null>(null)
 const selectedImage = ref<File | null>(null)
-const phrase = ref('')
-const autor = ref('')
+const depoimentoStore = useDepoimentoStore()
 
+
+
+const depoimento = ref('')
+const autor = ref('')
 const route = useRoute()
 const id = route.params.id as string | undefined
+const imagem = ref('')
 
-//função para caso tenha depoimento cadastrado.
-const carregarDepoimentoExistente = async () =>{
+
+onMounted( async () => {
     if(id){
-        try{
-            //const depoimentoExistente =  await getDepoimentoById(id)
-            const depoimentoExistente = await depoimentoService.getDepoimento(id)
-            autor.value = depoimentoExistente.nome
-            phrase.value = depoimentoExistente.depoimento
-            //selectedImage.value = depoimentoExistente.imagem ? new File([depoimentoExistente.imagem], 'imagem.jpg'): null
-
-            if(depoimentoExistente.imagem){
-                const response = await fetch(depoimentoExistente.imagem);
-                const blob = await response.blob();
-
-                selectedImage.value = new File([blob], "imagem.jpg", {type: blob.type});
-            }else{
-                selectedImage.value = null;
-            }
-        } catch(error){
-            toast.error('Erro ao carregar depoimento.')
-            console.error(error)
-        }
+        await depoimentoStore.fetchSingleDepoimento(id)
+        autor.value = depoimentoStore.currentDepoimento?.nome || ''
+        depoimento.value = depoimentoStore.currentDepoimento?.depoimento || ''
+        imagem.value = depoimentoStore.currentDepoimento?.imagem || ''
+    }else{  
+        depoimentoStore.resetCurrentDepoimento()
     }
-}
-
-onMounted(() =>{
-    carregarDepoimentoExistente()
 })
 
-const handleImageUpload = (event: Event) => {
-    const target = event.target as HTMLInputElement
-    if (target.files && target.files.length > 0) {
-        selectedImage.value = target.files[0]
-    }
+const handleImageUpload = () => {
+    const target = fileInput.value
+    selectedImage.value = target?.files ? target.files[0] : null
 }
 
 const triggerFileInput = () => {
-    fileInput.value?.click()
-}
-
-// const submitForm = () => {
-//     console.log('Form submitted:', '123')
-//     console.log('Selected image:', selectedImage.value)
-//     toast.success('Salvo com sucesso!')
-// }
-
-const resetForm = () =>{
-    autor.value = ''
-    phrase.value = '';
-    selectedImage.value = null;
-}
-
-const submitForm = async () =>{
-    if(!phrase.value || !selectedImage.value){
-        toast.error('Por favor, preencha todos os campos.')
-        return;
+    if(fileInput.value){
+        fileInput.value.click()
     }
+}
 
-    // const formData = {
-    //     depoimento: phrase.value,
-    //     imagem: selectedImage.value
-    // }
-    
-    const formData = new FormData();
-    formData.append('nome', autor.value);
-    formData.append('depoimento', phrase.value);
+const submitForm = async () => {
+    if(!autor.value || !depoimento.value ){
+        toast.error('Preencha todos os campos')
+        return
+    }
     if(selectedImage.value){
-        formData.append('imagem', selectedImage.value)
+        imagem.value = selectedImage.value.name
     }
+
+
+    const data = new FormData()
+    data.append('nome', autor.value)
+    data.append('depoimento', depoimento.value)
+    data.append('ativo', 'true')
+    if(selectedImage.value){
+        data.append('imagem', selectedImage.value)
+    }
+
 
     try{
-        // await submitDepoimento(formData);
-        // toast.success('Depoimento salvo com sucesso!');
-        // resetForm()
         if(id){
-            await depoimentoService.updateDepoimento(id, formData);
-            toast('Depoimento editado com sucesso!')
+            await depoimentoStore.updateDepoimento(id, data)
+            toast.success('Depoimento atualizado com sucesso')
         }else{
-            await depoimentoService.submitDepoimento(formData);
-            toast.success
+            await depoimentoStore.createDepoimento(data)
+            toast.success('Depoimento criado com sucesso')
         }
-        resetForm
-    }catch(error){
-        toast.error('Erro ao salvar depoimento');
-        console.error(error);
+
+        selectedImage.value = null
+        autor.value = '';
+        depoimento.value = '';
+        
+    } catch (error){
+        toast.error('Erro ao salvar depoimento')
     }
 }
 
 
 
 
-const saveAndAddAnother = () => {
-    submitForm()
-}
+
+ const saveAndAddAnother = () => {
+     submitForm()
+ }
 
 const saveAndContinueEditing = () => {
     submitForm()
 }
 </script>
+@/types/depoimento.types@/types/depoimento.type

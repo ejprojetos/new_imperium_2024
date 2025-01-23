@@ -57,19 +57,35 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, onMounted } from 'vue'
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 import { toast } from 'vue-sonner'
+import { useInicialStore } from '@/stores/institucional/inicial.store'
+
 
 const fileInput = ref<HTMLInputElement | null>(null)
 const selectedImage = ref<File | null>(null)
-
+const inicialStore = useInicialStore()
 const phrase = ref('')
+const imagem = ref('')
+
+
+
+onMounted(async () => {
+    await inicialStore.fetchInicial()
+    const firstItem = inicialStore.inicial[0]
+    if(firstItem){
+        phrase.value = firstItem.frase
+
+        imagem.value = firstItem.imagem
+    }
+})
 
 const handleImageUpload = (event: Event) => {
     const target = event.target as HTMLInputElement
     if (target.files && target.files.length > 0) {
         selectedImage.value = target.files[0]
+        console.log('Imagem selecionada:', selectedImage.value)
     }
 }
 
@@ -77,10 +93,38 @@ const triggerFileInput = () => {
     fileInput.value?.click()
 }
 
-const submitForm = () => {
-    console.log('Form submitted:', '123 ')
-    console.log('Selected image:', selectedImage.value)
-    toast.success('Salvo com sucesso!')
+const submitForm = async () => {
+    if(!selectedImage.value || !phrase.value) {
+        toast.error('Preencha todos os campos!')
+        return
+    }
+
+    const formData = new FormData()
+    formData.append('frase', phrase.value)
+    if(selectedImage.value){
+        formData.append('imagem', selectedImage.value)
+    }
+
+    
+    try {
+        const firstItem = inicialStore.inicial[0]
+        if(firstItem){
+            await inicialStore.updateInicial(firstItem.id, formData)
+            toast.success('Atualizado com sucesso!')
+            return
+        }else{
+            await inicialStore.creatInicial(formData)
+            toast.success('Salvo com sucesso!')
+        }
+        //console.log('Dados enviados:', Array.from(formData.entries()))
+        
+        //const inicialData = formatPaginaInicialData();
+        // await inicialStore.creatInicial(formData)
+        // toast.success('Salvo com sucesso!')
+    } catch (error) {
+        toast.error('Erro ao salvar!')
+        console.error(error)
+    }
 }
 
 const saveAndAddAnother = () => {
