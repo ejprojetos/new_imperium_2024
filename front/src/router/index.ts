@@ -133,11 +133,11 @@ const router = createRouter({
             name: 'visualizar-paciente',
             component: () => import('../views/dashboard/pacientes/visualizar-paciente.vue')
         },
-        {
-            path: '/dashboard/pacientes/cadastrar-consulta',
-            name: 'cadastrar-consulta',
-            component: () => import('../views/dashboard/pacientes/cadastrar-consulta.vue')
-        },
+        // {
+        //     path: '/dashboard/pacientes/cadastrar-consulta',
+        //     name: 'cadastrar-consulta',
+        //     component: () => import('../views/dashboard/pacientes/cadastrar-consulta.vue')
+        // },
         {
             path: '/dashboard/institucional/features',
             name: 'features',
