@@ -97,6 +97,7 @@ const navigateToAddDepoimento = () => {
 
 const editDepoimento = (id: string) => {
     depoimentoStore.fetchSingleDepoimento(id)
+    router.push(`/dashboard/institucional/cadastrar-depoimentos/${id}`)
 }
 
 const deleteDepoimento = (id: string) => {
