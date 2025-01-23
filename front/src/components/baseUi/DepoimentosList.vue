@@ -26,7 +26,7 @@
                         <button
                             @click="deleteDepoimento(depoimento.id)"
                             class="px-3 py-1 text-white transition-colors bg-red-500 rounded-md hover:bg-red-600">
-                            Desativar
+                            Excluir
                         </button>
                     </div>
                 </div>
@@ -55,23 +55,28 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import type { Depoimento } from '@/types/depoimentos.types'
-import { depoimentoService } from '@/services/depoimentos.service'
+import type { Depoimento } from '@/types/institucional.types'
+import { useDepoimentoStore } from '@/stores/institucional/depoiment.store'
+import { reactify } from '@vueuse/core'
+import { toast } from 'vue-sonner'
 
 const router = useRouter()
-const modalEdit = ref<HTMLDialogElement>()
 const modalDelete = ref<HTMLDialogElement>()
 
 const depoimentos = ref<Depoimento[]>([])
+const depoimentoStore = useDepoimentoStore()
+
+
+
+
+//depoimento que será excluido
+const depoimentoParaExcluir = ref<Depoimento | null>(null)
 
 
 onMounted(async () =>{
     try{
-        const response = await depoimentoService.getAllDepoimentos()
-        // const response = await getDepoimentos();
-        console.log('Depoimentos:', response)
-        depoimentos.value = response;
-        // depoimentos.value = response;
+        await depoimentoStore.fetchDepoimentos()
+        depoimentos.value = depoimentoStore.depoimentos
     } catch(error){
         console.error('Erro ao buscar depoimento', error)
     }
@@ -90,18 +95,29 @@ const navigateToAddDepoimento = () => {
     router.push('/dashboard/institucional/cadastrar-depoimentos')
 }
 
-const editDepoimento = (id: number) => {
-    router.push(`/dashboard/institucional/cadastrar-depoimentos/${id}`)
+const editDepoimento = (id: string) => {
+    depoimentoStore.fetchSingleDepoimento(id)
 }
 
-const deleteDepoimento = (id: number) => {
-    console.log('Delete depoimento')
-    showModalDelete()
+const deleteDepoimento = (id: string) => {
+    const depoimento = depoimentos.value.find((d) => d.id === id)
+    if(depoimento){
+        depoimentoParaExcluir.value = depoimento
+        showModalDelete()
+    }
+}
+const confirmActionDelete =  async() => {
+    if(depoimentoParaExcluir.value){
+        try{
+            await depoimentoStore.deleteDepoimento(depoimentoParaExcluir.value.id)
+            depoimentos.value = depoimentos.value.filter((d) => d.id !== depoimentoParaExcluir.value?.id)
+            closeModalDelete()
+        }catch(error){
+            toast.error('Erro ao excluir depoimento')
+        }
+    }
 }
 
-const confirmActionDelete = () => {
-    console.log('deleted')
-}
 </script>
 
 <style scoped>
