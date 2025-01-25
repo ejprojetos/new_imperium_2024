@@ -10,7 +10,7 @@
 			<div class="flex flex-col mt-12">
 				<RouterLink v-for="item in navItems" :key="item.name" :to="item.path">
 					<div v-if="item.roles.includes(role)"
-						class="flex items-center justify-start mt-4 mb-2 text-sm gap-x-4">
+						class="flex gap-x-4 justify-start items-center mt-4 mb-2 text-sm">
 						<img :src="item.icon" alt="" />
 						<p :class="{ 'text-active': isActive(item.path) }" class="font-bold text-md">
 							{{ item.name }}
@@ -20,12 +20,12 @@
 			</div>
 
 			<!-- notificacoes -->
-			<div class="flex flex-col mt-12 gap-y-1">
-				<div class="flex flex-col p-4 bg-blue-200 shadow-lg rounded-2xl">
+			<div class="flex flex-col gap-y-1 mt-12">
+				<div class="flex flex-col p-4 bg-blue-200 rounded-2xl shadow-lg">
 					<div class="self-end">
 						<p class="text-xs">Seg 19:30</p>
 					</div>
-					<div class="flex items-start gap-x-2">
+					<div class="flex gap-x-2 items-start">
 						<Bell fill="#054088" stroke="#054088" class="w-12" />
 						<p class="text-sm">Solicitação aceita pelo paciente.</p>
 					</div>
@@ -53,10 +53,9 @@ import clinicasIcon from '@/assets/icons/clinicas.svg'
 import emailIcon from '@/assets/icons/email.svg'
 import recepcionistasIcon from '@/assets/icons/recepcionistas.svg'
 import pacientesIcon from '@/assets/icons/pacientes.svg'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter, useRoute } from 'vue-router'
 
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
 import { Bell } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
 import { useUIStore } from '@/stores/ui/useUIStore'
@@ -69,6 +68,7 @@ const uiStore = useUIStore()
 
 const { role, name } = storeToRefs(userStore)
 
+const router = useRouter()
 const route = useRoute()
 const { isLeftbarOpen } = storeToRefs(uiStore)
 const { isMobile } = useScreenSize()
@@ -77,6 +77,7 @@ const isActive = (path: string) => computed(() => route.path === path).value
 
 const logout = () => {
 	authService.logout()
+	router.push('/auth/login')
 }
 
 const closeLeftbar = () => {

@@ -39,8 +39,8 @@ export const authService = {
         localStorage.removeItem('refresh_token')
         localStorage.removeItem('user_role')
 
-        const router = useRouter()
-        router.push('/auth/login')
+        //const router = useRouter()
+        //router.push('/auth/login')
 
         //return fetcher('/auth/logout/', {
         //    method: 'POST'
