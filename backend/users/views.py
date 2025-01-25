@@ -171,9 +171,10 @@ class CustomTokenRefreshView(TokenRefreshView):
 class ViewGetUsersPacientes(APIView):
     def get(self, request, *args, **kwargs):
         user = self.request.user
-        if user.is_staff:  # Admin pode visualizar usuários de todas as clínicas
-            return User.objects.filter(clinics__in=user.clinics.all())
-        return User.objects.filter(clinics__in=user.clinics.all())  # Usuários podem ver somente da clínica associada
+
+        users = User.objects.filter(clinics__in=user.clinics.all())
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
