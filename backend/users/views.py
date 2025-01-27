@@ -172,7 +172,7 @@ class ViewGetUsersPacientes(APIView):
     def get(self, request, *args, **kwargs):
         user = self.request.user
 
-        users = User.objects.filter(clinics__in=user.clinics.all())
+        users = User.objects.filter(roles__name__in=['PATIENT'])
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
