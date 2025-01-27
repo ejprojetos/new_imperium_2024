@@ -15,13 +15,11 @@
             <div class="p-4 bg-green-100 rounded-lg shadow-lg min-w-56">
                 <h3 class="mb-8 text-xl font-bold">Cadastrar Consultas</h3>
 
-
                 <RouterLink :to="cadastro_consultas.path">
                     <button class="w-full py-2 text-xs text-white btn bg-primary hover:bg-primary">
                         Cadastrar
                     </button>
                 </RouterLink>
-
             </div>
             <div class="p-4 bg-white rounded-lg shadow-lg min-w-56">
                 <h3 class="mb-8 text-xl font-bold">Cadastrar Médicos</h3>
@@ -52,24 +50,32 @@
             </button>
         </div>
 
-        <!-- Receptionists Grid -->
+        <!-- Doctors Grid -->
         <div class="grid grid-cols-4 gap-4 px-12 mt-8">
-            <div v-for="receptionist in receptionists" :key="receptionist.id"
+            <div v-if="userStore.loading" class="col-span-4 text-center">Carregando médicos...</div>
+            <div v-else-if="userStore.error" class="col-span-4 text-center text-red-600">
+                {{ userStore.error }}
+            </div>
+            <div
+                v-else
+                v-for="doctor in doctors"
+                :key="doctor.id"
                 class="flex flex-col items-center p-4 bg-white rounded-lg shadow">
-                <img :src="receptionist.image" alt="Recepcionista" class="w-24 h-24 mx-auto rounded-full" />
-                <h4 class="mt-2 font-bold text-center">{{ receptionist.name }}</h4>
-                <p class="text-sm text-center">Atendimento: {{ receptionist.schedule }}</p>
-                <p class="text-sm text-center">Turno: {{ receptionist.shift }}</p>
+                <img
+                    :src="`src/assets/images/avatar.png`"
+                    alt="Médico"
+                    class="w-24 h-24 mx-auto rounded-full" />
+                <h4 class="mt-2 font-bold text-center">
+                    {{ doctor.first_name }} {{ doctor.last_name }}
+                </h4>
+                <p class="text-sm text-center">CRM: {{ doctor.crm }}</p>
+                <p class="text-sm text-center">Formação: {{ doctor.formacao }}</p>
                 <div class="flex mt-2 gap-x-2">
                     <Mail class="w-6 h-6 mx-auto text-blue-700" />
-                    <p class="text-sm text-center">{{ receptionist.email }}</p>
-                </div>
-                <div class="flex gap-x-2">
-                    <Phone class="w-6 h-6 mx-auto text-blue-700" />
-                    <p class="text-sm text-center">{{ receptionist.phone }}</p>
+                    <p class="text-sm text-center">{{ doctor.email }}</p>
                 </div>
                 <RouterLink
-                    :to="`/dashboard/medicos/${receptionist.id}`"
+                    :to="`/dashboard/medicos/${doctor.id}`"
                     class="w-full px-4 py-2 mt-2 text-center text-white bg-blue-700 rounded-lg">
                     Ver Perfil
                 </RouterLink>
@@ -79,32 +85,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 import { Search, Mail, Phone } from 'lucide-vue-next'
 import { useRoute } from 'vue-router'
+import { useUserStore } from '@/stores/users/users.store'
+import type { User } from '@/types/users.types'
 
 const route = useRoute()
+const userStore = useUserStore()
 
-import { RouterLink } from 'vue-router'
+// remove o array estático de recepcionistas
+const doctors = ref<User[]>([])
 
-const receptionists = ref([
-    {
-        id: 1,
-        name: 'Rafaela Veríssimo',
-        schedule: '2ª a 5ª',
-        shift: 'Manhã e Tarde',
-        email: 'rafaelaverissimo@gmail.com',
-        phone: '(00) 00000-0000',
-        image: '/path/to/image.jpg'
+// busca os médicos quando o componente é montado
+onMounted(async () => {
+    try {
+        await userStore.fetchDoctors()
+        doctors.value = userStore.doctors
+    } catch (error) {
+        console.error('erro ao carregar médicos:', error)
     }
-    // Add more receptionists here...
-])
+})
 
 const cadastro_consultas = {
     name: 'Cadastro de Consultas',
     path: '/dashboard/medicos/cadastrar-consultas',
     roles: ['medico']
 }
-
 </script>

@@ -13,4 +13,5 @@ export interface User {
     formacao: string
     crm: string
     attach_document: string
+    password?: string
 }

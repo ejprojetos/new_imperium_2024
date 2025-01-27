@@ -138,7 +138,7 @@ const submitForm = async () => {
    Crie um arquivo .env na raiz do projeto:
 
 ```
-VITE_API_URL= http://161.35.63.22/api ou http://localhost:8000/api
+VITE_API_URL= http://191.252.192.82/api ou http://localhost:8000/api
 ```
 
 O ip 172.105.155.145 é o ip do servidor da EJECT backend

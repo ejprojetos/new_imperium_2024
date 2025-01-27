@@ -8,6 +8,7 @@ export const useUserStore = defineStore('users', () => {
     const patients = ref<User[]>([])
     const loading = ref(false)
     const error = ref<string | null>(null)
+    const validationErrors = ref<Record<string, string[]>>({})
 
     const fetchDoctors = async () => {
         try {
@@ -35,12 +36,32 @@ export const useUserStore = defineStore('users', () => {
         }
     }
 
+    const createDoctor = async (doctorData: any) => {
+        try {
+            loading.value = true
+            validationErrors.value = {}
+            const response = await userService.createDoctor(doctorData)
+            return response
+        } catch (error: any) {
+            console.error('erro ao criar médico:', error)
+            if (error.status === 400) {
+                validationErrors.value = error.errors
+                throw new Error('dados inválidos')
+            }
+            throw new Error('erro ao criar médico')
+        } finally {
+            loading.value = false
+        }
+    }
+
     return {
         doctors,
         patients,
         loading,
         error,
+        validationErrors,
         fetchDoctors,
-        fetchPatients
+        fetchPatients,
+        createDoctor
     }
 })
