@@ -18,9 +18,11 @@ class ClinicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Clinic
-        fields = ['name', 'image', 'cnpj', 'telefone_responsavel', 'email_responsavel', 'cpf_responsavel', 'nome_responsavel', 'rg_responsavel' ,  'address', 'admin_clinic']
+        fields = ['id', 'name', 'image', 'cnpj', 'telefone_responsavel', 'email_responsavel', 'cpf_responsavel', 'nome_responsavel', 'rg_responsavel' ,  'address', 'admin_clinic']
         extra_kwargs = {
-            'admin_clinic': {'read_only': True}  # O ID da clínica será passado pela URL, não pelo corpo da requisição
+            'admin_clinic': {
+                'read_only': True
+            }
         }
 
     def create(self, validated_data):
