@@ -8,7 +8,7 @@
 			</button>
 		</div>
 		<ul>
-			<li v-for="clinica in clinicas" :key="clinica.id" class="border-b last:border-b-0">
+			<li v-for="clinica in clinicas" :key="clinica.uuid" class="border-b last:border-b-0">
 				<div class="flex justify-between items-center p-4 hover:bg-blue-200">
 					<span>{{ clinica.name }}</span>
 					<div class="max-lg:flex max-lg:flex-col max-lg:space-y-1">
@@ -18,7 +18,7 @@
 						</button>
 						<button @click="deleteClinica(clinica.id)"
 							class="px-3 py-1 text-white bg-red-500 rounded-md transition-colors hover:bg-red-600">
-							Desativar
+							Excluir
 						</button>
 					</div>
 				</div>
@@ -47,15 +47,19 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import type { Clinic } from '@/types/clinica.types'
+import type { Clinic } from '@/types/clinic.types'
 import { clinicService } from '@/services/clinic.service'
+import { toast } from 'vue-sonner'
+
+const clinicaParaExcluir = ref<Clinic | null>(null)
 
 const clinicas = ref<Clinic[]>([])
+
 onMounted(async () => {
 	try {
 		const response = await clinicService.getAllClinics()
 		console.log('Clinicas:', response)
-		clinicas.value = response
+		clinicas.value = response ?? []
 	} catch (error) {
 		console.error('Erro ao buscar clinicas', error)
 	}
@@ -76,20 +80,35 @@ const showModalDelete = () => {
 }
 
 const navigateToAddClinic = () => {
-	router.push('/dashboard/clinicas/cadastrar')
+	router.push('/dashboard/clinicas/cadastrar/')
 }
 
 const editClinica = (id: number) => {
 	console.log('Editar clinica')
+	router.push(`/dashboard/clinicas/cadastrar/${id}`)
 }
 
 const deleteClinica = (id: number) => {
-	console.log('Delete clinica')
+	console.log('Delete clinica', id)
+	const clinicaToDelete = clinicas.value.find((c) => c.id === id)
+	if (clinicaToDelete) {
+		clinicaParaExcluir.value = clinicaToDelete
+		showModalDelete()
+	}
 	showModalDelete()
 }
 
-const confirmActionDelete = () => {
+const confirmActionDelete =async () => {
 	console.log('deleted')
+	if(clinicaParaExcluir.value){
+		try{
+			await clinicService.deleteClinic(clinicaParaExcluir.value.id)
+			clinicas.value = clinicas.value.filter((c) => c.id !== clinicaParaExcluir.value?.id)
+			closeModalDelete()
+		}catch(error){
+			toast.error('Erro ao excluir clinica')
+		}
+	}
 }
 </script>
 

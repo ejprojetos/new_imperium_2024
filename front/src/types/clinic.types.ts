@@ -9,6 +9,7 @@ export interface Address {
 }
 
 export interface Clinic {
+    id: number
     uuid?: string
     name: string
     cnpj: string

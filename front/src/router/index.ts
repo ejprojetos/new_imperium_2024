@@ -164,6 +164,11 @@ const router = createRouter({
             component: () => import('../views/dashboard/clinicas/cadastrar-clinica.vue')
         },
         {
+            path: '/dashboard/clinicas/cadastrar/:id',
+            name: 'editar-clinica',
+            component: () => import('../views/dashboard/clinicas/cadastrar-clinica.vue')
+        },
+        {
             path: '/dashboard/emails',
             name: 'emails',
             component: () => import('../views/dashboard/emails/index.vue')

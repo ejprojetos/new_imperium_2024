@@ -19,7 +19,7 @@ export const clinicService = {
             body: JSON.stringify(data)
         }),
 
-    deleteClinic: (id: string) =>
+    deleteClinic: (id: number) =>
         fetcher(`/clinics/${id}/`, {
             method: 'DELETE'
         }),
