@@ -29,8 +29,8 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.is_staff:  # Admin pode visualizar usuários de todas as clínicas
-            return User.objects.filter(clinics__in=user.clinics.all())
-        return User.objects.filter(clinics__in=user.clinics.all())  # Usuários podem ver somente da clínica associada
+            return User.objects.all()
+        return User.objects.all()  # Usuários podem ver somente da clínica associada
 
     def list_users_from_clinic(self, request):
         user = request.user
