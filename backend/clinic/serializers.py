@@ -6,6 +6,8 @@ from django.utils import timezone
 from django.db.models import Q
 from datetime import timedelta
 from commom.models import Address
+from drf_extra_fields.fields import Base64ImageField, Base64FileField
+
 
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,6 +17,7 @@ class AddressSerializer(serializers.ModelSerializer):
 
 class ClinicSerializer(serializers.ModelSerializer):
     address = AddressSerializer(required=False)
+    image = Base64ImageField(required=False)
 
     class Meta:
         model = Clinic

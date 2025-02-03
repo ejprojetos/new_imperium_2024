@@ -3,7 +3,8 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, Toke
 from .models import Role, User
 from commom.models import Address
 from clinic.models import Clinic
-
+from drf_extra_fields.fields import Base64ImageField, Base64FileField
+from .utils import PDFBase64File
 
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,6 +28,8 @@ class UserSerializer(serializers.ModelSerializer):
     # cpf = serializers.CharField(required=True)
     # date_birth = serializers.DateField(required=True)
     password = serializers.CharField(write_only=True, required=True)
+
+    attach_document = PDFBase64File(required=False)
 
     class Meta:
         model = User
