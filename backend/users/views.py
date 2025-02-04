@@ -1,5 +1,5 @@
 from .models import User
-from .serializers import UserSerializer
+from .serializers import UserSerializer, RecepcionistSerializer
 from rest_framework import permissions
 from rest_framework.decorators import action, permission_classes
 from rest_framework.response import Response
@@ -122,17 +122,17 @@ class ViewGetUsersDoctors(APIView):
 
 
 @extend_schema(
-    summary="List Doctors",
-    description="Returns a list of users with the 'DOCTOR' role.",
+    summary="List Receptionists",
+    description="Returns a list of users with the 'RECEPTIONIST' role.",
     responses={
-        200: UserSerializer(many=True),
+        200: RecepcionistSerializer(many=True),
         401: "Authentication credentials were not provided.",
     }
 )
 class ViewGetUsersRecepcionistas(APIView):
     def get(self, request, *args, **kwargs):
         users = User.objects.filter(roles__name='RECEPTIONIST')
-        serializer = UserSerializer(users, many=True)
+        serializer = RecepcionistSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 @extend_schema(

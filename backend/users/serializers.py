@@ -5,6 +5,7 @@ from commom.models import Address
 from clinic.models import Clinic
 from drf_extra_fields.fields import Base64ImageField, Base64FileField
 from .utils import PDFBase64File
+from clinic.serializers import WorkingHoursSerializer
 
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:
@@ -104,3 +105,14 @@ class CustomRefreshObtainPairSerializer(TokenRefreshSerializer):
         data['user_role'] = list(roles)
 
         return data
+    
+class RecepcionistSerializer(UserSerializer):
+    working_hours = WorkingHoursSerializer(many=True, required=False)
+    
+    class Meta:
+        model = User
+        fields = [
+            'id', 'first_name', 'email', 'cpf', 'date_birth',
+            'roles', 'address', 'clinics', 'gender', 'attach_document', 'working_hours'
+        ]
+    
