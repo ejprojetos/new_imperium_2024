@@ -9,6 +9,7 @@ interface ValidationErrors {
 export const userService = {
     getDoctors: () => fetcher<User[]>('/users/users_doctors'),
     getPatients: () => fetcher<User[]>('/users/users_pacientes'),
+    getUserById: (id: string) => fetcher<User>(`/users/${id}`),
     createDoctor: async (data: any) => {
         // usa a url base da api
         const baseURL = import.meta.env.VITE_API_URL
@@ -16,7 +17,6 @@ export const userService = {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                // adiciona o token de autorização se necessário
                 ...(localStorage.getItem('token') && {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 })

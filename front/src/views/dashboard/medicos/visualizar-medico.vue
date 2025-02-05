@@ -1,6 +1,6 @@
 <template>
     <LayoutDashboard>
-        <div class="p-8">
+        <div class="p-8 mx-auto w-full">
             <div class="">
                 <h1 class="mb-6 text-[50px] font-normal">{{ FormData.fullName }}</h1>
             </div>
@@ -116,26 +116,63 @@
 
 <script setup lang="ts">
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { userService } from '@/services/users.service'
+import type { User } from '@/types/users.types'
 
+const route = useRoute()
 const FormData = ref({
-    fullName: 'Dra. Rafaela Veríssimo',
-    dateOfBirth: '1981-10-10',
-    gener: 'Feminino',
-    cpf: '999.999.999-99',
-    country: 'Brasil',
-    state: 'RN',
-    city: 'Parnamirim',
-    neighborhood: 'Nova Parnamirim',
-    zipCode: '59999-999',
-    street: 'Av. Maria Lacerda Montenegro',
-    number: '000',
-    email: 'exemplo99@email.com',
-    phone: '(00) 00000-0000',
-    degree: 'Graduação e Pós-Graduação completo',
-    specialty: 'Oftalmologia',
-    crm: '999.999.999-99',
-    fileName: 'DOC1.pdf'
+    fullName: '',
+    dateOfBirth: '',
+    gener: '',
+    cpf: '',
+    country: '',
+    state: '',
+    city: '',
+    neighborhood: '',
+    zipCode: '',
+    street: '',
+    number: '',
+    email: '',
+    phone: '',
+    degree: '',
+    specialty: '',
+    crm: '',
+    fileName: ''
+})
+
+const fetchDoctorData = async () => {
+    try {
+        const doctorId = route.params.id as string
+        const data = (await userService.getUserById(doctorId)) as User
+
+        FormData.value = {
+            fullName: data.first_name || '',
+            dateOfBirth: data.date_birth || '',
+            gener: data.gender || '',
+            cpf: data.cpf || '',
+            country: data.address?.country || '',
+            state: data.address?.state || '',
+            city: data.address?.city || '',
+            neighborhood: '', // Not available in API
+            zipCode: data.address?.zip_code || '',
+            street: data.address?.street || '',
+            number: data.address?.number || '',
+            email: data.email || '',
+            phone: '', // Not available in API
+            degree: data.formacao || '',
+            specialty: data.roles?.find((role) => role.name === 'DOCTOR')?.name || '',
+            crm: data.crm || '',
+            fileName: data.attach_document || ''
+        }
+    } catch (error) {
+        console.error('Error fetching doctor data:', error)
+    }
+}
+
+onMounted(() => {
+    fetchDoctorData()
 })
 </script>
 

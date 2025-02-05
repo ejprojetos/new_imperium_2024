@@ -1,8 +1,8 @@
 <template>
     <LayoutDashboard>
-        <div class="p-8">
+        <div class="p-8 mx-auto w-full">
             <div class="">
-                <h1 class="mb-6 text-[50px] font-normal">{{ FormData.name }}</h1>
+                <h1 class="mb-6 text-[50px] font-normal">{{ FormData.fullName }}</h1>
             </div>
             <div class="pb-[70px] pt-[40px] px-[60px] mb-4 bg-white gap-x-4 w-[650px]">
                 <section>
@@ -12,12 +12,8 @@
 
                     <div class="grid grid-cols-1 gap-4">
                         <div>
-                            <label class="block mb-2 text-lg font-montserrat">Nome:</label>
-                            <p class="px-2 py-1">{{ FormData.name }}</p>
-                        </div>
-                        <div>
-                            <label class="block mb-2 text-lg font-montserrat">Sobrenome:</label>
-                            <p class="px-2 py-1">{{ FormData.lastName }}</p>
+                            <label class="block mb-2 text-lg font-montserrat">Nome completo:</label>
+                            <p class="px-2 py-1">{{ FormData.fullName }}</p>
                         </div>
                         <div class="flex gap-[80px]">
                             <div>
@@ -50,6 +46,40 @@
                             <p class="px-2 py-1">{{ FormData.state }}</p>
                         </div>
                     </div>
+                    <div>
+                        <label class="block mt-[20px] mb-2 text-lg font-montserrat">Cidade:</label>
+                        <p class="px-2 py-1">{{ FormData.city }}</p>
+                    </div>
+                    <div>
+                        <label class="block mt-[20px] mb-2 text-lg font-montserrat">Bairro:</label>
+                        <p class="px-2 py-1">{{ FormData.neighborhood }}</p>
+                    </div>
+                    <div>
+                        <label class="block mt-[20px] mb-2 text-lg font-montserrat">CEP:</label>
+                        <p class="px-2 py-1">{{ FormData.zipCode }}</p>
+                    </div>
+                    <div>
+                        <label class="block mt-[20px] mb-2 text-lg font-montserrat">
+                            Logradouro:
+                        </label>
+                        <p class="px-2 py-1">{{ FormData.street }}</p>
+                    </div>
+                    <div>
+                        <label class="block mt-[20px] mb-2 text-lg font-montserrat">Número:</label>
+                        <p class="px-2 py-1">{{ FormData.number }}</p>
+                    </div>
+
+                    <h2 class="mt-[30px] mb-4 text-xl font-montserrat text-black font-bold">
+                        Contato:
+                    </h2>
+                    <div>
+                        <label class="block mt-[20px] mb-2 text-lg font-montserrat">Email:</label>
+                        <p class="px-2 py-1">{{ FormData.email }}</p>
+                    </div>
+                    <div>
+                        <label class="block mt-[20px] mb-2 text-lg font-montserrat">Celular:</label>
+                        <p class="px-2 py-1">{{ FormData.phone }}</p>
+                    </div>
 
                     <h2 class="mt-[30px] mb-4 text-xl font-montserrat text-black font-bold">
                         Informações Médicas:
@@ -80,43 +110,61 @@
 
 <script setup lang="ts">
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { userService } from '@/services/users.service'
+import type { User } from '@/types/users.types'
 
+const route = useRoute()
 const FormData = ref({
-    name: 'Maria',
-    lastName: 'Silva',
-    dateOfBirth: '1990-01-01',
-    gener: 'Feminino',
-    cpf: '123.456.789-00',
-    country: 'Brasil',
-    state: 'RN',
-    city: 'Natal',
-    neighborhood: 'Centro',
-    zipCode: '59000-000',
-    street: 'Rua Principal',
-    number: '123',
-    email: 'maria.silva@email.com',
-    phone: '(84) 99999-9999',
-    allergies: 'Penicilina, Dipirona',
-    recurringProblems: 'Hipertensão',
-    medication: 'Losartana 50mg',
-    appointments: [
-        {
-            date: '2024-03-15',
-            doctor: 'Dr. João Santos',
-            specialty: 'Cardiologia'
-        },
-        {
-            date: '2024-02-20',
-            doctor: 'Dra. Ana Paula',
-            specialty: 'Clínico Geral'
-        },
-        {
-            date: '2024-01-10',
-            doctor: 'Dr. Carlos Silva',
-            specialty: 'Cardiologia'
+    fullName: '',
+    dateOfBirth: '',
+    gener: '',
+    cpf: '',
+    country: '',
+    state: '',
+    city: '',
+    neighborhood: '',
+    zipCode: '',
+    street: '',
+    number: '',
+    email: '',
+    phone: '',
+    allergies: '',
+    recurringProblems: '',
+    medication: ''
+})
+
+const fetchPatientData = async () => {
+    try {
+        const patientId = route.params.id as string
+        const data = (await userService.getUserById(patientId)) as User
+
+        FormData.value = {
+            fullName: `${data.first_name}` || '',
+            dateOfBirth: data.date_birth || '',
+            gener: data.gender || '',
+            cpf: data.cpf || '',
+            country: data.address?.country || '',
+            state: data.address?.state || '',
+            city: data.address?.city || '',
+            neighborhood: '', // Not available in API
+            zipCode: data.address?.zip_code || '',
+            street: data.address?.street || '',
+            number: data.address?.number || '',
+            email: data.email || '',
+            phone: data.telefone || '',
+            allergies: data.alergias || '',
+            recurringProblems: data.problemas_recorrentes || '',
+            medication: data.medicacao || ''
         }
-    ]
+    } catch (error) {
+        console.error('Erro ao carregar dados do paciente:', error)
+    }
+}
+
+onMounted(() => {
+    fetchPatientData()
 })
 </script>
 

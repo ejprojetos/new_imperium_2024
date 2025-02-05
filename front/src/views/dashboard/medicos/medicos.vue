@@ -16,7 +16,7 @@
                 <h3 class="mb-8 text-xl font-bold">Cadastrar Consultas</h3>
 
                 <RouterLink :to="cadastro_consultas.path">
-                    <button class="w-full py-2 text-xs text-white btn bg-primary hover:bg-primary">
+                    <button class="py-2 w-full text-xs text-white btn bg-primary hover:bg-primary">
                         Cadastrar
                     </button>
                 </RouterLink>
@@ -24,7 +24,7 @@
             <div class="p-4 bg-white rounded-lg shadow-lg min-w-56">
                 <h3 class="mb-8 text-xl font-bold">Cadastrar Médicos</h3>
                 <RouterLink to="/dashboard/medicos/cadastrar">
-                    <button class="w-full py-2 text-xs text-white btn bg-primary hover:bg-primary">
+                    <button class="py-2 w-full text-xs text-white btn bg-primary hover:bg-primary">
                         Cadastrar
                     </button>
                 </RouterLink>
@@ -32,7 +32,7 @@
         </div>
 
         <!-- Filter Tabs -->
-        <div class="flex items-center px-12 mt-8 gap-x-4">
+        <div class="flex gap-x-4 items-center px-12 mt-8">
             <span class="font-bold">Médicos</span>
             <button class="px-4 py-2 text-white bg-blue-700 rounded-full">Hoje</button>
             <select class="px-4 py-2 bg-gray-200 rounded-full">
@@ -44,7 +44,16 @@
             <select class="px-4 py-2 bg-gray-200 rounded-full">
                 <option>Turno</option>
             </select>
-            <input type="text" class="px-4 py-2 bg-gray-200 rounded-full" placeholder="Buscar" />
+            <input
+                type="text"
+                v-model="searchCrm"
+                class="px-4 py-2 bg-gray-200 rounded-full"
+                placeholder="CRM" />
+            <input
+                type="text"
+                v-model="searchName"
+                class="px-4 py-2 bg-gray-200 rounded-full"
+                placeholder="Nome" />
             <button class="p-2 bg-gray-200 rounded-full">
                 <Search />
             </button>
@@ -58,34 +67,42 @@
             </div>
             <div
                 v-else
-                v-for="doctor in doctors"
+                v-for="doctor in filteredDoctors"
                 :key="doctor.id"
                 class="flex flex-col items-center p-4 bg-white rounded-lg shadow">
                 <img
                     :src="`src/assets/images/avatar.png`"
                     alt="Médico"
-                    class="w-24 h-24 mx-auto rounded-full" />
+                    class="mx-auto w-24 h-24 rounded-full" />
                 <h4 class="mt-2 font-bold text-center">
                     {{ doctor.first_name }} {{ doctor.last_name }}
                 </h4>
                 <p class="text-sm text-center">CRM: {{ doctor.crm }}</p>
                 <p class="text-sm text-center">Formação: {{ doctor.formacao }}</p>
-                <div class="flex mt-2 gap-x-2">
-                    <Mail class="w-6 h-6 mx-auto text-blue-700" />
+                <div class="flex gap-x-2 mt-2">
+                    <Mail class="mx-auto w-6 h-6 text-blue-700" />
                     <p class="text-sm text-center">{{ doctor.email }}</p>
                 </div>
                 <RouterLink
                     :to="`/dashboard/medicos/${doctor.id}`"
-                    class="w-full px-4 py-2 mt-2 text-center text-white bg-blue-700 rounded-lg">
+                    class="px-4 py-2 mt-2 w-full text-center text-white bg-blue-700 rounded-lg">
                     Ver Perfil
                 </RouterLink>
             </div>
+        </div>
+
+        <!-- mensagem quando nao ha resultados -->
+        <div
+            v-if="!filteredDoctors.length && !userStore.loading && !userStore.error"
+            class="flex flex-col justify-center items-center mt-12 w-full">
+            <img src="../../../assets/pacientes404.svg" alt="Médicos" class="w-64" />
+            <h2>Nenhum médico encontrado</h2>
         </div>
     </LayoutDashboard>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 import { Search, Mail, Phone } from 'lucide-vue-next'
 import { useRoute } from 'vue-router'
@@ -95,8 +112,24 @@ import type { User } from '@/types/users.types'
 const route = useRoute()
 const userStore = useUserStore()
 
-// remove o array estático de recepcionistas
+// referencia para armazenar os medicos
 const doctors = ref<User[]>([])
+
+// referencias para os campos de busca
+const searchCrm = ref('')
+const searchName = ref('')
+
+// computed property para filtrar os medicos
+const filteredDoctors = computed(() => {
+    return doctors.value.filter((doctor) => {
+        const matchCrm = doctor.crm.toLowerCase().includes(searchCrm.value.toLowerCase())
+        const fullName = `${doctor.first_name} ${doctor.last_name}`.toLowerCase()
+        const matchName = fullName.includes(searchName.value.toLowerCase())
+
+        // retorna true se o crm ou nome corresponderem à busca
+        return (searchCrm.value === '' || matchCrm) && (searchName.value === '' || matchName)
+    })
+})
 
 // busca os médicos quando o componente é montado
 onMounted(async () => {

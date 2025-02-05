@@ -2,30 +2,22 @@
     <NavBarHome></NavBarHome>
     <section class="secao-login">
         <div class="secao-texto">
-            <h1 class="texto-bem-vindos"> REDEFINIR SENHA</h1>
+            <h1 class="texto-bem-vindos">REDEFINIR SENHA</h1>
         </div>
         <div>
-            <div class="secao-bem-vindos primeira-div">
-
-            </div>
-            <div class="secao-bem-vindos segunda-div">
-
-            </div>
+            <div class="secao-bem-vindos primeira-div"></div>
+            <div class="secao-bem-vindos segunda-div"></div>
         </div>
 
-        <div class="p-6 rounded-lg shadow-lg max-w-[400px] mx-auto p-15 box secao-input"
-            style="background-color: #00428F;">
+        <div
+            class="p-6 rounded-lg shadow-lg max-w-[400px] mx-auto p-15 box secao-input"
+            style="background-color: #00428f">
             <h3 class="text-3xl font-bold text-white titulo-secao">EMAIL ENVIADO!</h3>
             <div class="grid grid-cols-1 gap-1">
-
-                <label class="block mb-1 font-semibold text-white texto-label">Enviamos um email para sua caixa de
-                    entrada acesse-a para redefinir sua senha.</label>
-
-
+                <label class="block mb-1 font-semibold text-white texto-label">
+                    Enviamos um email para sua caixa de entrada acesse-a para redefinir sua senha.
+                </label>
             </div>
-
-
-
         </div>
     </section>
 
@@ -33,12 +25,8 @@
 </template>
 
 <script setup lang="ts">
-
 import NavBarHome from '@/components/baseUi/NavBarHome.vue'
 import Footer from '@/components/baseUi/Footer.vue'
-
-
-
 </script>
 
 <style scoped>
@@ -56,7 +44,7 @@ import Footer from '@/components/baseUi/Footer.vue'
 }
 
 .secao-bem-vindos {
-    background-color: #00428F80;
+    background-color: #00428f80;
     width: 900px;
     height: 780px;
     border-radius: 69px;
@@ -73,7 +61,6 @@ import Footer from '@/components/baseUi/Footer.vue'
     transform: rotate(-132deg);
     left: -350px;
     top: -73px;
-
 }
 
 .secao-login {
@@ -91,7 +78,6 @@ import Footer from '@/components/baseUi/Footer.vue'
     display: flex;
     flex-direction: column;
     gap: 2rem;
-
 }
 
 .titulo-secao {
@@ -117,8 +103,8 @@ import Footer from '@/components/baseUi/Footer.vue'
 }
 
 .botao-login {
-    background-color: #E1E7EF;
-    color: #002A5C;
+    background-color: #e1e7ef;
+    color: #002a5c;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
@@ -133,6 +119,6 @@ import Footer from '@/components/baseUi/Footer.vue'
 }
 
 .link-recadastro-senha {
-    color: #FAFAFA;
+    color: #fafafa;
 }
 </style>
