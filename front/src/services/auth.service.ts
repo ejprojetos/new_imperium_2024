@@ -10,6 +10,10 @@ export const authService = {
                 body: JSON.stringify(data)
             })
 
+            if (!response) {
+                throw new Error('Login response is null')
+            }
+
             console.log('Login response', response)
             if (response.detail) {
                 throw new Error(response.detail)
@@ -33,6 +37,37 @@ export const authService = {
             method: 'POST',
             body: JSON.stringify(data)
         }),
+
+    // servico para solicitar recuperacao de senha
+    requestPasswordReset: async (email: string) => {
+        try {
+            const response = await fetcher('/api/password-reset/', {
+                method: 'POST',
+                body: JSON.stringify({ email })
+            })
+            return response
+        } catch (error) {
+            console.error('erro ao solicitar recuperacao de senha:', error)
+            throw error
+        }
+    },
+
+    // servico para confirmar a nova senha
+    confirmPasswordReset: async (token: string, newPassword: string) => {
+        try {
+            const response = await fetcher('/api/password-reset-confirm/', {
+                method: 'POST',
+                body: JSON.stringify({
+                    token,
+                    new_password: newPassword
+                })
+            })
+            return response
+        } catch (error) {
+            console.error('erro ao confirmar nova senha:', error)
+            throw error
+        }
+    },
 
     logout: () => {
         localStorage.removeItem('access_token')
