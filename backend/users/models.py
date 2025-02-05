@@ -63,6 +63,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     formacao = models.CharField(max_length=255, null=True, blank=True)
     crm = models.CharField(max_length=255, null=True, blank=True)
     attach_document = models.FileField(upload_to='attach',null=True, blank=True)
+    phone = models.CharField(max_length=255, null=True, blank=True)
 
     objects = UserManager()
 

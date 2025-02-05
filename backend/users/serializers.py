@@ -37,7 +37,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'first_name', 'email', 'cpf', 'date_birth',
             'password', 'roles', 'address', 'clinics', 'gender',
-            'formacao', 'crm', 'attach_document'
+            'formacao', 'crm', 'attach_document', 'phone'
         ]
         read_only_fields = ['id']
 
@@ -113,6 +113,6 @@ class RecepcionistSerializer(UserSerializer):
         model = User
         fields = [
             'id', 'first_name', 'email', 'cpf', 'date_birth',
-            'roles', 'address', 'clinics', 'gender', 'attach_document', 'working_hours'
+            'roles', 'address', 'clinics', 'gender', 'attach_document', 'working_hours', 'phone'
         ]
     
