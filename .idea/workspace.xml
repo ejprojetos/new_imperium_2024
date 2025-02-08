@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bc52c524-4ca3-4ed2-94f5-3edd72f3ad22" name="Changes" comment="" />
+    <list default="true" id="bc52c524-4ca3-4ed2-94f5-3edd72f3ad22" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/front/src/views/dashboard/medicos/cadastrar-medico.vue" beforeDir="false" afterPath="$PROJECT_DIR$/front/src/views/dashboard/medicos/cadastrar-medico.vue" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -30,7 +32,7 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "/home/isaac/Documents/repos/imperium_2024/front",
+    "last_opened_file_path": "/home/isaac/Documents/repos/imperium_2024",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -57,6 +59,7 @@
       <workItem from="1732134709680" duration="322000" />
       <workItem from="1732135119393" duration="76000" />
       <workItem from="1732135201809" duration="14000" />
+      <workItem from="1738975293222" duration="13000" />
     </task>
     <servers />
   </component>
