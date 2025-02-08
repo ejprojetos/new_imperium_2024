@@ -10,7 +10,7 @@ class Clinic(models.Model):
     image = models.ImageField(null=True, blank=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     name = models.CharField(max_length=255)
-    cnpj = models.CharField(max_length=14)
+    cnpj = models.CharField(max_length=255)
     telefone_responsavel = models.CharField(max_length=255)
     email_responsavel = models.EmailField()
     cpf_responsavel = models.CharField(max_length=255)
@@ -37,7 +37,7 @@ class Appointment(models.Model):
         ('canceled', 'Canceled'),
         ('completed', 'Completed'),
     ]
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='scheduled')
+    status = models.CharField(max_length=255, choices=STATUS_CHOICES, default='scheduled')
     room = models.ForeignKey('Room', on_delete=models.CASCADE, blank=True, null=True, related_name='appointments')
 
     def __str__(self):
@@ -85,10 +85,10 @@ class Notification(models.Model):
     
     message = models.TextField()
     is_read = models.BooleanField(default=False)
-    type = models.CharField(max_length=20, choices=MESSAGE_TYPES)
+    type = models.CharField(max_length=255, choices=MESSAGE_TYPES)
     datetime = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
-    status = models.CharField(max_length=20, choices=STATUS_MODES, null=True)
+    status = models.CharField(max_length=255, choices=STATUS_MODES, null=True)
 
     def __str__(self):
         return f"Notification for {self.user.email} - {self.get_type_display()}"
@@ -97,7 +97,7 @@ class Notification(models.Model):
 class Room(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='rooms')
-    number = models.CharField(max_length=20)
+    number = models.CharField(max_length=255)
     description = models.TextField(blank=True)
 
     class Meta:
@@ -117,7 +117,7 @@ class WaitingList(models.Model):
     patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='waiting_list_patient')
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='waiting_list_clinic')
     arrival_datetime = models.DateTimeField()
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='waiting')
+    status = models.CharField(max_length=255, choices=STATUS_CHOICES, default='waiting')
     doctor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='waiting_list_doctor', blank=True, null=True)
 
     def __str__(self):
