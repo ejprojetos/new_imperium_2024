@@ -1,5 +1,14 @@
 const BASE_URL = import.meta.env.VITE_API_URL
 
+interface ValidationErrors {
+    [key: string]: string[]
+}
+
+interface ApiError extends Error {
+    errors?: ValidationErrors
+    status?: number
+}
+
 export async function fetcher<T>(endpoint: string, options: RequestInit = {}): Promise<T | null> {
     const token = localStorage.getItem('access_token')
 
@@ -25,7 +34,11 @@ export async function fetcher<T>(endpoint: string, options: RequestInit = {}): P
             } catch (err) {
                 errorData = { detail: response.statusText }
             }
-            throw new Error(errorData.detail || response.statusText)
+            
+            const error = new Error(errorData.detail || response.statusText) as ApiError
+            error.errors = errorData
+            error.status = response.status
+            throw error
         }
 
         if (response.status === 204) {
@@ -33,8 +46,8 @@ export async function fetcher<T>(endpoint: string, options: RequestInit = {}): P
         }
 
         return await response.json()
-    } catch {
-        console.error('Erro ao fazer requisição')
-        return null
+    } catch (error) {
+        console.error('Erro ao fazer requisição:', error)
+        throw error
     }
 }

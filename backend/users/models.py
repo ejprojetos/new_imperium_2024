@@ -17,7 +17,7 @@ class RoleEnum(Enum):
 
 
 class Role(models.Model):
-    name = models.CharField(max_length=20, choices=RoleEnum.choices())
+    name = models.CharField(max_length=255, choices=RoleEnum.choices())
     description = models.TextField(blank=True)
 
     def __str__(self):
@@ -48,12 +48,12 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
-    first_name = models.CharField(max_length=300, blank=True)
-    # last_name = models.CharField(max_length=150, blank=True)
+    first_name = models.CharField(max_length=255, blank=True)
+    # last_name = models.CharField(max_length=255, blank=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
-    cpf = models.CharField(max_length=11)
+    cpf = models.CharField(max_length=255)
     date_birth = models.DateField()
     address = models.ForeignKey(Address, on_delete=models.CASCADE, null=True, blank=True)
     roles = models.ManyToManyField(Role, related_name='users')

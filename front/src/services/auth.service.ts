@@ -41,7 +41,7 @@ export const authService = {
     // servico para solicitar recuperacao de senha
     requestPasswordReset: async (email: string) => {
         try {
-            const response = await fetcher('/api/password-reset/', {
+            const response = await fetcher('/password-reset/', {
                 method: 'POST',
                 body: JSON.stringify({ email })
             })
@@ -55,7 +55,7 @@ export const authService = {
     // servico para confirmar a nova senha
     confirmPasswordReset: async (token: string, newPassword: string) => {
         try {
-            const response = await fetcher('/api/password-reset-confirm/', {
+            const response = await fetcher('/password-reset-confirm/', {
                 method: 'POST',
                 body: JSON.stringify({
                     token,
