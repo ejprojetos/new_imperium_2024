@@ -140,7 +140,8 @@ const formData = reactive({
 	street: '',
 	number: '',
 	email: '',
-	phone: ''
+	phone: '',
+	fileName:''
 })
 
 onMounted(async () => {
@@ -312,4 +313,5 @@ const saveAndAddAnother = async () => {
 //         console.error(error)
 //     }
 // }
+
 </script>
