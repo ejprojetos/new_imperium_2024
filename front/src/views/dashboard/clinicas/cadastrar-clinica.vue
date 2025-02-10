@@ -138,7 +138,8 @@ const formData = reactive({
 	street: '',
 	number: '',
 	email: '',
-	phone: ''
+	phone: '',
+	fileName:''
 })
 
 const handleImageUpload = (event: Event) => {
@@ -210,4 +211,5 @@ const saveAndAddAnother = async () => {
 //         console.error(error)
 //     }
 // }
+
 </script>
