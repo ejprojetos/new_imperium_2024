@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
-from .models import Role, User
+from .models import Role, User, Expedient
 from commom.models import Address
 from clinic.models import Clinic
 from drf_extra_fields.fields import Base64ImageField, Base64FileField
@@ -19,11 +19,17 @@ class AddressSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ExpedientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Expedient
+        fields = ["days_of_week", "turns"]
+
 class UserSerializer(serializers.ModelSerializer):
     address = AddressSerializer(required=False)
     roles = RoleSerializer(many=True, required=False)
     clinics = serializers.PrimaryKeyRelatedField(queryset=Clinic.objects.all(), many=True, required=False)
-    
+    expedient = ExpedientSerializer(required=False)
+
     # first_name = serializers.CharField(required=True)
     # email = serializers.EmailField(required=True)
     # cpf = serializers.CharField(required=True)
@@ -37,7 +43,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'first_name', 'email', 'cpf', 'date_birth',
             'password', 'roles', 'address', 'clinics', 'gender',
-            'formacao', 'crm', 'attach_document', 'phone'
+            'formacao', 'crm', 'attach_document', 'phone', 'expediente'
         ]
         read_only_fields = ['id']
 
