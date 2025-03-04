@@ -51,14 +51,24 @@ export const useClinicStore = defineStore('clinic', () => {
         }
     }
 
-    const updateClinic = async (id: string, clinicData: Partial<Clinic>) => {
+    const updateClinic = async (id: number, clinicData: Partial<Clinic>) => {
         try {
             loading.value = true
+
             const updatedClinic = await clinicService.updateClinic(id, clinicData)
-            const index = clinics.value.findIndex((c) => c.uuid === id) // encontra o index da clínica a ser atualizada
+
+            if(!updatedClinic) {
+                throw new Error('Erro ao atualizar clínica')
+            }
+
+            console.log('Lista de clinicas antes da atualização:', clinics.value)
+            const index = clinics.value.findIndex((c) => c.id === id) // encontra o index da clínica a ser atualizada
             if (index !== -1) {
                 clinics.value[index] = updatedClinic // atualiza a clínica no array
+            }else{
+                console.warn('Clínica não encontrada no array de clínicas')
             }
+            
             return updatedClinic
         } catch (err) {
             error.value = 'Erro ao atualizar clínica'
