@@ -13,7 +13,7 @@ export const clinicService = {
             body: JSON.stringify(data)
         }),
 
-    updateClinic: (id: string, data: Partial<Clinic>) =>
+    updateClinic: (id: number, data: Partial<Clinic>) =>
         fetcher<Clinic>(`/clinics/${id}/`, {
             method: 'PUT',
             body: JSON.stringify(data)

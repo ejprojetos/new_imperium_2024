@@ -117,6 +117,7 @@ import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 import { toast } from 'vue-sonner'
 import { useClinicStore } from '@/stores/clinic/clinic.store'
 import type { Clinic } from '@/types/clinic.types'
+import { reject } from 'node_modules/cypress/types/bluebird'
 
 const router = useRouter()
 const route = useRoute()
@@ -141,7 +142,8 @@ const formData = reactive({
 	number: '',
 	email: '',
 	phone: '',
-	fileName:''
+	fileName:'',
+	uploadedFile: null as File | null
 })
 
 onMounted(async () => {
@@ -186,15 +188,9 @@ const handleImageUpload = (event: Event) => {
 // formata os dados da clínica para o formato esperado pelo backend
 const formatClinicData = async (): Promise<Clinic> => {
 	let base64Image = ''
+
 	if (selectedImage.value) {
-		const reader = new FileReader()
-		base64Image = await new Promise((resolve) => {
-			reader.onload = (e) => {
-				const result = e.target?.result as string
-				resolve(result.split(',')[1])
-			}
-			reader.readAsDataURL(selectedImage.value)
-		})
+		base64Image = await convertImageToBase64(selectedImage.value)
 	}
 
 	return {
@@ -216,6 +212,21 @@ const formatClinicData = async (): Promise<Clinic> => {
 			number: formData.number
 		}
 	}
+}
+
+const convertImageToBase64 = (file: File): Promise<string> => {
+	return new Promise((resolve, reject) =>{
+		const reader = new FileReader()
+
+		reader.onload = () =>{
+			const result = reader.result as string
+			resolve(result.split(',')[1]) // Para remover o prefixo 'data:image/png;base64,'
+		}
+
+		reader.onerror = (error) => (error)
+
+		reader.readAsDataURL(file)
+	})
 }
 
 const triggerFileInput = () => {
@@ -246,10 +257,13 @@ const formatErrorMessage = (error: any): string => {
 const submitForm = async () => {
 	try {
 		const clinicData = await formatClinicData()
+		console.log('clinicData:', clinicData)
+		
 		let result;
 
+
 		if (isEditMode.value) {
-			const clinicId = route.params.id as string
+			const clinicId = Number(route.params.id)
 			result = await clinicStore.updateClinic(clinicId, clinicData)
 			if (result) {
 				toast.success('Clínica atualizada com sucesso!')
