@@ -41,10 +41,10 @@ class ExpedientSerializer(serializers.ModelSerializer):
        }
 
        times = {
-           "Matutino": [7,12],
-           "Vespertino": [13,18],
-           "Noturno": [18, 23],
-       }
+            "Morning": [7,12],
+            "Evening": [13,18],
+            "nightly": [18, 23],
+        }    
 
        days = validated_data.get('days_of_week')
        turns = validated_data.get('turns')
@@ -117,9 +117,61 @@ class UserSerializer(serializers.ModelSerializer):
         if roles_data:
             roles = Role.objects.filter(name=roles_data)  # Busca as roles pelos nomes
             user.roles.set(roles)
+            if "ADMIN" in roles_data:
+                user.is_staff = True
+                user.save()
 
         return user
+    
+    def update(self, instance, validated_data):
+        address_data = validated_data.pop('address', None)
+        clinics = validated_data.pop('clinics', [])
+        roles_data = validated_data.pop('roles', [])
+        expedient_data = validated_data.pop('expedient', None)
 
+        # Atualiza endereço
+        if address_data:
+            if instance.address:
+                for key, value in address_data.items():
+                    setattr(instance.address, key, value)
+                instance.address.save()
+            else:
+                instance.address = Address.objects.create(**address_data)
+
+        # Atualiza roles
+        if roles_data:
+            role_names = [role['name'] for role in roles_data]
+            roles = Role.objects.filter(name__in=role_names)
+            instance.roles.set(roles)
+            if "ADMIN" in role_names:
+                instance.is_staff = True
+            else:
+                instance.is_staff = False
+
+        # Atualiza expediente
+        if expedient_data:
+            if instance.expedient:
+                for key, value in expedient_data.items():
+                    setattr(instance.expedient, key, value)
+                instance.expedient.save()
+            else:
+                expedient_serializer = ExpedientSerializer(data=expedient_data, context={'user': instance})
+                if expedient_serializer.is_valid(raise_exception=True):
+                    instance.expedient = expedient_serializer.save()
+
+        # Atualiza clínicas
+        if clinics:
+            instance.clinics.set(clinics)
+
+        # Atualiza outros campos do usuário
+        for key, value in validated_data.items():
+            if key == 'password':
+                instance.set_password(value)  # Garante que a senha seja armazenada corretamente
+            else:
+                setattr(instance, key, value)
+
+        instance.save()
+        return instance
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):

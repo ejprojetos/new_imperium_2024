@@ -19,7 +19,7 @@ router.register('users', UserViewSet, basename='users/')
 router.register(r'waiting-list', WaitingListViewSet, basename='waiting-list')
 # router.register(r'working-hours', WorkingHoursViewSet, basename='working-hours')
 router.register(r'appointments', AppointmentViewSet, basename='appointments')
-router.register(r'expedients', ExpedientViewSet, basename='expedients')
+#router.register(r'expedients', ExpedientViewSet, basename='expedients')
 
 urlpatterns = [
     path('', include(router.urls)),

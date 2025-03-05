@@ -14,6 +14,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from clinic.models import WorkingHours
 from .permissions import IsRoleUser
 
+from datetime import time
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -216,9 +218,9 @@ class ExpedientViewSet(viewsets.ModelViewSet):
 
 
    times = {
-       "Matutino": [7,12],
-       "Vespertino": [13,18],
-       "Noturno": [18, 23],
+       "Morning": [7,12],
+       "Evening": [13,18],
+       "nightly": [18, 23],
    }
 
 
@@ -226,7 +228,7 @@ class ExpedientViewSet(viewsets.ModelViewSet):
    serializer_class = ExpedientSerializer
    required_roles = ['ADMIN']
    permission_classes = [IsRoleUser]
-   http_method_names = ['get','post', 'put', 'delete']
+   http_method_names = ['get', 'put', 'delete']
       
    def update(self, request, *args, **kwargs):
        partial = kwargs.pop('partial', False)
