@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
-from .models import Role, User, Expedient
+from .models import Role, User, Policies, FAQ, Tag, UserPoliciesSupport, OtherArchives
 from commom.models import Address
 from clinic.models import Clinic, WorkingHours
 from drf_extra_fields.fields import Base64ImageField, Base64FileField
@@ -219,4 +219,100 @@ class RecepcionistSerializer(UserSerializer):
             'id', 'first_name', 'email', 'cpf', 'date_birth',
             'roles', 'address', 'clinics', 'gender', 'attach_document', 'phone', 'expedient'
         ]
+
+class OtherArchivesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OtherArchives
+        fields = '__all__'
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = '__all__'
+
+
+class PoliciesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Policies
+        fields = '__all__'
+
+class FAQSerializer(serializers.ModelSerializer):
+    tags = TagSerializer(required=False, many=True)
+
+    class Meta:
+        model = FAQ
+        fields = ['title', 'questions', 'content', 'profile', 'tags']
+
+    def create(self, validated_data):
+        tags_data = validated_data.pop('tags', None)
+        faq = super().create(validated_data)
+
+        if tags_data:
+            for tag_data in tags_data:
+                tag, created = Tag.objects.get_or_create(**tag_data)
+                faq.tags.add(tag)
+
+        return faq
+    
+    def update(self, instance, validated_data):
+        tags_data = validated_data.pop('tags', None)  # Extrai as tags, se existirem
+        instance = super().update(instance, validated_data)  # Atualiza os outros campos do FAQ
+
+        if tags_data is not None:
+            instance.tags.clear()  # Remove todas as tags associadas antes de atualizar
+            for tag_data in tags_data:
+                tag, created = Tag.objects.get_or_create(**tag_data)  # Obtém ou cria a tag
+                instance.tags.add(tag)  # Associa a tag ao FAQ
+
+        return instance
+
+class UserPoliciesSupportSerializer(serializers.ModelSerializer):
+    policy = PoliciesSerializer()
+    other_files = OtherArchivesSerializer(required=False, many=True)
+
+    class Meta:
+        model = UserPoliciesSupport
+        fields = ['id', 'profile', 'policy', 'manual_archive', 'other_files']
+
+    def create(self, validated_data):
+        policy_data = validated_data.pop('policy', None)
+        profile = validated_data.get('profile')  # Obtém o profile do request
+
+        # Verifica se já existe um UserPoliciesSupport para este profile
+        if UserPoliciesSupport.objects.filter(profile=profile).exists():
+            raise serializers.ValidationError({"profile": "Já existe um objeto UserPoliciesSupport para este profile."})
+
+        if policy_data:  
+            # Cria a policy antes de criar UserPoliciesSupport
+            policy_instance = Policies.objects.create(**policy_data)
+        else:
+            raise serializers.ValidationError({"policy": "Este campo é obrigatório."})
+
+        # Cria UserPoliciesSupport com a nova policy
+        user_policy_support = UserPoliciesSupport.objects.create(policy=policy_instance, **validated_data)
+
+        return user_policy_support
+    
+    def update(self, instance, validated_data):
+        policy_data = validated_data.pop('policy', None)
+        other_files_data = validated_data.pop('other_files', None)
+
+        # Atualiza os outros campos do UserPoliciesSupport
+        instance = super().update(instance, validated_data)
+
+        if policy_data:
+            # Atualiza os campos da policy existente
+            for attr, value in policy_data.items():
+                setattr(instance.policy, attr, value)
+            instance.policy.save()
+
+        if other_files_data is not None:
+            # Atualiza os arquivos associados, removendo os antigos e adicionando os novos
+            instance.other_files.clear()
+            for file_data in other_files_data:
+                file_instance = OtherArchives.objects.create(**file_data)
+                instance.other_files.add(file_instance)
+
+        return instance
+
     

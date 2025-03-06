@@ -1,20 +1,18 @@
 from .models import User
-from .serializers import UserSerializer, RecepcionistSerializer
+from .serializers import UserSerializer, RecepcionistSerializer, PoliciesSerializer, FAQSerializer, UserPoliciesSupportSerializer
 from rest_framework import permissions
 from rest_framework.decorators import action, permission_classes
 from rest_framework.response import Response
 
-from rest_framework import permissions, viewsets, status
+from rest_framework import permissions, viewsets, status, filters
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
-from .models import User, Role, Expedient
-from .serializers import UserSerializer, CustomTokenObtainPairSerializer, ExpedientSerializer
+from .models import User, Role, Policies, FAQ, UserPoliciesSupport
+from .serializers import UserSerializer, CustomTokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from clinic.models import WorkingHours
-from .permissions import IsRoleUser
-
-from datetime import time
+from django_filters.rest_framework import DjangoFilterBackend
+from clinic.pagination import SmallPagination
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -203,63 +201,28 @@ class ViewGetUsersClinics(APIView):
         clinics = user.clinics.all()  # Fetch clinics associated with the user
         serializer = ClinicSerializer(clinics, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class PoliciesViewSet(viewsets.ModelViewSet):
+    queryset = Policies.objects.all()
+    serializer_class = PoliciesSerializer
+    http_method_names = ['get', 'post', 'patch', 'delete']
+    permission_classes = [permissions.IsAuthenticated]
 
+class FAQViewSet(viewsets.ModelViewSet):
+    queryset = FAQ.objects.all()
+    serializer_class = FAQSerializer
+    http_method_names = ['get', 'post', 'patch', 'delete']
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    filterset_fields = ['title', 'profile']   
+    pagination_class = SmallPagination
 
-class ExpedientViewSet(viewsets.ModelViewSet):
-   days_dict = {
-           "Monday": 1,
-           "Tuesday": 2,
-           "Wednesday": 3,
-           "Thursday": 4,
-           "Friday": 5,
-           "Saturday": 6,
-           "Sunday": 7
-       }
+class UserPoliciesSupportViewSet(viewsets.ModelViewSet):
+    queryset = UserPoliciesSupport.objects.all()
+    serializer_class = UserPoliciesSupportSerializer
+    http_method_names = ['get', 'post', 'patch', 'delete']
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    filterset_fields = ['profile']
 
-
-   times = {
-       "Morning": [7,12],
-       "Evening": [13,18],
-       "nightly": [18, 23],
-   }
-
-
-   queryset = Expedient.objects.all()
-   serializer_class = ExpedientSerializer
-   required_roles = ['ADMIN']
-   permission_classes = [IsRoleUser]
-   http_method_names = ['get', 'put', 'delete']
-      
-   def update(self, request, *args, **kwargs):
-       partial = kwargs.pop('partial', False)
-       instance = self.get_object()
-
-       serializer = self.get_serializer(instance, data=request.data, partial=partial)
-
-       if serializer.is_valid():
-           #atualizar o working hours
-           user = serializer.validated_data.get('expedient_user')
-           days = serializer.validated_data.get('days_of_week')
-           turns = serializer.validated_data.get('turns')
-
-           WorkingHours.objects.filter(user=user).delete()
-
-           for day in days:
-               for turn in turns:
-                   #criar as working hours com base nos dias e turnos
-                   working_hours = WorkingHours(user=user, day_of_week=self.days_dict[day], start_time=time(self.times[turn][0],0), end_time=time(self.times[turn][1],0))
-                   working_hours.save()
-
-           serializer.save()
-           return Response(serializer.data)
-
-       return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-  
-   def destroy(self, request, *args, **kwargs):
-       user_id = self.kwargs.get('pk')
-       print(user_id)
-       user = User.objects.get(id=user_id)
-       WorkingHours.objects.filter(user=user).delete()
-
-
-       return super().destroy(request, *args, **kwargs)
+    
