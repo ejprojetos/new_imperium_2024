@@ -12,7 +12,7 @@ from .models import User, Role, Policies, FAQ, UserPoliciesSupport
 from .serializers import UserSerializer, CustomTokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django_filters.rest_framework import DjangoFilterBackend
-from clinic.pagination import SmallPagination
+from clinic.pagination import FaqPagination
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -215,7 +215,7 @@ class FAQViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_fields = ['title', 'profile']   
-    pagination_class = SmallPagination
+    pagination_class = FaqPagination
 
 class UserPoliciesSupportViewSet(viewsets.ModelViewSet):
     queryset = UserPoliciesSupport.objects.all()
