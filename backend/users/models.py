@@ -5,6 +5,10 @@ from django.utils.translation import gettext_lazy as _
 from commom.models import Address
 from enum import Enum
 
+class Expedient(models.Model):
+    days_of_week = models.JSONField(default=list)
+    turns = models.JSONField(default=list)
+
 class RoleEnum(Enum):
     ADMIN = "admin"
     DOCTOR = "doctor"
@@ -22,7 +26,6 @@ class Role(models.Model):
 
     def __str__(self):
         return self.name
-
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -64,6 +67,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     crm = models.CharField(max_length=255, null=True, blank=True)
     attach_document = models.FileField(upload_to='attach',null=True, blank=True)
     phone = models.CharField(max_length=255, null=True, blank=True)
+    expedient = models.OneToOneField(Expedient, on_delete=models.CASCADE, blank=True, null=True)
+    availableForShift = models.BooleanField(default=False, blank=True, null=True)
 
     objects = UserManager()
 
