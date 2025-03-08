@@ -207,21 +207,20 @@ class ViewGetUsersClinics(APIView):
 
 class ExpedientViewSet(viewsets.ModelViewSet):
    days_dict = {
-           "Monday": 1,
-           "Tuesday": 2,
-           "Wednesday": 3,
-           "Thursday": 4,
-           "Friday": 5,
-           "Saturday": 6,
-           "Sunday": 7
-       }
-
+        "Segunda-feira": 1,
+        "Terça-feira": 2,
+        "Quarta-feira": 3,
+        "Quinta-feira": 4,
+        "Sexta-feira": 5,
+        "Sábado": 6,
+        "Domingo": 7
+    }
 
    times = {
-       "Morning": [7,12],
-       "Evening": [13,18],
-       "nightly": [18, 23],
-   }
+        "Matutino": [7, 12],
+        "Vespertino": [13, 18],
+        "Noturno": [18, 23],
+    }   
 
 
    queryset = Expedient.objects.all()
