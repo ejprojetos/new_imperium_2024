@@ -1,16 +1,19 @@
 from .models import User
-from .serializers import UserSerializer, RecepcionistSerializer
+from .serializers import UserSerializer, RecepcionistSerializer, PoliciesSerializer, FAQSerializer, UserPoliciesSupportSerializer
 from rest_framework import permissions
 from rest_framework.decorators import action, permission_classes
 from rest_framework.response import Response
 
-from rest_framework import permissions, viewsets, status
+from rest_framework import permissions, viewsets, status, filters
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
-from .models import User, Role, Expedient
+
+from .models import User, Role, Expedient, Policies, FAQ, UserPoliciesSupport
 from .serializers import UserSerializer, CustomTokenObtainPairSerializer, ExpedientSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from django_filters.rest_framework import DjangoFilterBackend
+from clinic.pagination import FaqPagination
 from clinic.models import WorkingHours
 from .permissions import IsRoleUser
 
@@ -203,7 +206,29 @@ class ViewGetUsersClinics(APIView):
         clinics = user.clinics.all()  # Fetch clinics associated with the user
         serializer = ClinicSerializer(clinics, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class PoliciesViewSet(viewsets.ModelViewSet):
+    queryset = Policies.objects.all()
+    serializer_class = PoliciesSerializer
+    http_method_names = ['get', 'post', 'patch', 'delete']
+    permission_classes = [permissions.IsAuthenticated]
 
+class FAQViewSet(viewsets.ModelViewSet):
+    queryset = FAQ.objects.all()
+    serializer_class = FAQSerializer
+    http_method_names = ['get', 'post', 'patch', 'delete']
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    filterset_fields = ['title', 'profile']   
+    pagination_class = FaqPagination
+
+class UserPoliciesSupportViewSet(viewsets.ModelViewSet):
+    queryset = UserPoliciesSupport.objects.all()
+    serializer_class = UserPoliciesSupportSerializer
+    http_method_names = ['get', 'post', 'patch', 'delete']
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    filterset_fields = ['profile']
 
 class ExpedientViewSet(viewsets.ModelViewSet):
    days_dict = {
