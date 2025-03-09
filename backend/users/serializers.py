@@ -1,11 +1,12 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
-from .models import Role, User
+from .models import Role, User, Expedient, Policies, FAQ, Tag, UserPoliciesSupport, OtherArchives
 from commom.models import Address
-from clinic.models import Clinic
+from clinic.models import Clinic, WorkingHours
 from drf_extra_fields.fields import Base64ImageField, Base64FileField
 from .utils import PDFBase64File
 from clinic.serializers import WorkingHoursSerializer
+from datetime import time
 
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,12 +19,54 @@ class AddressSerializer(serializers.ModelSerializer):
         model = Address
         fields = '__all__'
 
+class SimplifiedExpedientSerializer(serializers.ModelSerializer):
+   class Meta:
+       model = Expedient
+       fields = ['days_of_week', 'turns']
+
+class ExpedientSerializer(serializers.ModelSerializer):
+    class Meta:
+       model = Expedient
+       fields = ['id','days_of_week', 'turns']
+
+    def create(self, validated_data):
+       days_dict = {
+            "Segunda-feira": 1,
+            "Terça-feira": 2,
+            "Quarta-feira": 3,
+            "Quinta-feira": 4,
+            "Sexta-feira": 5,
+            "Sábado": 6,
+            "Domingo": 7
+       }
+
+       times = {
+            "Matutino": [7, 12],
+            "Vespertino": [13, 18],
+            "Noturno": [18, 23],
+       }   
+
+       days = validated_data.get('days_of_week')
+       turns = validated_data.get('turns')
+       
+       user = self.context['user']
+
+       for day in days:
+           for turn in turns:
+               #criar as working hours com base nos dias e turnos
+               working_hours = WorkingHours(user=user, day_of_week=days_dict[day], start_time=time(times[turn][0],0), end_time=time(times[turn][1],0))
+               working_hours.save()
+               pass
+
+       return super().create(validated_data)
+
 
 class UserSerializer(serializers.ModelSerializer):
     address = AddressSerializer(required=False)
     roles = RoleSerializer(many=True, required=False)
     clinics = serializers.PrimaryKeyRelatedField(queryset=Clinic.objects.all(), many=True, required=False)
-    
+    expedient = ExpedientSerializer(required=False)
+
     # first_name = serializers.CharField(required=True)
     # email = serializers.EmailField(required=True)
     # cpf = serializers.CharField(required=True)
@@ -37,7 +80,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'first_name', 'email', 'cpf', 'date_birth',
             'password', 'roles', 'address', 'clinics', 'gender',
-            'formacao', 'crm', 'attach_document', 'phone'
+            'formacao', 'crm', 'attach_document', 'phone', 'expedient', 'availableForShift'
         ]
         read_only_fields = ['id']
 
@@ -51,7 +94,8 @@ class UserSerializer(serializers.ModelSerializer):
         clinics = validated_data.pop('clinics', [])
         roles_data = validated_data.pop('roles', [])
         roles_data = roles_data[0]['name']
-
+        expedient_data = validated_data.pop('expedient', None)
+        
         address = None
         if address_data:
             address = Address.objects.create(**address_data)
@@ -60,15 +104,74 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
 
+        if expedient_data:
+            expedient_serializer = ExpedientSerializer(data=expedient_data, context={'user': user})
+            if expedient_serializer.is_valid(raise_exception=True):
+                expedient = expedient_serializer.save()
+                user.expedient = expedient
+                user.save()
+
         if clinics:
             user.clinics.set(clinics)
 
         if roles_data:
             roles = Role.objects.filter(name=roles_data)  # Busca as roles pelos nomes
             user.roles.set(roles)
+            if "ADMIN" in roles_data:
+                user.is_staff = True
+                user.save()
 
         return user
+    
+    def update(self, instance, validated_data):
+        address_data = validated_data.pop('address', None)
+        clinics = validated_data.pop('clinics', [])
+        roles_data = validated_data.pop('roles', [])
+        expedient_data = validated_data.pop('expedient', None)
 
+        # Atualiza endereço
+        if address_data:
+            if instance.address:
+                for key, value in address_data.items():
+                    setattr(instance.address, key, value)
+                instance.address.save()
+            else:
+                instance.address = Address.objects.create(**address_data)
+
+        # Atualiza roles
+        if roles_data:
+            role_names = [role['name'] for role in roles_data]
+            roles = Role.objects.filter(name__in=role_names)
+            instance.roles.set(roles)
+            if "ADMIN" in role_names:
+                instance.is_staff = True
+            else:
+                instance.is_staff = False
+
+        # Atualiza expediente
+        if expedient_data:
+            if instance.expedient:
+                for key, value in expedient_data.items():
+                    setattr(instance.expedient, key, value)
+                instance.expedient.save()
+            else:
+                expedient_serializer = ExpedientSerializer(data=expedient_data, context={'user': instance})
+                if expedient_serializer.is_valid(raise_exception=True):
+                    instance.expedient = expedient_serializer.save()
+
+        # Atualiza clínicas
+        if clinics:
+            instance.clinics.set(clinics)
+
+        # Atualiza outros campos do usuário
+        for key, value in validated_data.items():
+            if key == 'password':
+                instance.set_password(value)  # Garante que a senha seja armazenada corretamente
+            else:
+                setattr(instance, key, value)
+
+        instance.save()
+        return instance
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
@@ -107,12 +210,109 @@ class CustomRefreshObtainPairSerializer(TokenRefreshSerializer):
         return data
     
 class RecepcionistSerializer(UserSerializer):
-    working_hours = WorkingHoursSerializer(many=True, required=False)
-    
+    #working_hours = WorkingHoursSerializer(many=True, required=False)
+    expedient = SimplifiedExpedientSerializer()
+
     class Meta:
         model = User
         fields = [
             'id', 'first_name', 'email', 'cpf', 'date_birth',
-            'roles', 'address', 'clinics', 'gender', 'attach_document', 'working_hours', 'phone'
+            'roles', 'address', 'clinics', 'gender', 'attach_document', 'phone', 'expedient'
         ]
+
+class OtherArchivesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OtherArchives
+        fields = '__all__'
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = '__all__'
+
+
+class PoliciesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Policies
+        fields = '__all__'
+
+class FAQSerializer(serializers.ModelSerializer):
+    tags = TagSerializer(required=False, many=True)
+
+    class Meta:
+        model = FAQ
+        fields = ['title', 'questions', 'content', 'profile', 'tags']
+
+    def create(self, validated_data):
+        tags_data = validated_data.pop('tags', None)
+        faq = super().create(validated_data)
+
+        if tags_data:
+            for tag_data in tags_data:
+                tag, created = Tag.objects.get_or_create(**tag_data)
+                faq.tags.add(tag)
+
+        return faq
+    
+    def update(self, instance, validated_data):
+        tags_data = validated_data.pop('tags', None)  # Extrai as tags, se existirem
+        instance = super().update(instance, validated_data)  # Atualiza os outros campos do FAQ
+
+        if tags_data is not None:
+            instance.tags.clear()  # Remove todas as tags associadas antes de atualizar
+            for tag_data in tags_data:
+                tag, created = Tag.objects.get_or_create(**tag_data)  # Obtém ou cria a tag
+                instance.tags.add(tag)  # Associa a tag ao FAQ
+
+        return instance
+
+class UserPoliciesSupportSerializer(serializers.ModelSerializer):
+    policy = PoliciesSerializer()
+    other_files = OtherArchivesSerializer(required=False, many=True)
+
+    class Meta:
+        model = UserPoliciesSupport
+        fields = ['id', 'profile', 'policy', 'manual_archive', 'other_files']
+
+    def create(self, validated_data):
+        policy_data = validated_data.pop('policy', None)
+        profile = validated_data.get('profile')  # Obtém o profile do request
+
+        # Verifica se já existe um UserPoliciesSupport para este profile
+        if UserPoliciesSupport.objects.filter(profile=profile).exists():
+            raise serializers.ValidationError({"profile": "Já existe um objeto UserPoliciesSupport para este profile."})
+
+        if policy_data:  
+            # Cria a policy antes de criar UserPoliciesSupport
+            policy_instance = Policies.objects.create(**policy_data)
+        else:
+            raise serializers.ValidationError({"policy": "Este campo é obrigatório."})
+
+        # Cria UserPoliciesSupport com a nova policy
+        user_policy_support = UserPoliciesSupport.objects.create(policy=policy_instance, **validated_data)
+
+        return user_policy_support
+    
+    def update(self, instance, validated_data):
+        policy_data = validated_data.pop('policy', None)
+        other_files_data = validated_data.pop('other_files', None)
+
+        # Atualiza os outros campos do UserPoliciesSupport
+        instance = super().update(instance, validated_data)
+
+        if policy_data:
+            # Atualiza os campos da policy existente
+            for attr, value in policy_data.items():
+                setattr(instance.policy, attr, value)
+            instance.policy.save()
+
+        if other_files_data is not None:
+            # Atualiza os arquivos associados, removendo os antigos e adicionando os novos
+            instance.other_files.clear()
+            for file_data in other_files_data:
+                file_instance = OtherArchives.objects.create(**file_data)
+                instance.other_files.add(file_instance)
+
+        return instance
+
     

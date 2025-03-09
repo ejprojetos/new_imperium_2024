@@ -5,6 +5,10 @@ from django.utils.translation import gettext_lazy as _
 from commom.models import Address
 from enum import Enum
 
+class Expedient(models.Model):
+    days_of_week = models.JSONField(default=list)
+    turns = models.JSONField(default=list)
+
 class RoleEnum(Enum):
     ADMIN = "admin"
     DOCTOR = "doctor"
@@ -22,7 +26,6 @@ class Role(models.Model):
 
     def __str__(self):
         return self.name
-
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -64,6 +67,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     crm = models.CharField(max_length=255, null=True, blank=True)
     attach_document = models.FileField(upload_to='attach',null=True, blank=True)
     phone = models.CharField(max_length=255, null=True, blank=True)
+    expedient = models.OneToOneField(Expedient, on_delete=models.CASCADE, blank=True, null=True)
+    availableForShift = models.BooleanField(default=False, blank=True, null=True)
 
     objects = UserManager()
 
@@ -114,4 +119,33 @@ class Receptionist(models.Model):
 
     def __str__(self):
         return self.user.get_full_name()
+
+class Policies(models.Model):
+    title = models.CharField(max_length=255)
+    content = models.TextField()
+
+    def __str__(self):
+        return super().__str__()
+    
+class Tag(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.CharField(max_length=500, blank=True, null=True)
+
+class OtherArchives(models.Model):
+    name = models.CharField(max_length=255, blank=True, null=True)
+    file = models.FileField(upload_to='others-archives',null=True, blank=True)
+
+class UserPoliciesSupport(models.Model):
+    profile = models.CharField(max_length=255, choices=RoleEnum.choices())
+    policy = models.ForeignKey(Policies, on_delete=models.CASCADE)
+    manual_archive = models.FileField(upload_to='manual',null=True, blank=True)
+    other_files = models.ManyToManyField(OtherArchives)
+
+class FAQ(models.Model):
+    title = models.CharField(max_length=255)
+    questions = models.CharField(max_length=255)
+    profile = models.CharField(max_length=255, choices=RoleEnum.choices())
+    date = models.DateField(default=timezone.now)
+    content = models.TextField()
+    tags = models.ManyToManyField(Tag)
 
