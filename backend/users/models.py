@@ -120,7 +120,8 @@ class Receptionist(models.Model):
     def __str__(self):
         return self.user.get_full_name()
 
-class Policies(models.Model):
+class UserPolicies(models.Model):
+    profile = models.CharField(max_length=255, choices=RoleEnum.choices())
     title = models.CharField(max_length=255)
     content = models.TextField()
 
@@ -129,15 +130,13 @@ class Policies(models.Model):
     
 class Tag(models.Model):
     name = models.CharField(max_length=255)
-    description = models.CharField(max_length=500, blank=True, null=True)
 
 class OtherArchives(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
     file = models.FileField(upload_to='others-archives',null=True, blank=True)
 
-class UserPoliciesSupport(models.Model):
+class UserSupport(models.Model):
     profile = models.CharField(max_length=255, choices=RoleEnum.choices())
-    policy = models.ForeignKey(Policies, on_delete=models.CASCADE)
     manual_archive = models.FileField(upload_to='manual',null=True, blank=True)
     other_files = models.ManyToManyField(OtherArchives)
 

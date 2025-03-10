@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
-from .models import Role, User, Policies, FAQ, Tag, UserPoliciesSupport, OtherArchives
+from .models import Role, User, Expedient, UserPolicies, FAQ, Tag, UserSupport, OtherArchives, UserSupport
 from commom.models import Address
 from clinic.models import Clinic, WorkingHours
 from drf_extra_fields.fields import Base64ImageField, Base64FileField
@@ -230,18 +230,38 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = '__all__'
 
-
-class PoliciesSerializer(serializers.ModelSerializer):
+class UserPoliciesSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Policies
+        model = UserPolicies
         fields = '__all__'
+
+    def create(self, validated_data):
+        profile = validated_data.get('profile')  # Obtém o profile do request
+
+        # Verifica se já existe um UserPoliciesSupport para este profile
+        if UserPolicies.objects.filter(profile=profile).exists():
+            raise serializers.ValidationError({"profile": "Já existe uma politica para este profile."})
+
+        # Cria UserPoliciesSupport com a nova policy
+        user_policy_support = UserPolicies.objects.create(**validated_data)
+
+        return user_policy_support
+    
+    def update(self, instance, validated_data):
+        profile = validated_data.get('profile')
+
+        if instance.profile != profile:
+            raise serializers.ValidationError({"profile": f"Não é possivel obter mais de uma politica para uma mesma profile, atualize o profile vinculado ao id, profile = {instance.profile}"})
+        else:
+            instance = super().update(instance, validated_data)
+            return instance
 
 class FAQSerializer(serializers.ModelSerializer):
     tags = TagSerializer(required=False, many=True)
 
     class Meta:
         model = FAQ
-        fields = ['title', 'questions', 'content', 'profile', 'tags']
+        fields = ['id', 'title', 'questions', 'content', 'profile', 'tags']
 
     def create(self, validated_data):
         tags_data = validated_data.pop('tags', None)
@@ -266,45 +286,18 @@ class FAQSerializer(serializers.ModelSerializer):
 
         return instance
 
-class UserPoliciesSupportSerializer(serializers.ModelSerializer):
-    policy = PoliciesSerializer()
+class UserSupportSerializer(serializers.ModelSerializer):
     other_files = OtherArchivesSerializer(required=False, many=True)
 
     class Meta:
-        model = UserPoliciesSupport
-        fields = ['id', 'profile', 'policy', 'manual_archive', 'other_files']
-
-    def create(self, validated_data):
-        policy_data = validated_data.pop('policy', None)
-        profile = validated_data.get('profile')  # Obtém o profile do request
-
-        # Verifica se já existe um UserPoliciesSupport para este profile
-        if UserPoliciesSupport.objects.filter(profile=profile).exists():
-            raise serializers.ValidationError({"profile": "Já existe um objeto UserPoliciesSupport para este profile."})
-
-        if policy_data:  
-            # Cria a policy antes de criar UserPoliciesSupport
-            policy_instance = Policies.objects.create(**policy_data)
-        else:
-            raise serializers.ValidationError({"policy": "Este campo é obrigatório."})
-
-        # Cria UserPoliciesSupport com a nova policy
-        user_policy_support = UserPoliciesSupport.objects.create(policy=policy_instance, **validated_data)
-
-        return user_policy_support
+        model = UserSupport
+        fields = ['id', 'profile', 'manual_archive', 'other_files']
     
     def update(self, instance, validated_data):
-        policy_data = validated_data.pop('policy', None)
         other_files_data = validated_data.pop('other_files', None)
 
         # Atualiza os outros campos do UserPoliciesSupport
         instance = super().update(instance, validated_data)
-
-        if policy_data:
-            # Atualiza os campos da policy existente
-            for attr, value in policy_data.items():
-                setattr(instance.policy, attr, value)
-            instance.policy.save()
 
         if other_files_data is not None:
             # Atualiza os arquivos associados, removendo os antigos e adicionando os novos
