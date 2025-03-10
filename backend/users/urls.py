@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 # from .views import AdminViewSet, DoctorViewSet, PatientViewSet, ReceptionistViewSet, 
-from .views import CustomTokenObtainPairView, ViewGetUsersDoctors, ViewGetUsersClinics, ViewGetUsersRecepcionistas, ViewGetUsersPacientes, CustomTokenRefreshView, PoliciesViewSet, FAQViewSet, UserPoliciesSupportViewSet
+from .views import CustomTokenObtainPairView, ViewGetUsersDoctors, ViewGetUsersClinics, ViewGetUsersRecepcionistas, ViewGetUsersPacientes, CustomTokenRefreshView, UserPoliciesViewSet, FAQViewSet, UserSupportViewSet
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from clinic.views import MedicalRecordViewSet, WaitingListViewSet, WorkingHoursViewSet, AppointmentViewSet
@@ -21,7 +21,8 @@ router.register(r'waiting-list', WaitingListViewSet, basename='waiting-list')
 router.register(r'appointments', AppointmentViewSet, basename='appointments')
 #router.register(r'policies', PoliciesViewSet, basename='policies')
 router.register(r'faqs', FAQViewSet, basename='faqs')
-router.register(r'user-policies-support', UserPoliciesSupportViewSet, basename='user-policies-support')
+router.register(r'user-policies', UserPoliciesViewSet, basename='user-policies')
+router.register(r'user-supports', UserSupportViewSet, basename='user-supports')
 
 urlpatterns = [
     path('', include(router.urls)),
