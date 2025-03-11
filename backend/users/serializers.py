@@ -73,7 +73,7 @@ class UserSerializer(serializers.ModelSerializer):
     # date_birth = serializers.DateField(required=True)
     password = serializers.CharField(write_only=True, required=True)
 
-    attach_document = PDFBase64File(required=False)
+    attach_document = PDFBase64File(required=False, allow_null=True)
 
     class Meta:
         model = User
@@ -83,6 +83,9 @@ class UserSerializer(serializers.ModelSerializer):
             'formacao', 'crm', 'attach_document', 'phone', 'expedient', 'availableForShift'
         ]
         read_only_fields = ['id']
+        extra_kwargs = {
+            'attach_document': {'write_only': True},  # Forçar escrita
+        }
 
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
@@ -95,6 +98,8 @@ class UserSerializer(serializers.ModelSerializer):
         roles_data = validated_data.pop('roles', [])
         roles_data = roles_data[0]['name']
         expedient_data = validated_data.pop('expedient', None)
+
+        attach_document = validated_data.pop("attach_document", None)
         
         address = None
         if address_data:
@@ -103,6 +108,10 @@ class UserSerializer(serializers.ModelSerializer):
         user = User.objects.create(**validated_data, address=address)
         user.set_password(validated_data['password'])
         user.save()
+
+        if attach_document:
+            user.attach_document = attach_document
+            user.save()
 
         if expedient_data:
             expedient_serializer = ExpedientSerializer(data=expedient_data, context={'user': user})
