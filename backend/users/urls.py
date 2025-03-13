@@ -17,7 +17,7 @@ router = DefaultRouter()
 router.register('users', UserViewSet, basename='users/')
 
 router.register(r'waiting-list', WaitingListViewSet, basename='waiting-list')
-# router.register(r'working-hours', WorkingHoursViewSet, basename='working-hours')
+#router.register(r'working-hours', WorkingHoursViewSet, basename='working-hours')
 router.register(r'appointments', AppointmentViewSet, basename='appointments')
 #router.register(r'policies', PoliciesViewSet, basename='policies')
 router.register(r'faqs', FAQViewSet, basename='faqs')

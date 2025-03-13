@@ -84,7 +84,7 @@ TEMPLATES = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Adicione o domínio da sua aplicação Vue
     "http://127.0.0.1:5173",
-    "https://imperium-2024-pi.vercel.app/",
+    "https://imperium-2024-pi.vercel.app",
 ]
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
