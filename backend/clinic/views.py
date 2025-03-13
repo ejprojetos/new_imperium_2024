@@ -39,7 +39,7 @@ class MedicalRecordViewSet(viewsets.ModelViewSet):
 
     queryset = MedicalRecord.objects.all()
     serializer_class = MedicalRecordSerializer
-    required_roles = ['Doctor','Admin']
+    required_roles = ['DOCTOR','ADMIN']
     permission_classes = [IsRoleUser]
     http_method_names = ['get', 'post', 'put', 'delete']
 
@@ -75,7 +75,7 @@ class MedicalRecordViewSet(viewsets.ModelViewSet):
 
 class RoomViewSet(viewsets.ModelViewSet):
     serializer_class = RoomSerializer
-    required_roles = ['Recepcionist', 'Admin']
+    required_roles = ['RECEPTIONIST', 'ADMIN']
     permission_classes = [IsRoleUser]
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     lookup_field = 'uuid'  # Define o campo de busca como 'uuid'
@@ -180,8 +180,8 @@ class NotificationViewSet(viewsets.ModelViewSet):
         is_read_req = serializer.validated_data.get('status')
         if is_read_req == 'accept':
             # create notification for confirmation
-            send_notifications.delay(users=[notification.user.id],type_notification="info", subtype_notification='confirmation')
-
+            #send_notifications.delay(users=[notification.user.id],type_notification="info", subtype_notification='confirmation')
+            pass
         return Response(serializer.data, status=status.HTTP_200_OK)
         
     def destroy(self, request, *args, **kwargs):
@@ -194,7 +194,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
 class WaitingListViewSet(viewsets.ModelViewSet):
     queryset = WaitingList.objects.all()
     serializer_class = WaitingListSerializer
-    required_roles = ['Recepcionist', 'Doctor']
+    required_roles = ['RECEPTIONIST', 'DOCTOR']
     permission_classes = [IsRoleUser]
     http_method_names = ['post', 'delete', 'put']
     
@@ -234,7 +234,7 @@ class WaitingListViewSet(viewsets.ModelViewSet):
 class WorkingHoursViewSet(viewsets.ModelViewSet):
     queryset = WorkingHours.objects.all()
     serializer_class = WorkingHoursSerializer
-    required_roles = ['Doctor']
+    required_roles = ['DOCTOR']
     permission_classes = [IsRoleUser]
     http_method_names = ['get', 'post', 'delete', 'put']
 
@@ -266,21 +266,35 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         """
         # Check doctor's availability
         day_of_week = appointment_date.weekday() + 1  # Django model uses 1-7
+
+        #checkando se os usuarios possuem o usuario correto
+        if not patient.roles.filter(name="PATIENT").exists():
+            raise ValidationError("ID definido não corresponde a um usuário PATIENT.")
         
-        try:
-            # Check working hours
-            working_hours = WorkingHours.objects.get(
-                user=doctor.user, 
-                day_of_week=day_of_week
-            )
+        elif not doctor.roles.filter(name="DOCTOR").exists():
+            raise ValidationError("ID definido não corresponde a um usuário DOCTOR.")
+        else:
+            try:
+                # Check working hours
+                working_hours = WorkingHours.objects.filter(
+                        user=doctor, 
+                        day_of_week=day_of_week
+                    )
+
+                not_available = True
+                    
+                for working_hour in working_hours:
+                    # Validate appointment time is within working hours
+                    if (working_hour.start_time <= appointment_date.time() <= working_hour.end_time):
+                        not_available = False
+                        break
+                        
+                if not_available:
+                    raise ValidationError(f"Doctor is not available at the selected time.")
             
-            # Validate appointment time is within working hours
-            if not (working_hours.start_time <= appointment_date.time() <= working_hours.end_time):
-                raise ValidationError(f"Doctor is not available at the selected time. Working hours are {working_hours.start_time} to {working_hours.end_time}")
+            except WorkingHours.DoesNotExist:
+                raise ValidationError("Doctor does not have defined working hours for this day")
             
-        except WorkingHours.DoesNotExist:
-            raise ValidationError("Doctor does not have defined working hours for this day")
-        
         # Check for existing appointments
         conflicting_appointments = Appointment.objects.filter(
             doctor=doctor,
@@ -333,10 +347,10 @@ class AppointmentViewSet(viewsets.ModelViewSet):
             )
 
             #notification for patient accept appointment
-            send_notifications.delay(users=[patient.user.id],type_notification="alert", subtype_notification='confirmation_appointment', flag_email=True)
+            #send_notifications.delay(users=[patient.user.id],type_notification="alert", subtype_notification='confirmation_appointment', flag_email=True)
 
             #notification for Room assignment logic for consultation
-            send_notifications.delay(users=[patient.user.id, doctor.user.id],type_notification="info", subtype_notification='room', room=room.number)
+            #send_notifications.delay(users=[patient.user.id, doctor.user.id],type_notification="info", subtype_notification='room', room=room.number)
             return Response(
                 self.get_serializer(appointment).data, 
                 status=status.HTTP_201_CREATED
@@ -407,7 +421,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         appointment.save()
 
         # create notification for canceled appointment
-        send_notifications.delay(users=[appointment.doctor.user.id, appointment.patient.user.id], type_notification="info", subtype_notification='canceled')
+        #send_notifications.delay(users=[appointment.doctor.user.id, appointment.patient.user.id], type_notification="info", subtype_notification='canceled')
 
         return Response(
             AppointmentSerializer(appointment).data, 

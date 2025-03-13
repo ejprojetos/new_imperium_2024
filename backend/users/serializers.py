@@ -25,12 +25,7 @@ class SimplifiedExpedientSerializer(serializers.ModelSerializer):
        fields = ['days_of_week', 'turns']
 
 class ExpedientSerializer(serializers.ModelSerializer):
-    class Meta:
-       model = Expedient
-       fields = ['id','days_of_week', 'turns']
-
-    def create(self, validated_data):
-       days_dict = {
+    days_dict = {
             "Segunda-feira": 1,
             "Terça-feira": 2,
             "Quarta-feira": 3,
@@ -40,12 +35,17 @@ class ExpedientSerializer(serializers.ModelSerializer):
             "Domingo": 7
        }
 
-       times = {
-            "Matutino": [7, 12],
-            "Vespertino": [13, 18],
-            "Noturno": [18, 23],
-       }   
+    times = {
+        "Matutino": [7, 12],
+        "Vespertino": [13, 18],
+        "Noturno": [18, 23],
+    }
 
+    class Meta:
+       model = Expedient
+       fields = ['id','days_of_week', 'turns']
+
+    def create(self, validated_data):   
        days = validated_data.get('days_of_week')
        turns = validated_data.get('turns')
        
@@ -54,12 +54,35 @@ class ExpedientSerializer(serializers.ModelSerializer):
        for day in days:
            for turn in turns:
                #criar as working hours com base nos dias e turnos
-               working_hours = WorkingHours(user=user, day_of_week=days_dict[day], start_time=time(times[turn][0],0), end_time=time(times[turn][1],0))
+               working_hours = WorkingHours(user=user, day_of_week=self.days_dict[day], start_time=time(self.times[turn][0],0), end_time=time(self.times[turn][1],0))
                working_hours.save()
                pass
 
        return super().create(validated_data)
+    
+    def update(self, instance, validated_data):
+        # Obtém os valores atualizados ou mantém os existentes
+        days = validated_data.get("days_of_week", instance.days_of_week)
+        turns = validated_data.get("turns", instance.turns)
 
+        # Obtém o usuário do contexto
+        user = self.context.get("user")
+
+        # Se "days_of_week" ou "turns" forem atualizados, recria os horários de trabalho
+        if "days_of_week" in validated_data or "turns" in validated_data:
+            WorkingHours.objects.filter(user=user).delete()
+
+            for day in days:
+                for turn in turns:
+                    working_hours = WorkingHours(
+                        user=user,
+                        day_of_week=self.days_dict[day],  
+                        start_time=time(self.times[turn][0], 0),
+                        end_time=time(self.times[turn][1], 0)
+                    )
+                    working_hours.save()
+
+        return super().update(instance, validated_data)
 
 class UserSerializer(serializers.ModelSerializer):
     address = AddressSerializer(required=False)
@@ -157,16 +180,14 @@ class UserSerializer(serializers.ModelSerializer):
             else:
                 instance.is_staff = False
 
-        # Atualiza expediente
-        if expedient_data:
-            if instance.expedient:
-                for key, value in expedient_data.items():
-                    setattr(instance.expedient, key, value)
-                instance.expedient.save()
+        if expedient_data:  # Se expedient foi enviado na requisição
+            expedient_instance = instance.expedient  # Pega o expedient atual do usuário
+            expedient_serializer = ExpedientSerializer(expedient_instance, data=expedient_data, partial=True, context={'user': instance})
+
+            if expedient_serializer.is_valid():
+                expedient_serializer.save()
             else:
-                expedient_serializer = ExpedientSerializer(data=expedient_data, context={'user': instance})
-                if expedient_serializer.is_valid(raise_exception=True):
-                    instance.expedient = expedient_serializer.save()
+                raise serializers.ValidationError(expedient_serializer.errors)
 
         # Atualiza clínicas
         if clinics:
