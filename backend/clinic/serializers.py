@@ -7,6 +7,7 @@ from django.db.models import Q
 from datetime import timedelta
 from commom.models import Address
 from drf_extra_fields.fields import Base64ImageField, Base64FileField
+from django.core.exceptions import ValidationError
 
 
 class AddressSerializer(serializers.ModelSerializer):
@@ -99,7 +100,7 @@ class WaitingListSerializer(serializers.ModelSerializer):
             current_day = timezone.now().isoweekday()
             current_time = timezone.now().time()
             working_hours = WorkingHours.objects.filter(
-                user=doctor.user, day_of_week=current_day,
+                user=doctor, day_of_week=current_day,
                 start_time__lte=current_time, end_time__gte=current_time
             )
             if not working_hours.exists():
@@ -120,7 +121,7 @@ class AssignDoctorSerializer(serializers.Serializer):
         
         # Popula o campo doctor_id com opções de médicos disponíveis
         self.fields['doctor_id'].choices = [
-            (doctor.id, f"{doctor.user.first_name} {doctor.user.last_name}")
+            (doctor.id, f"{doctor.first_name} {doctor.last_name}")
             for doctor in Doctor.objects.all()
         ]
 
@@ -134,7 +135,7 @@ class AssignDoctorSerializer(serializers.Serializer):
         current_day = timezone.now().isoweekday()
         current_time = timezone.now().time()
         working_hours = WorkingHours.objects.filter(
-            user=doctor.user, 
+            user=doctor, 
             day_of_week=current_day,
             start_time__lte=current_time, 
             end_time__gte=current_time
@@ -220,20 +221,34 @@ class AppointmentSerializer(serializers.ModelSerializer):
         # Check doctor's availability
         if doctor and appointment_date:
             day_of_week = appointment_date.weekday() + 1
+
+            #checkando se os usuarios possuem o usuario correto
+            if not patient.roles.filter(name="PATIENT").exists():
+                raise ValidationError("ID definido não corresponde a um usuário PATIENT.")
             
-            try:
-                # Check working hours
-                working_hours = WorkingHours.objects.get(
-                    user=doctor.user, 
-                    day_of_week=day_of_week
-                )
+            elif not doctor.roles.filter(name="DOCTOR").exists():
+                raise ValidationError("ID definido não corresponde a um usuário DOCTOR.")
+            else:
+                try:
+                    # Check working hours
+                    working_hours = WorkingHours.objects.filter(
+                            user=doctor, 
+                            day_of_week=day_of_week
+                        )
+
+                    not_available = True
+                        
+                    for working_hour in working_hours:
+                        # Validate appointment time is within working hours
+                        if (working_hour.start_time <= appointment_date.time() <= working_hour.end_time):
+                            not_available = False
+                            break
+                            
+                    if not_available:
+                        raise ValidationError(f"Doctor is not available at the selected time.")
                 
-                # Validate appointment time is within working hours
-                if not (working_hours.start_time <= appointment_date.time() <= working_hours.end_time):
-                    raise serializers.ValidationError(f"Doctor is not available at the selected time. Working hours are {working_hours.start_time} to {working_hours.end_time}")
-                
-            except WorkingHours.DoesNotExist:
-                raise serializers.ValidationError("Doctor does not have defined working hours for this day")
+                except WorkingHours.DoesNotExist:
+                    raise ValidationError("Doctor does not have defined working hours for this day")
             
             # Check for existing appointments
             conflicting_appointments = Appointment.objects.filter(

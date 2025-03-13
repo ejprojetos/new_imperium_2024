@@ -247,7 +247,6 @@ class ExpedientViewSet(viewsets.ModelViewSet):
         "Noturno": [18, 23],
     }   
 
-
    queryset = Expedient.objects.all()
    serializer_class = ExpedientSerializer
    required_roles = ['ADMIN']
