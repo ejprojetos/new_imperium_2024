@@ -23,7 +23,7 @@ from datetime import time
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     
     def get_permissions(self):
