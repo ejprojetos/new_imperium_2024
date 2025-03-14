@@ -181,13 +181,21 @@ class UserSerializer(serializers.ModelSerializer):
                 instance.is_staff = False
 
         if expedient_data:  # Se expedient foi enviado na requisição
-            expedient_instance = instance.expedient  # Pega o expedient atual do usuário
-            expedient_serializer = ExpedientSerializer(expedient_instance, data=expedient_data, partial=True, context={'user': instance})
+            if instance.expedient:
+                expedient_instance = instance.expedient  # Pega o expedient atual do usuário
+                expedient_serializer = ExpedientSerializer(expedient_instance, data=expedient_data, partial=True, context={'user': instance})
 
-            if expedient_serializer.is_valid():
-                expedient_serializer.save()
+                if expedient_serializer.is_valid():
+                    expedient_serializer.save()
+                else:
+                    raise serializers.ValidationError(expedient_serializer.errors)
             else:
-                raise serializers.ValidationError(expedient_serializer.errors)
+                # Cria um novo expedient caso o usuário ainda não tenha um
+                expedient_serializer = ExpedientSerializer(data=expedient_data, context={'user': instance})
+                if expedient_serializer.is_valid(raise_exception=True):
+                    expedient = expedient_serializer.save()
+                    instance.expedient = expedient
+                    instance.save()
 
         # Atualiza clínicas
         if clinics:
