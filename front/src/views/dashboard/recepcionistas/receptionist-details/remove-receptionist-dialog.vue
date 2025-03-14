@@ -21,7 +21,7 @@ const route = useRoute()
 const router = useRouter()
 const receptionistId = route.params.id as string
 
-const { mutate } = useMutation({
+const { isPending, mutate } = useMutation({
     mutationFn: async () =>
         await fetcher(`/users/${receptionistId}/`, {
             method: 'DELETE'
@@ -61,7 +61,10 @@ function handleDelete() {
             </AlertDialogHeader>
             <AlertDialogFooter>
                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction @click="handleDelete">Deletar</AlertDialogAction>
+                <AlertDialogAction @click="handleDelete">
+                    <Loader v-if="isPending" class="animate-spin size-4" />
+                    Deletar
+                </AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>
     </AlertDialog>
