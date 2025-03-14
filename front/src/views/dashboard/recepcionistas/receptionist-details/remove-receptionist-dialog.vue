@@ -11,6 +11,39 @@ import {
     AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
+import { useRouter, useRoute } from 'vue-router'
+import { useMutation } from '@tanstack/vue-query'
+import { fetcher } from '@/services/fetcher.service'
+import { useToast } from '@/components/ui/toast/use-toast'
+
+const { toast } = useToast()
+const route = useRoute()
+const router = useRouter()
+const receptionistId = route.params.id as string
+
+const { mutate } = useMutation({
+    mutationFn: async () =>
+        await fetcher(`/users/${receptionistId}/`, {
+            method: 'DELETE'
+        }),
+    onSuccess: () => {
+        toast({
+            variant: 'success',
+            description: 'Recepcionista removido com sucesso!'
+        })
+        router.push('/dashboard/recepcionistas')
+    },
+    onError: () => {
+        toast({
+            variant: 'destructive',
+            description: 'Erro ao remover recepcionista! 😢'
+        })
+    }
+})
+
+function handleDelete() {
+    mutate()
+}
 </script>
 
 <template>
@@ -28,7 +61,7 @@ import { Button } from '@/components/ui/button'
             </AlertDialogHeader>
             <AlertDialogFooter>
                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction>Deletar</AlertDialogAction>
+                <AlertDialogAction @click="handleDelete">Deletar</AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>
     </AlertDialog>
