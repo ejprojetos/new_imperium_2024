@@ -66,7 +66,11 @@
                 class="flex gap-x-6 p-8 bg-white rounded-2xl shadow-lg cursor-pointer min-w-56">
                 <img
                     class="object-cover w-24 h-24 rounded-full aspect-square"
-                    :src="clinica.image ? clinica.image : '/src/assets/placeholder.png'"
+                    :src="
+                        clinica.image
+                            ? 'data:image/jpeg;base64,' + clinica.image
+                            : '/src/assets/placeholder.png'
+                    "
                     alt="Imagem da clínica" />
                 <div class="flex flex-col items-start">
                     <h3 class="text-2xl font-bold">{{ clinica.name }}</h3>
@@ -101,9 +105,7 @@ onMounted(async () => {
     try {
         const response = await clinicService.getAllClinics()
         console.log('Clinicas: ', response)
-        if (response) {
-            clinicas.value = response
-        }
+        clinicas.value = response || []
     } catch (error) {
         console.error('Erro ao buscar clinicas', error)
     }

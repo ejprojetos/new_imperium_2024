@@ -23,7 +23,8 @@ export const useUserStore = defineStore(
         return {
             id: idRef,
             role: roleRef,
-            setUser
+            setUser,
+            name: 'Test'
         }
     },
     {
