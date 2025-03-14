@@ -99,9 +99,11 @@ const router = createRouter({
         },
         {
             path: '/dashboard/recepcionistas/:id', // visualizar perfil de qualquer recepcionista na lista
-            name: 'visualizar-recepcionista',
+            name: 'receptionist-details',
             component: () =>
-                import('../views/dashboard/recepcionistas/visualizar-recepcionista.vue')
+                import(
+                    '../views/dashboard/recepcionistas/receptionist-details/receptionist-details.vue'
+                )
         },
         {
             path: '/dashboard/medicos',
