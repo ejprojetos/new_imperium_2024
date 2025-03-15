@@ -50,7 +50,11 @@ const { isPending, mutate } = useMutation({
 })
 
 function formatData(raw: Recepcionist = data.value!) {
-    const formatDate = raw.date_birth.split('-')
+    if (!raw) {
+        return {}
+    }
+
+    const formatDate = raw.date_birth?.split('-')
 
     return {
         fullname: raw.first_name,
@@ -94,7 +98,7 @@ const { isFieldDirty, handleSubmit, setValues, resetForm } = useForm<Receptionis
 watch(initialValues, (newAsyncData) => {
     headerPersonalInfos.value.fullName = newAsyncData.fullname
     headerPersonalInfos.value.initials = getInitials(newAsyncData.fullname ?? '')
-
+    savedValues.value = formatData()
     setValues(newAsyncData)
 })
 
@@ -124,11 +128,11 @@ const onSubmit = handleSubmit((values) => {
 
     const expedientChanged =
         !arraysHaveSameValues({
-            defaultData: initialValues.value.workDays,
+            defaultData: savedValues.value.workDays,
             newData: values.workDays
         }) ||
         !arraysHaveSameValues({
-            defaultData: initialValues.value.turns,
+            defaultData: savedValues.value.turns,
             newData: values.turns
         })
 
@@ -154,13 +158,13 @@ const onSubmit = handleSubmit((values) => {
         expedient: expedientChanged
             ? {
                   days_of_week: !arraysHaveSameValues({
-                      defaultData: initialValues.value.workDays,
+                      defaultData: savedValues.value.workDays,
                       newData: values.workDays
                   })
                       ? values.workDays
                       : undefined,
                   turns: !arraysHaveSameValues({
-                      defaultData: initialValues.value.turns,
+                      defaultData: savedValues.value.turns,
                       newData: values.turns
                   })
                       ? values.turns
@@ -181,8 +185,8 @@ const onSubmit = handleSubmit((values) => {
     }
 
     mutate(newData as any, {
-        onSuccess: async (newData) => {
-            if (newData) {
+        onSuccess: async (newValue) => {
+            if (newValue) {
                 toast({
                     variant: 'success',
                     description: 'Recepcionista atualizado com sucesso! 🎉'
@@ -190,16 +194,16 @@ const onSubmit = handleSubmit((values) => {
 
                 if (headerPersonalInfos.value) {
                     headerPersonalInfos.value.fullName =
-                        newData.first_name ?? headerPersonalInfos.value.fullName
-                    headerPersonalInfos.value.initials = newData.first_name
-                        ? getInitials(newData.first_name)
+                        newValue.first_name ?? headerPersonalInfos.value.fullName
+                    headerPersonalInfos.value.initials = newValue.first_name
+                        ? getInitials(newValue.first_name)
                         : headerPersonalInfos.value.initials
-                    newData?.first_name && getInitials(newData.first_name)
+                    newValue?.first_name && getInitials(newValue.first_name)
                 }
 
-                queryClient.setQueryData(['receptionist-user', id], newData)
+                queryClient.setQueryData(['receptionist-user', id], newValue)
 
-                savedValues.value = formatData(newData)
+                savedValues.value = formatData(newValue)
             }
         },
         onError: () => {
