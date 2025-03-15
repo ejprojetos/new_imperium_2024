@@ -26,3 +26,15 @@ export function getInitials(name: string) {
 
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
 }
+
+type ArrayComparison = {
+    defaultData: string[]
+    newData: string[]
+}
+
+export function arraysHaveSameValues({ defaultData, newData }: ArrayComparison): boolean {
+    return (
+        defaultData.length === newData.length &&
+        defaultData.every((value) => newData.includes(value))
+    )
+}

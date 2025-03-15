@@ -17,7 +17,7 @@ import { useQuery, useMutation } from '@tanstack/vue-query'
 import { useRoute } from 'vue-router'
 import { fetcher } from '@/services/fetcher.service'
 import { useToast } from '@/components/ui/toast/use-toast'
-import { getInitials } from '@/lib/utils'
+import { getInitials, arraysHaveSameValues } from '@/lib/utils'
 import RemoveReceptionistDialog from './remove-receptionist-dialog.vue'
 
 const { toast } = useToast()
@@ -94,6 +94,23 @@ const onSubmit = handleSubmit((values) => {
     }
 
     const formatDate = values.dateOfBirth.split('/')
+    const addressChanged =
+        hasChanged('address', 'zipCode') ||
+        hasChanged('address', 'country') ||
+        hasChanged('address', 'state') ||
+        hasChanged('address', 'city') ||
+        hasChanged('address', 'street') ||
+        hasChanged('address', 'number')
+
+    const expedientChanged =
+        !arraysHaveSameValues({
+            defaultData: initialValues.value.workDays,
+            newData: values.workDays
+        }) ||
+        !arraysHaveSameValues({
+            defaultData: initialValues.value.turns,
+            newData: values.turns
+        })
 
     const newData = {
         first_name: hasChanged('fullname') ? values.fullname : undefined,
@@ -102,20 +119,34 @@ const onSubmit = handleSubmit((values) => {
             ? `${formatDate[2]}-${formatDate[1]}-${formatDate[0]}`
             : undefined,
         gender: hasChanged('gender') ? values.gender : undefined,
-        address: {
-            zip_code: hasChanged('address', 'zipCode') ? values.address.zipCode : undefined,
-            country: hasChanged('address', 'country') ? values.address.country : undefined,
-            state: hasChanged('address', 'state') ? values.address.state : undefined,
-            city: hasChanged('address', 'city') ? values.address.city : undefined,
-            street: hasChanged('address', 'street') ? values.address.street : undefined,
-            number: hasChanged('address', 'number') ? values.address.number : undefined
-        },
+        address: addressChanged
+            ? {
+                  zip_code: hasChanged('address', 'zipCode') ? values.address.zipCode : undefined,
+                  country: hasChanged('address', 'country') ? values.address.country : undefined,
+                  state: hasChanged('address', 'state') ? values.address.state : undefined,
+                  city: hasChanged('address', 'city') ? values.address.city : undefined,
+                  street: hasChanged('address', 'street') ? values.address.street : undefined,
+                  number: hasChanged('address', 'number') ? values.address.number : undefined
+              }
+            : undefined,
         email: hasChanged('email') ? values.email : undefined,
         phone: hasChanged('phone') ? values.phone : undefined,
-        expedient: {
-            days_of_week: hasChanged('workDays') ? values.workDays : undefined,
-            turns: hasChanged('turns') ? values.turns : undefined
-        },
+        expedient: expedientChanged
+            ? {
+                  days_of_week: !arraysHaveSameValues({
+                      defaultData: initialValues.value.workDays,
+                      newData: values.workDays
+                  })
+                      ? values.workDays
+                      : undefined,
+                  turns: !arraysHaveSameValues({
+                      defaultData: initialValues.value.turns,
+                      newData: values.turns
+                  })
+                      ? values.turns
+                      : undefined
+              }
+            : undefined,
         availableForShift: hasChanged('availableForShift')
             ? values.availableForShift === 'yes'
             : undefined
