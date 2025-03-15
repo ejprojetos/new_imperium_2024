@@ -17,7 +17,7 @@ import { useQuery, useMutation } from '@tanstack/vue-query'
 import { useRoute } from 'vue-router'
 import { fetcher } from '@/services/fetcher.service'
 import { useToast } from '@/components/ui/toast/use-toast'
-
+import { getInitials } from '@/lib/utils'
 import RemoveReceptionistDialog from './remove-receptionist-dialog.vue'
 
 const { toast } = useToast()
@@ -28,7 +28,7 @@ const id = ref(receptionistId)
 const isEditMode = ref(false)
 
 const { data, isLoading } = useQuery({
-    queryKey: ['user', id],
+    queryKey: ['receptionist-user', id],
     queryFn: async () => await fetcher<Recepcionist>(`/users/${receptionistId}`)
 })
 
@@ -77,38 +77,47 @@ watch(initialValues, (newAsyncData) => {
 })
 
 const onSubmit = handleSubmit((values) => {
+    console.log(values.workDays, initialValues.value.workDays)
+
+    const hasChanged = <K extends keyof ReceptionistDataSchema>(
+        key: K,
+        subKey?: keyof ReceptionistDataSchema[K]
+    ) => {
+        if (
+            subKey &&
+            typeof values[key] === 'object' &&
+            typeof initialValues.value[key] === 'object'
+        ) {
+            return (values[key] as any)[subKey] !== (initialValues.value[key] as any)[subKey]
+        }
+        return values[key] !== initialValues.value[key]
+    }
+
     const formatDate = values.dateOfBirth.split('/')
 
     const newData = {
-        first_name: isFieldDirty('email') ? values.fullname : undefined,
-        cpf: isFieldDirty('cpf') ? values.cpf : undefined,
-        date_birth: isFieldDirty('dateOfBirth')
+        first_name: hasChanged('fullname') ? values.fullname : undefined,
+        cpf: hasChanged('cpf') ? values.cpf : undefined,
+        date_birth: hasChanged('dateOfBirth')
             ? `${formatDate[2]}-${formatDate[1]}-${formatDate[0]}`
             : undefined,
-        gender: isFieldDirty('gender') ? values.gender : undefined,
-        address: isFieldDirty('address')
-            ? {
-                  zip_code: isFieldDirty('address.zipCode') ? values.address.zipCode : undefined,
-                  country: isFieldDirty('address.country') ? values.address.country : undefined,
-                  state: isFieldDirty('address.state') ? values.address.state : undefined,
-                  city: isFieldDirty('address.city') ? values.address.city : undefined,
-                  street: isFieldDirty('address.street') ? values.address.street : undefined,
-                  number: isFieldDirty('address.number') ? values.address.number : undefined
-              }
-            : undefined,
-        email: isFieldDirty('email') ? values.email : undefined,
-        phone: isFieldDirty('phone') ? values.phone : undefined,
-        expedient:
-            isFieldDirty('workDays') || isFieldDirty('turns')
-                ? {
-                      days_of_week: isFieldDirty('workDays') ? values.workDays : undefined,
-                      turns: isFieldDirty('turns') ? values.turns : undefined
-                  }
-                : undefined,
-        availableForShift: isFieldDirty('availableForShift')
+        gender: hasChanged('gender') ? values.gender : undefined,
+        address: {
+            zip_code: hasChanged('address', 'zipCode') ? values.address.zipCode : undefined,
+            country: hasChanged('address', 'country') ? values.address.country : undefined,
+            state: hasChanged('address', 'state') ? values.address.state : undefined,
+            city: hasChanged('address', 'city') ? values.address.city : undefined,
+            street: hasChanged('address', 'street') ? values.address.street : undefined,
+            number: hasChanged('address', 'number') ? values.address.number : undefined
+        },
+        email: hasChanged('email') ? values.email : undefined,
+        phone: hasChanged('phone') ? values.phone : undefined,
+        expedient: {
+            days_of_week: hasChanged('workDays') ? values.workDays : undefined,
+            turns: hasChanged('turns') ? values.turns : undefined
+        },
+        availableForShift: hasChanged('availableForShift')
             ? values.availableForShift === 'yes'
-                ? true
-                : false
             : undefined
     }
 
@@ -156,7 +165,9 @@ function handleCancel() {
                 <div class="flex gap-4 items-center">
                     <Avatar size="base" class="bg-primary text-white">
                         <AvatarImage src="https://github.com/josmartrigueiro.pnag" alt="@unovue" />
-                        <AvatarFallback>JS</AvatarFallback>
+                        <AvatarFallback>
+                            {{ initialValues.fullname && getInitials(initialValues.fullname) }}
+                        </AvatarFallback>
                     </Avatar>
                     <div>
                         <h2 class="text-3xl font-bold">
@@ -205,8 +216,14 @@ function handleCancel() {
                     </Button>
                 </template>
                 <template v-if="isEditMode">
-                    <Button variant="outline" type="button" @click="handleCancel">Cancelar</Button>
-                    <Button type="submit">
+                    <Button
+                        variant="outline"
+                        type="button"
+                        @click="handleCancel"
+                        :disabled="isPending">
+                        Cancelar
+                    </Button>
+                    <Button type="submit" :disabled="isPending">
                         <Loader v-if="isPending" class="animate-spin size-4" />
                         Salvar
                     </Button>
