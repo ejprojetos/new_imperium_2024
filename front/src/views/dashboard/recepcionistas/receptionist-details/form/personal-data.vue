@@ -2,6 +2,7 @@
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
 import {
     Select,
     SelectContent,
@@ -90,7 +91,7 @@ defineProps<{
 
                     <FormField v-slot="{ componentField }" name="gender">
                         <FormItem>
-                            <FormLabel>Email</FormLabel>
+                            <FormLabel>Gênero</FormLabel>
 
                             <Select v-bind="componentField">
                                 <FormControl>

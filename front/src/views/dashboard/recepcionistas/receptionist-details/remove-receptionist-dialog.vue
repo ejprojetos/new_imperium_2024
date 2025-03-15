@@ -15,6 +15,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useMutation } from '@tanstack/vue-query'
 import { fetcher } from '@/services/fetcher.service'
 import { useToast } from '@/components/ui/toast/use-toast'
+import { Loader } from 'lucide-vue-next'
 
 const { toast } = useToast()
 const route = useRoute()
