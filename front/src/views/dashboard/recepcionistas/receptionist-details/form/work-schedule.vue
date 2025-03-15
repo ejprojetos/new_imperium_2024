@@ -41,7 +41,9 @@ defineProps<{
                                             (checked) => {
                                                 const newValue = checked
                                                     ? [...value, day.id]
-                                                    : value.filter((d) => d !== day.id)
+                                                    : value.filter(
+                                                          (dayId: string) => dayId !== day.id
+                                                      )
                                                 handleChange(newValue)
                                             }
                                         "
@@ -71,7 +73,7 @@ defineProps<{
                                             (checked) => {
                                                 const newValue = checked
                                                     ? [...value, turn.id]
-                                                    : value.filter((t) => t !== turn.id)
+                                                    : value.filter((t: string) => t !== turn.id)
                                                 handleChange(newValue)
                                             }
                                         "
