@@ -1,35 +1,43 @@
 <script setup lang="ts">
-import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
+// Layout and Core Vue imports
 import { ref, computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 
+// UI Components
+import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-
-import PersonalData from './form/personal-data.vue'
-import WorkSchedule from './form/work-schedule.vue'
-import { Button } from '@/components/ui/button'
-import type { Recepcionist } from '@/types/users.types'
 import { Loader } from 'lucide-vue-next'
 
-import { useForm } from 'vee-validate'
+// Form Components
+import PersonalData from './form/personal-data.vue'
+import WorkSchedule from './form/work-schedule.vue'
+import RemoveReceptionistDialog from './remove-receptionist-dialog.vue'
+
+// Types and Schemas
+import type { Recepcionist } from '@/types/users.types'
 import { receptionistDataSchema, type ReceptionistDataSchema } from './schema'
-import { useQuery, useMutation } from '@tanstack/vue-query'
-import { useRoute } from 'vue-router'
+
+// Utilities and Services
+import { useForm } from 'vee-validate'
+import { useQuery, useMutation, QueryClient } from '@tanstack/vue-query'
 import { fetcher } from '@/services/fetcher.service'
 import { useToast } from '@/components/ui/toast/use-toast'
 import { getInitials, arraysHaveSameValues } from '@/lib/utils'
-import RemoveReceptionistDialog from './remove-receptionist-dialog.vue'
 
-const { toast } = useToast()
 const router = useRoute()
-const receptionistId = router.params.id as string
+const { toast } = useToast()
 
+const receptionistId = router.params.id as string
 const id = ref(receptionistId)
 const isEditMode = ref(false)
+const queryClient = new QueryClient()
 
 const { data, isLoading } = useQuery({
     queryKey: ['receptionist-user', id],
-    queryFn: async () => await fetcher<Recepcionist>(`/users/${receptionistId}`)
+    queryFn: async () => await fetcher<Recepcionist>(`/users/${receptionistId}`),
+    staleTime: 5 * 1000
 })
 
 const { isPending, mutate } = useMutation({
@@ -41,30 +49,41 @@ const { isPending, mutate } = useMutation({
     }
 })
 
-const initialValues = computed(() => {
-    const formatDate = data.value?.date_birth.split('-')
+function formatData(raw: Recepcionist = data.value!) {
+    const formatDate = raw.date_birth.split('-')
 
     return {
-        fullname: data.value?.first_name,
-        cpf: data.value?.cpf,
+        fullname: raw.first_name,
+        cpf: raw.cpf,
         dateOfBirth: formatDate && `${formatDate[2]}/${formatDate[1]}/${formatDate[0]}`,
-        gender: data.value?.gender as 'Masculino' | 'Feminino' | 'Outro',
+        gender: raw.gender as 'Masculino' | 'Feminino' | 'Outro',
         address: {
-            zipCode: data.value?.address.zip_code,
-            country: data.value?.address.country,
-            state: data.value?.address.state,
-            city: data.value?.address.city,
-            neighborhood: data.value?.address.street,
-            street: data.value?.address.street,
-            number: data.value?.address.number
+            zipCode: raw.address.zip_code,
+            country: raw.address.country,
+            state: raw.address.state,
+            city: raw.address.city,
+            neighborhood: raw.address.street,
+            street: raw.address.street,
+            number: raw.address.number
         },
-        email: data.value?.email,
-        phone: data.value?.phone,
-        workDays: data.value?.expedient?.days_of_week || [],
-        turns: data.value?.expedient?.turns || [],
-        availableForShift: (data.value?.availableForShift ? 'yes' : 'no') as 'yes' | 'no'
+        email: raw.email,
+        phone: raw.phone,
+        workDays: raw.expedient?.days_of_week || [],
+        turns: raw.expedient?.turns || [],
+        availableForShift: (raw.availableForShift ? 'yes' : 'no') as 'yes' | 'no'
     }
+}
+
+const initialValues = computed(() => {
+    return formatData()
 })
+
+const headerPersonalInfos = ref({
+    fullName: initialValues.value?.fullname,
+    initials: initialValues.value?.fullname && getInitials(initialValues.value.fullname)
+})
+
+const savedValues = ref(formatData())
 
 const { isFieldDirty, handleSubmit, setValues, resetForm } = useForm<ReceptionistDataSchema>({
     validationSchema: receptionistDataSchema,
@@ -73,12 +92,13 @@ const { isFieldDirty, handleSubmit, setValues, resetForm } = useForm<Receptionis
 })
 
 watch(initialValues, (newAsyncData) => {
+    headerPersonalInfos.value.fullName = newAsyncData.fullname
+    headerPersonalInfos.value.initials = getInitials(newAsyncData.fullname ?? '')
+
     setValues(newAsyncData)
 })
 
 const onSubmit = handleSubmit((values) => {
-    console.log(values.workDays, initialValues.value.workDays)
-
     const hasChanged = <K extends keyof ReceptionistDataSchema>(
         key: K,
         subKey?: keyof ReceptionistDataSchema[K]
@@ -86,11 +106,11 @@ const onSubmit = handleSubmit((values) => {
         if (
             subKey &&
             typeof values[key] === 'object' &&
-            typeof initialValues.value[key] === 'object'
+            typeof savedValues.value[key] === 'object'
         ) {
-            return (values[key] as any)[subKey] !== (initialValues.value[key] as any)[subKey]
+            return (values[key] as any)[subKey] !== (savedValues.value[key] as any)[subKey]
         }
-        return values[key] !== initialValues.value[key]
+        return values[key] !== savedValues.value[key]
     }
 
     const formatDate = values.dateOfBirth.split('/')
@@ -161,11 +181,26 @@ const onSubmit = handleSubmit((values) => {
     }
 
     mutate(newData as any, {
-        onSuccess: () => {
-            toast({
-                variant: 'success',
-                description: 'Recepcionista atualizado com sucesso! 🎉'
-            })
+        onSuccess: async (newData) => {
+            if (newData) {
+                toast({
+                    variant: 'success',
+                    description: 'Recepcionista atualizado com sucesso! 🎉'
+                })
+
+                if (headerPersonalInfos.value) {
+                    headerPersonalInfos.value.fullName =
+                        newData.first_name ?? headerPersonalInfos.value.fullName
+                    headerPersonalInfos.value.initials = newData.first_name
+                        ? getInitials(newData.first_name)
+                        : headerPersonalInfos.value.initials
+                    newData?.first_name && getInitials(newData.first_name)
+                }
+
+                queryClient.setQueryData(['receptionist-user', id], newData)
+
+                savedValues.value = formatData(newData)
+            }
         },
         onError: () => {
             toast({
@@ -197,12 +232,12 @@ function handleCancel() {
                     <Avatar size="base" class="bg-primary text-white">
                         <AvatarImage src="https://github.com/josmartrigueiro.pnag" alt="@unovue" />
                         <AvatarFallback>
-                            {{ initialValues.fullname && getInitials(initialValues.fullname) }}
+                            {{ headerPersonalInfos.initials }}
                         </AvatarFallback>
                     </Avatar>
                     <div>
                         <h2 class="text-3xl font-bold">
-                            {{ data?.first_name }}
+                            {{ headerPersonalInfos.fullName }}
                         </h2>
                         <div class="text-sm text-gray-500">Recepcionista</div>
                     </div>
