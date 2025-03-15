@@ -112,8 +112,8 @@ const router = createRouter({
         },
         {
             path: '/dashboard/medicos/:id',
-            name: 'visualizar-medico',
-            component: () => import('../views/dashboard/medicos/visualizar-medico.vue')
+            name: 'doctor-details',
+            component: () => import('../views/dashboard/medicos/doctor-details/doctor-details.vue')
         },
         {
             path: '/dashboard/medicos/cadastrar-consultas',
