@@ -28,13 +28,16 @@ export function getInitials(name: string) {
 }
 
 type ArrayComparison = {
-    defaultData: string[]
-    newData: string[]
+    defaultData?: string[]
+    newData?: string[]
 }
 
-export function arraysHaveSameValues({ defaultData, newData }: ArrayComparison): boolean {
+export function arraysHaveSameValues({
+    defaultData,
+    newData
+}: ArrayComparison): boolean | undefined {
     return (
-        defaultData.length === newData.length &&
-        defaultData.every((value) => newData.includes(value))
+        defaultData?.length === newData?.length &&
+        defaultData?.every((value) => newData?.includes(value))
     )
 }
