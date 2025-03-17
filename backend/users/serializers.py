@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
-from .models import Role, User, Expedient, Policies, FAQ, Tag, UserPoliciesSupport, OtherArchives
+from .models import Role, User, Expedient, UserPolicies, FAQ, Tag, UserSupport, OtherArchives, UserSupport
 from commom.models import Address
 from clinic.models import Clinic, WorkingHours
 from drf_extra_fields.fields import Base64ImageField, Base64FileField
@@ -25,12 +25,7 @@ class SimplifiedExpedientSerializer(serializers.ModelSerializer):
        fields = ['days_of_week', 'turns']
 
 class ExpedientSerializer(serializers.ModelSerializer):
-    class Meta:
-       model = Expedient
-       fields = ['id','days_of_week', 'turns']
-
-    def create(self, validated_data):
-       days_dict = {
+    days_dict = {
             "Segunda-feira": 1,
             "Terça-feira": 2,
             "Quarta-feira": 3,
@@ -40,12 +35,17 @@ class ExpedientSerializer(serializers.ModelSerializer):
             "Domingo": 7
        }
 
-       times = {
-            "Matutino": [7, 12],
-            "Vespertino": [13, 18],
-            "Noturno": [18, 23],
-       }   
+    times = {
+        "Matutino": [7, 12],
+        "Vespertino": [13, 18],
+        "Noturno": [18, 23],
+    }
 
+    class Meta:
+       model = Expedient
+       fields = ['id','days_of_week', 'turns']
+
+    def create(self, validated_data):   
        days = validated_data.get('days_of_week')
        turns = validated_data.get('turns')
        
@@ -54,12 +54,35 @@ class ExpedientSerializer(serializers.ModelSerializer):
        for day in days:
            for turn in turns:
                #criar as working hours com base nos dias e turnos
-               working_hours = WorkingHours(user=user, day_of_week=days_dict[day], start_time=time(times[turn][0],0), end_time=time(times[turn][1],0))
+               working_hours = WorkingHours(user=user, day_of_week=self.days_dict[day], start_time=time(self.times[turn][0],0), end_time=time(self.times[turn][1],0))
                working_hours.save()
                pass
 
        return super().create(validated_data)
+    
+    def update(self, instance, validated_data):
+        # Obtém os valores atualizados ou mantém os existentes
+        days = validated_data.get("days_of_week", instance.days_of_week)
+        turns = validated_data.get("turns", instance.turns)
 
+        # Obtém o usuário do contexto
+        user = self.context.get("user")
+
+        # Se "days_of_week" ou "turns" forem atualizados, recria os horários de trabalho
+        if "days_of_week" in validated_data or "turns" in validated_data:
+            WorkingHours.objects.filter(user=user).delete()
+
+            for day in days:
+                for turn in turns:
+                    working_hours = WorkingHours(
+                        user=user,
+                        day_of_week=self.days_dict[day],  
+                        start_time=time(self.times[turn][0], 0),
+                        end_time=time(self.times[turn][1], 0)
+                    )
+                    working_hours.save()
+
+        return super().update(instance, validated_data)
 
 class UserSerializer(serializers.ModelSerializer):
     address = AddressSerializer(required=False)
@@ -73,7 +96,7 @@ class UserSerializer(serializers.ModelSerializer):
     # date_birth = serializers.DateField(required=True)
     password = serializers.CharField(write_only=True, required=True)
 
-    attach_document = PDFBase64File(required=False)
+    attach_document = PDFBase64File(required=False, allow_null=True)
 
     class Meta:
         model = User
@@ -83,6 +106,9 @@ class UserSerializer(serializers.ModelSerializer):
             'formacao', 'crm', 'attach_document', 'phone', 'expedient', 'availableForShift'
         ]
         read_only_fields = ['id']
+        extra_kwargs = {
+            'attach_document': {'write_only': True},  # Forçar escrita
+        }
 
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
@@ -95,6 +121,8 @@ class UserSerializer(serializers.ModelSerializer):
         roles_data = validated_data.pop('roles', [])
         roles_data = roles_data[0]['name']
         expedient_data = validated_data.pop('expedient', None)
+
+        attach_document = validated_data.pop("attach_document", None)
         
         address = None
         if address_data:
@@ -103,6 +131,10 @@ class UserSerializer(serializers.ModelSerializer):
         user = User.objects.create(**validated_data, address=address)
         user.set_password(validated_data['password'])
         user.save()
+
+        if attach_document:
+            user.attach_document = attach_document
+            user.save()
 
         if expedient_data:
             expedient_serializer = ExpedientSerializer(data=expedient_data, context={'user': user})
@@ -148,16 +180,22 @@ class UserSerializer(serializers.ModelSerializer):
             else:
                 instance.is_staff = False
 
-        # Atualiza expediente
-        if expedient_data:
+        if expedient_data:  # Se expedient foi enviado na requisição
             if instance.expedient:
-                for key, value in expedient_data.items():
-                    setattr(instance.expedient, key, value)
-                instance.expedient.save()
+                expedient_instance = instance.expedient  # Pega o expedient atual do usuário
+                expedient_serializer = ExpedientSerializer(expedient_instance, data=expedient_data, partial=True, context={'user': instance})
+
+                if expedient_serializer.is_valid():
+                    expedient_serializer.save()
+                else:
+                    raise serializers.ValidationError(expedient_serializer.errors)
             else:
+                # Cria um novo expedient caso o usuário ainda não tenha um
                 expedient_serializer = ExpedientSerializer(data=expedient_data, context={'user': instance})
                 if expedient_serializer.is_valid(raise_exception=True):
-                    instance.expedient = expedient_serializer.save()
+                    expedient = expedient_serializer.save()
+                    instance.expedient = expedient
+                    instance.save()
 
         # Atualiza clínicas
         if clinics:
@@ -230,18 +268,38 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = '__all__'
 
-
-class PoliciesSerializer(serializers.ModelSerializer):
+class UserPoliciesSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Policies
+        model = UserPolicies
         fields = '__all__'
+
+    def create(self, validated_data):
+        profile = validated_data.get('profile')  # Obtém o profile do request
+
+        # Verifica se já existe um UserPoliciesSupport para este profile
+        if UserPolicies.objects.filter(profile=profile).exists():
+            raise serializers.ValidationError({"profile": "Já existe uma politica para este profile."})
+
+        # Cria UserPoliciesSupport com a nova policy
+        user_policy_support = UserPolicies.objects.create(**validated_data)
+
+        return user_policy_support
+    
+    def update(self, instance, validated_data):
+        profile = validated_data.get('profile')
+
+        if instance.profile != profile:
+            raise serializers.ValidationError({"profile": f"Não é possivel obter mais de uma politica para uma mesma profile, atualize o profile vinculado ao id, profile = {instance.profile}"})
+        else:
+            instance = super().update(instance, validated_data)
+            return instance
 
 class FAQSerializer(serializers.ModelSerializer):
     tags = TagSerializer(required=False, many=True)
 
     class Meta:
         model = FAQ
-        fields = ['title', 'questions', 'content', 'profile', 'tags']
+        fields = ['id', 'title', 'questions', 'content', 'profile', 'tags']
 
     def create(self, validated_data):
         tags_data = validated_data.pop('tags', None)
@@ -266,45 +324,18 @@ class FAQSerializer(serializers.ModelSerializer):
 
         return instance
 
-class UserPoliciesSupportSerializer(serializers.ModelSerializer):
-    policy = PoliciesSerializer()
+class UserSupportSerializer(serializers.ModelSerializer):
     other_files = OtherArchivesSerializer(required=False, many=True)
 
     class Meta:
-        model = UserPoliciesSupport
-        fields = ['id', 'profile', 'policy', 'manual_archive', 'other_files']
-
-    def create(self, validated_data):
-        policy_data = validated_data.pop('policy', None)
-        profile = validated_data.get('profile')  # Obtém o profile do request
-
-        # Verifica se já existe um UserPoliciesSupport para este profile
-        if UserPoliciesSupport.objects.filter(profile=profile).exists():
-            raise serializers.ValidationError({"profile": "Já existe um objeto UserPoliciesSupport para este profile."})
-
-        if policy_data:  
-            # Cria a policy antes de criar UserPoliciesSupport
-            policy_instance = Policies.objects.create(**policy_data)
-        else:
-            raise serializers.ValidationError({"policy": "Este campo é obrigatório."})
-
-        # Cria UserPoliciesSupport com a nova policy
-        user_policy_support = UserPoliciesSupport.objects.create(policy=policy_instance, **validated_data)
-
-        return user_policy_support
+        model = UserSupport
+        fields = ['id', 'profile', 'manual_archive', 'other_files']
     
     def update(self, instance, validated_data):
-        policy_data = validated_data.pop('policy', None)
         other_files_data = validated_data.pop('other_files', None)
 
         # Atualiza os outros campos do UserPoliciesSupport
         instance = super().update(instance, validated_data)
-
-        if policy_data:
-            # Atualiza os campos da policy existente
-            for attr, value in policy_data.items():
-                setattr(instance.policy, attr, value)
-            instance.policy.save()
 
         if other_files_data is not None:
             # Atualiza os arquivos associados, removendo os antigos e adicionando os novos
