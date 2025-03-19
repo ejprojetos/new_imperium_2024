@@ -25,3 +25,27 @@ export const ajudaService = {
         })
 
 }
+
+export const policiesService = {
+
+        getAllPolicies: () => fetcher<Policies[]>('/policies/'),
+
+        getPolicy: (id: number) => fetcher<Policies>(`/policies/${id}/`),
+
+        createPolicy: (data: Partial<Policies>) => 
+            fetcher<Policies>('/policies/', {
+                method: 'POST',
+                body: JSON.stringify(data)
+            }),
+
+        updatePolicy: (id:number, data: Partial<Policies>) =>
+            fetcher<Policies>(`/policies/${id}/`,{
+                method: 'PUT',
+                body: JSON.stringify(data)
+            }),
+
+        deletPolicy: (id:number) =>
+            fetcher(`/policies/${id}/`, {
+                method: 'DELETE'
+            }) 
+}

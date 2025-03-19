@@ -9,3 +9,11 @@ interface Faq {
         name: string
     }[]
 }
+
+
+interface Policies {
+    id: number
+    profile: string
+    title: string
+    content: string
+}
