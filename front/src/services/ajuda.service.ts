@@ -28,12 +28,12 @@ export const ajudaService = {
 
 export const policiesService = {
 
-        getAllPolicies: () => fetcher<Policies[]>('/policies/'),
+        getAllPolicies: () => fetcher<Policies[]>('/user-policies/'),
 
-        getPolicy: (id: number) => fetcher<Policies>(`/policies/${id}/`),
+        getPolicy: (id: number) => fetcher<Policies>(`/user-policies/${id}/`),
 
         createPolicy: (data: Partial<Policies>) => 
-            fetcher<Policies>('/policies/', {
+            fetcher<Policies>('/user-policies/', {
                 method: 'POST',
                 body: JSON.stringify(data)
             }),
