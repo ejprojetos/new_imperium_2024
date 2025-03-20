@@ -34,10 +34,14 @@
 			<button class="px-4 py-2 text-white bg-blue-700 rounded-full">Hoje</button>
 			<select class="px-4 py-2 bg-gray-200 rounded-full">
 				<option>Dias da semana</option>
+				<option v-for="day in days_of_week" :key="day">{{ day }}</option>
+				
 			</select>
 			<select class="px-4 py-2 bg-gray-200 rounded-full">
 				<option>Turno</option>
+				<option v-for="turn in turns" :key="turn">{{ turn }}</option>
 			</select>
+			
 			<input type="text" v-model="searchName" class="px-4 py-2 bg-gray-200 rounded-full" placeholder="Pesquise..." />
 			<button class="p-2 bg-gray-200 rounded-full">
 				<Search />
@@ -101,6 +105,8 @@ const apiAddress = 'http://191.252.192.82'
 // referencias para os campos de busca
 const searchName = ref('')
 const searchEmail = ref('')
+const days_of_week = ['Segunda-Feira', 'Terça-Feira', 'Quarta-Feira', 'Quinta-Feira', 'Sexta-Feira', 'Sábado', 'Domingo']
+const turns = ['Matutino', 'Vespertino', 'Noturno']
 
 // computed property para filtrar os recepcionistas
 const filteredReceptionists = computed(() => {
