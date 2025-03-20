@@ -236,9 +236,9 @@ const router = createRouter({
             component: () => import('../views/dashboard/politicas/politicas.vue')
         },
         {
-            path: '/dashboard/suporte/editar-politicas',
-            name: 'editar-politicas',
-            component: () => import('../views/dashboard/suporte/editar-politicas.vue')
+            path: '/dashboard/suporte/cadastrar-politicas',
+            name: 'cadastrar-politicas',
+            component: () => import('../views/dashboard/suporte/cadastrar-politicas.vue')
         },
 
         {

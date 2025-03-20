@@ -9,7 +9,7 @@
                     <img :src="administradorIcon" alt="Administrador" class="w-20 h-20 mb-4" />
                     <span class="text-lg font-medium mb-4">Administrador</span>
 
-                    <RouterLink to="/dashboard/suporte/editar-politicas">
+                    <RouterLink to="/dashboard/suporte/cadastrar-politicas">
 
                         <button
                             class="bg-blue-600 text-white px-6 py-1 rounded-full text-sm hover:bg-blue-600 transition-colors">
