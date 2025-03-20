@@ -19,3 +19,12 @@ export interface User {
     attach_document: string | null
     password?: string
 }
+
+export interface Recepcionist extends User {
+    phone: string
+    availableForShift: boolean
+    expedient: {
+        days_of_week: string[]
+        turns: string[]
+    }
+}

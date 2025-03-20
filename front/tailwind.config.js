@@ -14,24 +14,40 @@ module.exports = {
 	],
 
 	theme: {
-		extend: {
-			colors: {
-				primary: '#00428F',
-				lightGreen: '#BBFAE4',
-				lightBlue: '#DEECFA',
-				DeepBlue: '#26438B',
-			},
-			fontFamily:{
-				montserrat:['Montserrat', 'sans-serif'],
-				openSans:['Open sans'],
-				roboto:['Roboto', 'sans-serif'],
-				raleway:['Raleway', 'sans-serif']
-			}
-		},
-	},
+    	extend: {
+    		colors: {
+    			primary: '#00428F',
+    			lightGreen: '#BBFAE4',
+    			lightBlue: '#DEECFA',
+    			DeepBlue: '#26438B'
+    		},
+    		fontFamily: {
+    			montserrat: [
+    				'Montserrat',
+    				'sans-serif'
+    			],
+    			openSans: [
+    				'Open sans'
+    			],
+    			roboto: [
+    				'Roboto',
+    				'sans-serif'
+    			],
+    			raleway: [
+    				'Raleway',
+    				'sans-serif'
+    			]
+    		},
+    		borderRadius: {
+    			lg: 'var(--radius)',
+    			md: 'calc(var(--radius) - 2px)',
+    			sm: 'calc(var(--radius) - 4px)'
+    		}
+    	}
+    },
 
 
-	plugins: [daisyui],
+	plugins: [daisyui, require("tailwindcss-animate")],
 	daisyui: {
 		themes: ["light"],
 	},
