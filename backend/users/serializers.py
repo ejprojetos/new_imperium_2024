@@ -101,9 +101,9 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'id', 'first_name', 'email', 'cpf', 'date_birth',
+            'id', 'full_name', 'email', 'cpf', 'date_birth',
             'password', 'roles', 'address', 'clinics', 'gender',
-            'formacao', 'crm', 'attach_document', 'phone', 'expedient', 'availableForShift'
+            'formacao', 'crm', 'attach_document', 'phone', 'expedient', 'availableForShift', 'formation', 'specialty', 'collective_documents'
         ]
         read_only_fields = ['id']
         extra_kwargs = {
@@ -254,7 +254,7 @@ class RecepcionistSerializer(UserSerializer):
     class Meta:
         model = User
         fields = [
-            'id', 'first_name', 'email', 'cpf', 'date_birth',
+            'id', 'full_name', 'email', 'cpf', 'date_birth',
             'roles', 'address', 'clinics', 'gender', 'attach_document', 'phone', 'expedient'
         ]
 

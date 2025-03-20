@@ -5,6 +5,59 @@ from django.utils.translation import gettext_lazy as _
 from commom.models import Address
 from enum import Enum
 
+def upload_collective_documents(instance, filename):
+    return f"doctors/{instance.id}/collective_documents/{filename}"
+
+class SpecialtyEnum(Enum):
+    ALERGOLOGIA = "Alergologia"
+    ANESTESIOLOGIA = "Anestesiologia"
+    ANGIOLOGIA = "Angiologia"
+    CARDIOLOGIA = "Cardiologia"
+    CIRURGIA_CARDIOVASCULAR = "Cirurgia Cardiovascular"
+    CIRURGIA_GERAL = "Cirurgia Geral"
+    CIRURGIA_PLASTICA = "Cirurgia Plástica"
+    CIRURGIA_VASCULAR = "Cirurgia Vascular"
+    CLINICA_MEDICA = "Clínica Médica"
+    DERMATOLOGIA = "Dermatologia"
+    ENDOCRINOLOGIA = "Endocrinologia"
+    GASTROENTEROLOGIA = "Gastroenterologia"
+    GERIATRIA = "Geriatria"
+    GINECOLOGIA_OBSTETRICIA = "Ginecologia e Obstetrícia"
+    HEMATOLOGIA = "Hematologia"
+    INFECTOLOGIA = "Infectologia"
+    MEDICINA_TRABALHO = "Medicina do Trabalho"
+    MEDICINA_ESPORTIVA = "Medicina Esportiva"
+    NEFROLOGIA = "Nefrologia"
+    NEUROLOGIA = "Neurologia"
+    OFTALMOLOGIA = "Oftalmologia"
+    ONCOLOGIA = "Oncologia"
+    ORTOPEDIA = "Ortopedia"
+    OTORRINOLARINGOLOGIA = "Otorrinolaringologia"
+    PEDIATRIA = "Pediatria"
+    PSIQUIATRIA = "Psiquiatria"
+    RADIOLOGIA = "Radiologia"
+    REUMATOLOGIA = "Reumatologia"
+    UROLOGIA = "Urologia"
+
+    @classmethod
+    def choices(cls):
+        return [(role.value, role.name) for role in cls]
+
+class FormationEnum(Enum):
+    ENSINO_MEDIO = "Ensino Médio"
+    TECNICO = "Técnico"
+    TECNOLOGO = "Tecnólogo"
+    GRADUACAO = "Graduação"
+    POS_GRADUACAO = "Pós-Graduação"
+    MBA = "MBA"
+    MESTRADO = "Mestrado"
+    DOUTORADO = "Doutorado"
+    POS_DOUTORADO = "Pós-Doutorado"
+    
+    @classmethod
+    def choices(cls):
+        return [(role.value, role.name) for role in cls]
+
 class Expedient(models.Model):
     days_of_week = models.JSONField(default=list)
     turns = models.JSONField(default=list)
@@ -51,8 +104,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
-    first_name = models.CharField(max_length=255, blank=True)
-    # last_name = models.CharField(max_length=255, blank=True)
+    full_name = models.CharField(max_length=255, blank=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
@@ -69,6 +121,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField(max_length=255, null=True, blank=True)
     expedient = models.OneToOneField(Expedient, on_delete=models.CASCADE, blank=True, null=True)
     availableForShift = models.BooleanField(default=False, blank=True, null=True)
+
+    # fields for doctor - professional data
+    formation = models.CharField(max_length=15, choices=FormationEnum.choices(), null=True, blank=True)
+    specialty = models.CharField(max_length=30, choices=SpecialtyEnum.choices(), null=True, blank=True)
+    collective_documents = models.FileField(upload_to=upload_collective_documents,null=True, blank=True)
 
     objects = UserManager()
 
