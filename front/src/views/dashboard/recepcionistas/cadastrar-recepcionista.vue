@@ -378,7 +378,8 @@ const submitForm = async () => {
 			phone: FormData.phone,
 			working_days: selectedDays.value,
 			working_shifts: selectedShifts.value,
-			on_call_availability: FormData.plantoes === 'sim'
+			on_call_availability: FormData.plantoes === 'sim',
+			availableForShift: FormData.plantoes === 'sim'
 		};
 
 		await userStore.createReceptionist(receptionistData);
