@@ -28,3 +28,10 @@ export interface Recepcionist extends User {
         turns: string[]
     }
 }
+
+export interface Doctor extends User {
+    phone: string
+    speciality: string
+    crm: string
+    attach_document: string | null
+}

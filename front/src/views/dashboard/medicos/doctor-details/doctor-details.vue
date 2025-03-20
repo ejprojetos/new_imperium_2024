@@ -1,50 +1,43 @@
 <script setup lang="ts">
-// Layout and Core Vue imports
 import { ref, computed, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
-
-// UI Components
-import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Loader } from 'lucide-vue-next'
-
-// Form Components
+import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
+import { type DoctorDataSchema } from './schema'
+import { doctorDataSchema } from './schema'
 import PersonalData from './form/personal-data.vue'
-import WorkSchedule from './form/work-schedule.vue'
+import ProfessionalData from './form/professional-data.vue'
+import { useQuery, useMutation, QueryClient } from '@tanstack/vue-query'
+import type { Doctor } from '@/types/users.types'
+import { useRoute, useRouter } from 'vue-router'
+import { fetcher } from '@/services/fetcher.service'
+import { useToast } from '@/components/ui/toast/use-toast'
+import { Loader } from 'lucide-vue-next'
+import { useForm } from 'vee-validate'
+import { getInitials } from '@/lib/utils'
+import { useDeleteUserMutation } from '@/hooks/use-delete-user-mutation'
 import DeleteUserDialog from '@/components/delete-user-dialog.vue'
 
-// Types and Schemas
-import type { Recepcionist } from '@/types/users.types'
-import { receptionistDataSchema, type ReceptionistDataSchema } from './schema'
-
-// Utilities and Services
-import { useForm } from 'vee-validate'
-import { useQuery, useMutation, QueryClient } from '@tanstack/vue-query'
-import { fetcher } from '@/services/fetcher.service'
-import { useDeleteUserMutation } from '@/hooks/use-delete-user-mutation'
-import { useToast } from '@/components/ui/toast/use-toast'
-import { getInitials, arraysHaveSameValues } from '@/lib/utils'
-
+const { toast } = useToast()
 const route = useRoute()
 const router = useRouter()
-const { toast } = useToast()
+const doctorId = route.params.id as string
 
-const receptionistId = route.params.id as string
-const id = ref(receptionistId)
+const id = ref(doctorId)
 const isEditMode = ref(false)
+
 const queryClient = new QueryClient()
 
 const { data, isLoading } = useQuery({
-    queryKey: ['receptionist-user', id],
-    queryFn: async () => await fetcher<Recepcionist>(`/users/${receptionistId}`),
+    queryKey: ['doctor-user', id],
+    queryFn: async () => await fetcher<Doctor>(`/users/${doctorId}`),
     staleTime: 5 * 1000
 })
 
 const { isPending, mutate } = useMutation({
     mutationFn: async (newTodo) => {
-        return await fetcher<Recepcionist>(`/users/${receptionistId}/`, {
+        return await fetcher<Doctor>(`/users/${doctorId}/`, {
             method: 'PATCH',
             body: JSON.stringify(newTodo)
         })
@@ -53,12 +46,12 @@ const { isPending, mutate } = useMutation({
 
 const { mutate: deleteUserMutate, isPending: isPendingUser } = useDeleteUserMutation()
 
-function formatData(raw: Recepcionist = data.value!) {
+function formatData(raw: Doctor = data.value!) {
     if (!raw) {
         return {}
     }
 
-    const formatDate = raw.date_birth?.split('-')
+    const formatDate = raw.date_birth.split('-')
 
     return {
         fullname: raw.first_name,
@@ -76,9 +69,10 @@ function formatData(raw: Recepcionist = data.value!) {
         },
         email: raw.email,
         phone: raw.phone,
-        workDays: raw.expedient?.days_of_week || [],
-        turns: raw.expedient?.turns || [],
-        availableForShift: (raw.availableForShift ? 'yes' : 'no') as 'yes' | 'no'
+        attachDocument: raw.attach_document ?? null,
+        formation: raw.formacao,
+        specialty: raw.speciality,
+        crm: raw.crm
     }
 }
 
@@ -90,11 +84,10 @@ const headerPersonalInfos = ref({
     fullName: initialValues.value?.fullname,
     initials: initialValues.value?.fullname && getInitials(initialValues.value.fullname)
 })
-
 const savedValues = ref(formatData())
 
-const { isFieldDirty, handleSubmit, setValues, resetForm } = useForm<ReceptionistDataSchema>({
-    validationSchema: receptionistDataSchema,
+const { isFieldDirty, handleSubmit, setValues, resetForm, values } = useForm<DoctorDataSchema>({
+    validationSchema: doctorDataSchema,
     initialValues: initialValues.value ?? undefined,
     keepValuesOnUnmount: true
 })
@@ -106,22 +99,45 @@ watch(initialValues, (newAsyncData) => {
     setValues(newAsyncData)
 })
 
-const onSubmit = handleSubmit((values) => {
-    const hasChanged = <K extends keyof ReceptionistDataSchema>(
+function handleRemoveFile() {
+    setValues({
+        ...initialValues.value,
+        file: undefined,
+        attachDocument: null
+    })
+}
+
+const onSubmit = handleSubmit(async (values) => {
+    const hasChanged = <K extends keyof DoctorDataSchema>(
         key: K,
-        subKey?: keyof ReceptionistDataSchema[K]
+        subKey?: keyof DoctorDataSchema[K]
     ) => {
         if (
             subKey &&
             typeof values[key] === 'object' &&
-            typeof savedValues.value[key] === 'object'
+            typeof savedValues.value?.[key as keyof typeof savedValues.value] === 'object'
         ) {
+            // @ts-ignore
             return (values[key] as any)[subKey] !== (savedValues.value[key] as any)[subKey]
         }
-        return values[key] !== savedValues.value[key]
+        return (
+            values[key as keyof typeof values] !==
+            savedValues.value?.[key as keyof typeof savedValues.value]
+        )
     }
 
     const formatDate = values.dateOfBirth.split('/')
+    let base64Image: string | null = null
+
+    if (values.file) {
+        base64Image = await new Promise((resolve) => {
+            const reader = new FileReader()
+            reader.readAsDataURL(values.file as File)
+            reader.onload = () => resolve(reader.result as string)
+        })
+        console.log(values.file)
+    }
+
     const addressChanged =
         hasChanged('address', 'zipCode') ||
         hasChanged('address', 'country') ||
@@ -130,23 +146,14 @@ const onSubmit = handleSubmit((values) => {
         hasChanged('address', 'street') ||
         hasChanged('address', 'number')
 
-    const expedientChanged =
-        !arraysHaveSameValues({
-            defaultData: savedValues.value.workDays,
-            newData: values.workDays
-        }) ||
-        !arraysHaveSameValues({
-            defaultData: savedValues.value.turns,
-            newData: values.turns
-        })
-
-    const newData = {
+    const newData: Partial<Doctor> = {
         first_name: hasChanged('fullname') ? values.fullname : undefined,
         cpf: hasChanged('cpf') ? values.cpf : undefined,
         date_birth: hasChanged('dateOfBirth')
             ? `${formatDate[2]}-${formatDate[1]}-${formatDate[0]}`
             : undefined,
         gender: hasChanged('gender') ? values.gender : undefined,
+        // @ts-ignore
         address: addressChanged
             ? {
                   zip_code: hasChanged('address', 'zipCode') ? values.address.zipCode : undefined,
@@ -159,42 +166,25 @@ const onSubmit = handleSubmit((values) => {
             : undefined,
         email: hasChanged('email') ? values.email : undefined,
         phone: hasChanged('phone') ? values.phone : undefined,
-        expedient: expedientChanged
-            ? {
-                  days_of_week: !arraysHaveSameValues({
-                      defaultData: savedValues.value.workDays,
-                      newData: values.workDays
-                  })
-                      ? values.workDays
-                      : undefined,
-                  turns: !arraysHaveSameValues({
-                      defaultData: savedValues.value.turns,
-                      newData: values.turns
-                  })
-                      ? values.turns
-                      : undefined
-              }
-            : undefined,
-        availableForShift: hasChanged('availableForShift')
-            ? values.availableForShift === 'yes'
-            : undefined
+        formacao: hasChanged('formation') ? values.formation : undefined,
+        crm: hasChanged('crm') ? values.crm.toUpperCase() : undefined,
+        attach_document: base64Image
+            ? base64Image
+            : values.attachDocument === null
+              ? null
+              : undefined
     }
 
     const isEmpty = Object.values(newData).every((value) => value === undefined)
-
     if (isEmpty) {
         isEditMode.value = false
-
         return
     }
 
     mutate(newData as any, {
-        onSuccess: async (newValue) => {
+        onSuccess: (newValue) => {
             if (newValue) {
-                toast({
-                    variant: 'success',
-                    description: 'Recepcionista atualizado com sucesso! 🎉'
-                })
+                toast({ variant: 'success', description: 'Médico atualizado com sucesso! 🎉' })
 
                 if (headerPersonalInfos.value) {
                     headerPersonalInfos.value.fullName =
@@ -205,16 +195,13 @@ const onSubmit = handleSubmit((values) => {
                     newValue?.first_name && getInitials(newValue.first_name)
                 }
 
-                queryClient.setQueryData(['receptionist-user', id], newValue)
+                queryClient.setQueryData(['doctor-user', id], newValue)
 
                 savedValues.value = formatData(newValue)
             }
         },
         onError: () => {
-            toast({
-                variant: 'destructive',
-                description: 'Erro ao atualizar recepcionista! 😢'
-            })
+            toast({ variant: 'destructive', description: 'Erro ao atualizar médico! 😢' })
         }
     })
 
@@ -229,18 +216,18 @@ function handleCancel() {
 }
 
 function handleDeleteUser() {
-    deleteUserMutate(receptionistId, {
+    deleteUserMutate(doctorId, {
         onSuccess: () => {
             toast({
                 variant: 'success',
-                description: 'Recepcionista removido com sucesso!'
+                description: 'Médico removido com sucesso!'
             })
             router.push('/dashboard/recepcionistas')
         },
         onError: () => {
             toast({
                 variant: 'destructive',
-                description: 'Erro ao remover recepcionista! 😢'
+                description: 'Erro ao remover médico! 😢'
             })
         }
     })
@@ -263,9 +250,12 @@ function handleDeleteUser() {
                     </Avatar>
                     <div>
                         <h2 class="text-3xl font-bold">
+                            {{ values.gender === 'Feminino' ? 'Dra.' : 'Dr.' }}
                             {{ headerPersonalInfos.fullName }}
                         </h2>
-                        <div class="text-sm text-gray-500">Recepcionista</div>
+                        <div class="text-sm text-gray-500">
+                            {{ values.gender === 'Feminino' ? 'Médico' : 'Médica' }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -274,14 +264,18 @@ function handleDeleteUser() {
                 <TabsList
                     className="grid grid-cols-2 mb-4 border rounded-md p-1.5 border-gray-200 bg-white">
                     <TabsTrigger value="personal">Dados Pessoais</TabsTrigger>
-                    <TabsTrigger value="work">Expediente</TabsTrigger>
+                    <TabsTrigger value="work">Dados Profissionais</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="personal">
                     <PersonalData :isEditMode="isEditMode" :isFieldDirty="isFieldDirty" />
                 </TabsContent>
                 <TabsContent value="work">
-                    <WorkSchedule :isEditMode="isEditMode" :isFieldDirty="isFieldDirty" />
+                    <ProfessionalData
+                        :onRemoveFile="handleRemoveFile"
+                        :isEditMode="isEditMode"
+                        :isFieldDirty="isFieldDirty"
+                        :imageUrl="values.attachDocument" />
                 </TabsContent>
             </Tabs>
 
