@@ -2,7 +2,7 @@
     <LayoutDashboard>
         <div class="p-1">
             <div class="flex items-center mb-6 w-full max-w-[1000px] m-6">
-                <RouterLink to="/dashboard/suporte/politicas"
+                <RouterLink to="/dashboard/politicas/politicas"
                     class="flex items-center text-blue-600 hover:text-blue-800 mb-4">
                     <span class="mr-2"></span>
                     <span>
@@ -114,20 +114,4 @@ const submitForm = async() =>{
     }
 }
 
-// function startEditing() {
-//     originalData.value = JSON.parse(JSON.stringify(formData))
-//     isEditing.value = true
-// }
-
-// function cancelEditing() {
-//     if (originalData.value) {
-//         Object.assign(formData, originalData.value)
-//     }
-//     isEditing.value = false
-// }
-
-// function saveChanges() {
-//     console.log('Saving changes:', formData)
-//     isEditing.value = false
-// }
 </script>

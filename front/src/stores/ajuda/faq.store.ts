@@ -14,9 +14,12 @@ export const useFaqStore = defineStore('faq', () => {
     const fetchFaqs = async () => {
         try {
             loading.value = true
-            if (!faqs.value.length) {
-                faqs.value = await ajudaService.getAllFaqs()
+            const response = await ajudaService.getAllFaqs()
+            if(response && response.results){
+                faqs.value = response.results
+                console.log(faqs)
             }
+            
         } catch (err) {
             error.value = 'Erro ao buscar faqs'
             console.error(err)
