@@ -61,8 +61,6 @@ import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 import { usePolicyStore } from '@/stores/ajuda/policys.store'
 import { toast } from 'vue-sonner'
 
-const isEditing = ref(false)
-const originalData = ref<manual | null>(null)
 
 const policyStore = usePolicyStore();
 
@@ -74,9 +72,6 @@ const profiles = ref([
     {label:'Recepcionista',value: 'RECEPTIONIST'}  ])
 
 
-const optionSelected = ref({
-    perfil: 'Médico',
-})
 const formData = reactive({
     profile:'',
     title:'',
