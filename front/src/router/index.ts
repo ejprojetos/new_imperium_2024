@@ -188,8 +188,9 @@ const router = createRouter({
         },
         {
             path: '/dashboard/recepcionista/cadastrar',
-            name: 'cadastrar-recepcionista',
-            component: () => import('../views/dashboard/recepcionistas/cadastrar-recepcionista.vue')
+            name: 'receptionist-registration',
+            component: () =>
+                import('../views/dashboard/recepcionistas/receptionist-registration/index.vue')
         },
         {
             path: '/dashboard/pacientes/cadastrar',
@@ -198,8 +199,8 @@ const router = createRouter({
         },
         {
             path: '/dashboard/medicos/cadastrar',
-            name: 'cadastrar-medico',
-            component: () => import('../views/dashboard/medicos/cadastrar-medico.vue')
+            name: 'doctor-registration',
+            component: () => import('../views/dashboard/medicos/doctor-registration/index.vue')
         },
         {
             path: '/dashboard/prontuario/:id',
