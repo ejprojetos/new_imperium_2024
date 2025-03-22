@@ -79,3 +79,15 @@ export const receptionistSchema = z.object({
         message: 'Disponibilidade para plantão é obrigatória'
     })
 })
+
+export const patientSchema = z.object({
+    fullname: fullnameSchema,
+    cpf: cpfSchema,
+    dateOfBirth: dateOfBirthSchema,
+    gender: z.enum(['Masculino', 'Feminino', 'Outro'], {
+        message: 'Gênero inválido. Escolha entre Masculino, Feminino ou Outro'
+    }),
+    address: addressSchema,
+    email: stringRequiredError.email('E-mail inválido'),
+    phone: stringRequiredError.regex(/^\(\d{2}\) \d{4,5}-\d{4}$/, 'Telefone inválido')
+})
