@@ -115,7 +115,7 @@ const onSubmit = handleSubmit(async (values) => {
     <LayoutDashboard>
         <div class="max-w-3xl mx-auto my-10">
             <div className="mb-8">
-                <h1 className="text-3xl font-bold">Cadastrar Pacient</h1>
+                <h1 className="text-3xl font-bold">Cadastrar Paciente</h1>
                 <p className="text-sm text-gray-500">
                     Preencha as informações abaixo para poder cadastrar um novo paciente
                 </p>
