@@ -4,14 +4,13 @@ import { Loader } from 'lucide-vue-next'
 import { useToast } from '@/components/ui/toast/use-toast'
 import { Card, CardContent } from '@/components/ui/card'
 import { useForm } from 'vee-validate'
-import type { DoctorDataSchema } from './schema'
-import { doctorDataSchema } from './schema'
-import { PersonalData, AddressData, ContactData, ProfessionalData, SecurityData } from './form'
 import { Button } from '@/components/ui/button'
 import { useMutation } from '@tanstack/vue-query'
 import { fetcher } from '@/services/fetcher.service'
 import type { Doctor } from '@/types/users.types'
 import { useRouter } from 'vue-router'
+import { PersonalData, AddressData, ContactData, ProfessionalData, SecurityData } from './form'
+import { receptionistDataSchema, type ReceptionistDataSchema } from './schema'
 
 const { toast } = useToast()
 const router = useRouter()
@@ -21,6 +20,11 @@ const { isPending, mutate } = useMutation({
         first_name: string
         cpf: string
         date_birth: string
+        roles: [
+            {
+                name: 'RECEPTIONIST'
+            }
+        ]
         gender: string
         address: {
             zip_code: string
@@ -32,8 +36,12 @@ const { isPending, mutate } = useMutation({
         }
         email: string
         phone: string
-        crm: string
         password: string
+        expedient: {
+            days_of_week: string[]
+            turns: string[]
+        }
+        availableForShift: boolean
     }) => {
         return await fetcher<Doctor>(`/users/`, {
             method: 'POST',
@@ -42,27 +50,12 @@ const { isPending, mutate } = useMutation({
     }
 })
 
-const { isFieldDirty, handleSubmit, resetForm, setFieldError, resetField } =
-    useForm<DoctorDataSchema>({
-        validationSchema: doctorDataSchema
-    })
+const { isFieldDirty, handleSubmit, resetForm, setFieldError } = useForm<ReceptionistDataSchema>({
+    validationSchema: receptionistDataSchema
+})
 
-function handleResetDocument() {
-    resetField('file')
-}
-
-const onSubmit = handleSubmit(async (values: DoctorDataSchema) => {
+const onSubmit = handleSubmit(async (values) => {
     const formatDate = values.dateOfBirth.split('/')
-
-    let base64Image: string | null = null
-
-    if (values.file) {
-        base64Image = await new Promise((resolve) => {
-            const reader = new FileReader()
-            reader.readAsDataURL(values.file as File)
-            reader.onload = () => resolve(reader.result as string)
-        })
-    }
 
     const newData = {
         first_name: values.fullname,
@@ -71,9 +64,9 @@ const onSubmit = handleSubmit(async (values: DoctorDataSchema) => {
         gender: values.gender,
         roles: [
             {
-                name: 'DOCTOR'
+                name: 'RECEPTIONIST'
             }
-        ],
+        ] as [{ name: 'RECEPTIONIST' }],
         address: {
             zip_code: values.address.zipCode,
             country: values.address.country,
@@ -82,24 +75,26 @@ const onSubmit = handleSubmit(async (values: DoctorDataSchema) => {
             street: values.address.street,
             number: values.address.number
         },
-        formacao: values.formation,
-        crm: values.crm,
-        attach_document: base64Image,
         email: values.email,
         phone: values.phone,
-        password: values.password
+        password: values.password,
+        expedient: {
+            days_of_week: values.workDays,
+            turns: values.turns
+        },
+        availableForShift: values.availableForShift === 'yes'
     }
 
     mutate(newData, {
         onSuccess() {
             toast({
                 title: 'Sucesso',
-                description: 'Médico cadastrado com sucesso!',
+                description: 'Recepcionista cadastrado com sucesso!',
                 variant: 'success'
             })
 
             resetForm()
-            router.push('/dashboard/medicos')
+            router.push('/dashboard/recepcionistas')
         },
         onError(error: any) {
             if (error.status === 400) {
@@ -119,7 +114,7 @@ const onSubmit = handleSubmit(async (values: DoctorDataSchema) => {
 
             toast({
                 title: 'Error',
-                description: 'Error ao criar um médico, tente mais tarde',
+                description: 'Error ao criar um recepcionista, tente mais tarde',
                 variant: 'destructive'
             })
         }
@@ -131,9 +126,9 @@ const onSubmit = handleSubmit(async (values: DoctorDataSchema) => {
     <LayoutDashboard>
         <div class="max-w-3xl mx-auto my-10">
             <div className="mb-8">
-                <h1 className="text-3xl font-bold">Cadastrar Médico</h1>
+                <h1 className="text-3xl font-bold">Cadastrar Recepcionista</h1>
                 <p className="text-sm text-gray-500">
-                    Preencha as informações abaixo para poder cadastrar um novo médico
+                    Preencha as informações abaixo para poder cadastrar um novo recepcionista
                 </p>
             </div>
 
@@ -143,9 +138,7 @@ const onSubmit = handleSubmit(async (values: DoctorDataSchema) => {
                         <PersonalData :isFieldDirty="isFieldDirty" />
                         <AddressData :isFieldDirty="isFieldDirty" />
                         <ContactData :isFieldDirty="isFieldDirty" />
-                        <ProfessionalData
-                            :onResetDocumentImg="handleResetDocument"
-                            :isFieldDirty="isFieldDirty" />
+                        <ProfessionalData :isFieldDirty="isFieldDirty" />
                         <SecurityData :isFieldDirty="isFieldDirty" />
                     </CardContent>
                 </Card>
