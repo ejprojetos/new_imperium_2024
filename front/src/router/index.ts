@@ -188,8 +188,9 @@ const router = createRouter({
         },
         {
             path: '/dashboard/recepcionista/cadastrar',
-            name: 'cadastrar-recepcionista',
-            component: () => import('../views/dashboard/recepcionistas/cadastrar-recepcionista.vue')
+            name: 'receptionist-registration',
+            component: () =>
+                import('../views/dashboard/recepcionistas/receptionist-registration/index.vue')
         },
         {
             path: '/dashboard/pacientes/cadastrar',
