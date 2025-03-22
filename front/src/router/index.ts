@@ -198,8 +198,8 @@ const router = createRouter({
         },
         {
             path: '/dashboard/medicos/cadastrar',
-            name: 'cadastrar-medico',
-            component: () => import('../views/dashboard/medicos/cadastrar-medico.vue')
+            name: 'doctor-registration',
+            component: () => import('../views/dashboard/medicos/doctor-registration/index.vue')
         },
         {
             path: '/dashboard/prontuario/:id',

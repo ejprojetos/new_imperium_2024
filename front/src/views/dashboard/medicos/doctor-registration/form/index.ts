@@ -1,0 +1,5 @@
+export { default as PersonalData } from './personal-data.vue'
+export { default as AddressData } from './address-data.vue'
+export { default as ContactData } from './contact-data.vue'
+export { default as ProfessionalData } from './professional-data.vue'
+export { default as SecurityData } from './security-data.vue'
