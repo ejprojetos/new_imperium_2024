@@ -17,6 +17,9 @@ class ClinicViewSet(viewsets.ModelViewSet):
     queryset = Clinic.objects.all()
     serializer_class = ClinicSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    filterset_fields = ['address__city', 'address__neighborhood', 'address__zip_code']
+    search_fields = ['name', 'cnpj', 'email_responsavel', 'cpf_responsavel', 'nome_responsavel', 'rg_responsavel', 'telefone_responsavel']
     lookup_field = 'id'
     lookup_url_kwarg = 'clinic_id'
 
