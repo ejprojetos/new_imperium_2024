@@ -135,7 +135,6 @@ const onSubmit = handleSubmit(async (values) => {
             reader.readAsDataURL(values.file as File)
             reader.onload = () => resolve(reader.result as string)
         })
-        console.log(values.file)
     }
 
     const addressChanged =
