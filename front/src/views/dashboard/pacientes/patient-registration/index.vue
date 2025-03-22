@@ -7,10 +7,9 @@ import { useForm } from 'vee-validate'
 import { Button } from '@/components/ui/button'
 import { useMutation } from '@tanstack/vue-query'
 import { fetcher } from '@/services/fetcher.service'
-import type { Recepcionist } from '@/types/users.types'
 import { useRouter } from 'vue-router'
-import { PersonalData, AddressData, ContactData, ProfessionalData, SecurityData } from './form'
-import { receptionistDataSchema, type ReceptionistDataSchema } from './schema'
+import { PersonalData, AddressData, ContactData, SecurityData } from './form'
+import { patientDataSchema, type PatientDataSchema } from './schema'
 
 const { toast } = useToast()
 const router = useRouter()
@@ -22,7 +21,7 @@ const { isPending, mutate } = useMutation({
         date_birth: string
         roles: [
             {
-                name: 'RECEPTIONIST'
+                name: 'PATIENT'
             }
         ]
         gender: string
@@ -37,21 +36,16 @@ const { isPending, mutate } = useMutation({
         email: string
         phone: string
         password: string
-        expedient: {
-            days_of_week: string[]
-            turns: string[]
-        }
-        availableForShift: boolean
     }) => {
-        return await fetcher<Recepcionist>(`/users/`, {
+        return await fetcher(`/users/`, {
             method: 'POST',
             body: JSON.stringify(newTodo)
         })
     }
 })
 
-const { isFieldDirty, handleSubmit, resetForm, setFieldError } = useForm<ReceptionistDataSchema>({
-    validationSchema: receptionistDataSchema
+const { isFieldDirty, handleSubmit, resetForm, setFieldError } = useForm<PatientDataSchema>({
+    validationSchema: patientDataSchema
 })
 
 const onSubmit = handleSubmit(async (values) => {
@@ -64,9 +58,9 @@ const onSubmit = handleSubmit(async (values) => {
         gender: values.gender,
         roles: [
             {
-                name: 'RECEPTIONIST'
+                name: 'PATIENT'
             }
-        ] as [{ name: 'RECEPTIONIST' }],
+        ] as [{ name: 'PATIENT' }],
         address: {
             zip_code: values.address.zipCode,
             country: values.address.country,
@@ -77,24 +71,19 @@ const onSubmit = handleSubmit(async (values) => {
         },
         email: values.email,
         phone: values.phone,
-        password: values.password,
-        expedient: {
-            days_of_week: values.workDays,
-            turns: values.turns
-        },
-        availableForShift: values.availableForShift === 'yes'
+        password: values.password
     }
 
     mutate(newData, {
         onSuccess() {
             toast({
                 title: 'Sucesso',
-                description: 'Recepcionista cadastrado com sucesso!',
+                description: 'Paciente cadastrado com sucesso!',
                 variant: 'success'
             })
 
             resetForm()
-            router.push('/dashboard/recepcionistas')
+            router.push('/dashboard/paciente')
         },
         onError(error: any) {
             if (error.status === 400) {
@@ -114,7 +103,7 @@ const onSubmit = handleSubmit(async (values) => {
 
             toast({
                 title: 'Error',
-                description: 'Error ao criar um recepcionista, tente mais tarde',
+                description: 'Error ao criar um paciente, tente mais tarde',
                 variant: 'destructive'
             })
         }
@@ -126,9 +115,9 @@ const onSubmit = handleSubmit(async (values) => {
     <LayoutDashboard>
         <div class="max-w-3xl mx-auto my-10">
             <div className="mb-8">
-                <h1 className="text-3xl font-bold">Cadastrar Recepcionista</h1>
+                <h1 className="text-3xl font-bold">Cadastrar Pacient</h1>
                 <p className="text-sm text-gray-500">
-                    Preencha as informações abaixo para poder cadastrar um novo recepcionista
+                    Preencha as informações abaixo para poder cadastrar um novo paciente
                 </p>
             </div>
 
@@ -138,7 +127,6 @@ const onSubmit = handleSubmit(async (values) => {
                         <PersonalData :isFieldDirty="isFieldDirty" />
                         <AddressData :isFieldDirty="isFieldDirty" />
                         <ContactData :isFieldDirty="isFieldDirty" />
-                        <ProfessionalData :isFieldDirty="isFieldDirty" />
                         <SecurityData :isFieldDirty="isFieldDirty" />
                     </CardContent>
                 </Card>

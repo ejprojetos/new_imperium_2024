@@ -194,8 +194,8 @@ const router = createRouter({
         },
         {
             path: '/dashboard/pacientes/cadastrar',
-            name: 'cadastrar-paciente',
-            component: () => import('../views/dashboard/pacientes/cadastrar-paciente.vue')
+            name: 'pacient-registration',
+            component: () => import('../views/dashboard/pacientes/patient-registration/index.vue')
         },
         {
             path: '/dashboard/medicos/cadastrar',
