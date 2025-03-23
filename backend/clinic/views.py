@@ -12,6 +12,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from users.models import User
 from .tasks import send_notifications
+from datetime import datetime, timedelta
 
 class ClinicViewSet(viewsets.ModelViewSet):
     queryset = Clinic.objects.all()
@@ -260,8 +261,60 @@ class WorkingHoursViewSet(viewsets.ModelViewSet):
 class AppointmentViewSet(viewsets.ModelViewSet):
     queryset = Appointment.objects.all()
     serializer_class = AppointmentSerializer
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    filterset_fields = ['status', 'appointment_date', 'clinic__name']
+    search_fields = ['patient__first_name', 'doctor__first_name', 'reason', 'room__number']
     lookup_field = 'uuid'
     http_method_names = ['get', 'post', 'delete', 'put']
+    pagination_class = SmallPagination
+
+    def get_queryset(self):
+        queryset = Appointment.objects.all()
+
+        #filtrar pelo dia atual
+        if self.request.query_params.get('today'):
+            queryset = queryset.filter(appointment_date__date=datetime.now().date())
+
+        #filtrar pelo dia seguinte - amanha
+        if self.request.query_params.get('tomorrow'):
+            queryset = queryset.filter(appointment_date__date=datetime.now().date() + timedelta(days=1))
+
+        #filtrar pelos dias da semana
+        dia = self.request.query_params.get('day')
+        if dia:
+            dict_dias = {
+                'domingo': 1,
+                'segunda': 2,
+                'terca': 3,
+                'quarta': 4,
+                'quinta': 5,
+                'sexta': 6,
+                'sabado': 7
+            }
+            dia = dict_dias.get(dia)
+            queryset = queryset.filter(appointment_date__date__week_day=dia)
+
+        #filtro por mes
+        mes = self.request.query_params.get('month')
+        if mes:
+            dict_mes = {
+                'janeiro': 1,
+                'fevereiro': 2,
+                'marco': 3,
+                'abril': 4,
+                'maio': 5,
+                'junho': 6,
+                'julho': 7,
+                'agosto': 8,
+                'setembro': 9,
+                'outubro': 10,
+                'novembro': 11,
+                'dezembro': 12
+            }
+            mes = dict_mes.get(mes)
+            queryset = queryset.filter(appointment_date__month=mes)
+            
+        return queryset
     
     def validate_appointment(self, patient, doctor, appointment_date):
         """
