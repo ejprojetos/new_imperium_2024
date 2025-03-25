@@ -5,35 +5,35 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
                 <RouterLink to="/dashboard/suporte/administrador" class="profile-card">
-                    <div class="flex flex-col items-center p-6">
+                    <div class="flex flex-col items-center p-6" @click="emitPerfil('ADMIN')">
                         <img :src="administradorIcon" alt="Administrador" class="w-20 h-20 mb-4" />
                         <span class="text-lg font-medium">Administrador</span>
                     </div>
                 </RouterLink>
 
-                <RouterLink to="/dashboard/suporte/suporte-usuario" class="profile-card">
-                    <div class="flex flex-col items-center p-6">
+                <RouterLink to="/dashboard/suporte/administrador" class="profile-card">
+                    <div class="flex flex-col items-center p-6" @click="emitPerfil('PATIENT')">
                         <img :src="pacienteIcon" alt="Paciente" class="w-20 h-20 mb-4" />
                         <span class="text-lg font-medium">Paciente</span>
                     </div>
                 </RouterLink>
 
-                <RouterLink to="/dashboard/clinica" class="profile-card">
-                    <div class="flex flex-col items-center p-6">
+                <RouterLink to="/dashboard/suporte/administrador" class="profile-card">
+                    <div class="flex flex-col items-center p-6" @click="emitPerfil('CLINIC')">
                         <img :src="clinicaIcon" alt="Clínica" class="w-20 h-20 mb-4" />
                         <span class="text-lg font-medium">Clínica</span>
                     </div>
                 </RouterLink>
 
-                <RouterLink to="/dashboard/medico" class="profile-card">
-                    <div class="flex flex-col items-center p-6">
+                <RouterLink to="/dashboard/suporte/administrador" class="profile-card">
+                    <div class="flex flex-col items-center p-6" @click="emitPerfil('DOCTOR')">
                         <img :src="medicoIcon" alt="Médico" class="w-20 h-20 mb-4" />
                         <span class="text-lg font-medium">Médico</span>
                     </div>
                 </RouterLink>
 
-                <RouterLink to="/dashboard/recepcionista" class="profile-card">
-                    <div class="flex flex-col items-center p-6">
+                <RouterLink to="/dashboard/suporte/administrador" class="profile-card">
+                <div class="flex flex-col items-center p-6" @click="emitPerfil('RECEPTIONIST')">
                         <img :src="recepcionistaIcon" alt="Recepcionista" class="w-20 h-20 mb-4" />
                         <span class="text-lg font-medium">Recepcionista</span>
                     </div>
@@ -57,6 +57,16 @@ import clinicaIcon from '@/assets/icons/clinicas.svg'
 import medicoIcon from '@/assets/icons/institucional.svg'
 import recepcionistaIcon from '@/assets/icons/recepcionistas.svg'
 import imperiumLogo from '@/assets/logo.svg'
+
+
+import { perfilSelecionado } from '@/stores/ajuda/perfilStore'
+
+
+function emitPerfil(perfil: string) {
+    console.log(perfil)
+    perfilSelecionado.value = perfil
+}
+
 </script>
 
 <style scoped>

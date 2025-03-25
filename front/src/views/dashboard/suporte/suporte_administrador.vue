@@ -2,7 +2,7 @@
     <LayoutDashboard>
         <div class="container mx-auto px-4 py-8">
             <h1 class="text-2xl font-bold text-center text-blue-900 mb-12">
-                Suporte ao administrador
+                Suporte ao {{ perfil }}
             </h1>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -68,6 +68,26 @@ import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 // You'll need to create or import these icons
 import manualIcon from '@/assets/icons/manual.png'
 import documentIcon from '@/assets/icons/documentos.png'
+
+import { perfilSelecionado } from '@/stores/ajuda/perfilStore'
+import { computed } from 'vue'
+
+const perfil = computed(() =>{
+    switch(perfilSelecionado.value){
+        case 'ADMIN':
+            return 'Administrador'
+        case 'PATIENT':
+            return 'Paciente'
+        case 'CLINIC':
+            return 'Clínica'
+        case 'DOCTOR':
+            return 'Médico'
+        case 'RECEPTIONIST':
+            return 'Recepcionista'
+        default:
+            return 'Perfil não encontrado'
+    }
+})
 </script>
 
 <style scoped>
