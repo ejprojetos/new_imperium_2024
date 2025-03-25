@@ -17,7 +17,6 @@ export const useFaqStore = defineStore('faq', () => {
             const response = await ajudaService.getAllFaqs()
             if(response && response.results){
                 faqs.value = response.results
-                console.log(faqs)
             }
             
         } catch (err) {
