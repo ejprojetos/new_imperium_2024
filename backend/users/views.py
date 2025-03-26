@@ -39,11 +39,11 @@ class UserViewSet(viewsets.ModelViewSet):
         turns = self.request.query_params.getlist('turns', [])
 
         if days_of_week and turns:
-            return self.queryset.filter(expedient__days_of_week__in=[days_of_week], expedient__turns__in=[turns])
+            return self.queryset.filter(expedient__days_of_week__contains=days_of_week, expedient__turns__contains=turns)
         elif turns:
-            return self.queryset.filter(expedient__turns__in=[turns])
+            return self.queryset.filter(expedient__turns__contains=turns)
         elif days_of_week:
-            return self.queryset.filter(expedient__days_of_week__in=[days_of_week])
+            return self.queryset.filter(expedient__days_of_week__contains=days_of_week)
         
         if user.is_staff:  # Admin pode visualizar usuários de todas as clínicas
             return User.objects.all()
