@@ -3,6 +3,9 @@
         <div class="container mx-auto px-4 py-8">
             <h1 class="text-2xl font-bold text-center text-blue-900 mb-12">Suporte ao usuário</h1>
 
+            <!-- <Escolher_perfil @setPerfil="handlePerfilSelecionado" /> -->
+
+
             <div class="max-w-4xl mx-auto">
                 <!-- Resources Section -->
                 <div class="bg-white rounded-lg shadow-md p-6 mb-8 grid grid-cols-2 gap-8">
@@ -27,13 +30,13 @@
 
                     <div class="space-y-4">
                         <div
-                            v-for="(question, index) in faqQuestions"
-                            :key="index"
+                            v-for="(faq, index) in filteredFaqs"
+                            :key="faq.id"
                             class="bg-white rounded-lg shadow-md">
                             <button
                                 class="w-full px-6 py-4 text-left flex justify-between items-center"
                                 @click="toggleQuestion(index)">
-                                <span>{{ question.title }}</span>
+                                <span>{{ faq.title }}</span>
                                 <span
                                     class="transform transition-transform"
                                     :class="{ 'rotate-180': openQuestions[index] }">
@@ -41,7 +44,7 @@
                                 </span>
                             </button>
                             <div v-show="openQuestions[index]" class="px-6 pb-4">
-                                {{ question.answer }}
+                                {{ faq.content }}
                             </div>
                         </div>
                     </div>
@@ -52,37 +55,40 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 
 import manualIcon from '@/assets/icons/manual.png'
 import documentIcon from '@/assets/icons/documentos.png'
+import { useFaqStore } from '@/stores/ajuda/faq.store'
+import type { Faq } from '@/types/ajuda.types'
+import { onMounted } from 'vue'
+import Escolher_perfil from '../suporte/escolher_perfil.vue'
 
-const faqQuestions = ref([
-    {
-        title: 'What is Loten ipsum?',
-        answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-    },
-    {
-        title: 'What is Loten ipsum?',
-        answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-    },
-    {
-        title: 'What is Loten ipsum?',
-        answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-    },
-    {
-        title: 'What is Loten ipsum?',
-        answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-    },
-    {
-        title: 'What is Loten ipsum?',
-        answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+const faqStore = useFaqStore()
+
+const faqs = ref<Faq[]>([])
+
+import { perfilSelecionado } from '@/stores/ajuda/perfilStore'
+
+
+const filteredFaqs = computed(() => {
+    return faqs.value.filter((faq: { profile: string }) => faq.profile === perfilSelecionado.value)
+})
+
+onMounted( async () =>{
+    try{
+        await faqStore.fetchFaqs()
+        faqs.value = faqStore.faqs
+        console.log('FAQs:', faqs)
+        console.log('Perfil:', perfilSelecionado)
+    }catch (error){
+        console.error("Erro ao buscar dados", error)
     }
-])
+})
 
-const openQuestions = ref(new Array(faqQuestions.value.length).fill(false))
+const openQuestions = ref(new Array(faqs.value.length).fill(false))
 
 const toggleQuestion = (index: number) => {
     openQuestions.value[index] = !openQuestions.value[index]
