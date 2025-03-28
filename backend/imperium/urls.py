@@ -4,6 +4,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 from commom.views import EmailAPIView, PasswordResetRequestView, PasswordResetConfirmView
 from django.conf.urls.static import static
 from django.conf import settings
+from commom.views import get_address
 
 
 urlpatterns = [
@@ -17,6 +18,7 @@ urlpatterns = [
     path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     path('api/institucional/', include('institucional.urls')),
+    path('api/get-address/<int:cep>/', get_address, name='get-address'),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
