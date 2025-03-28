@@ -19,12 +19,14 @@ from .permissions import IsRoleUser
 
 from datetime import time
 
-
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    search_fields = ['email', 'first_name', 'cpf', 'date_birth', 'clinics__name', 'specialty', 'gender', 'formacao', 'phone']
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+    lookup_field = 'pk'
     
     def get_permissions(self):
         if self.action in ['list', 'destroy']:
@@ -35,8 +37,21 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+
+        # filtrar por dias da semana e turnos
+        days_of_week = self.request.query_params.getlist('days_of_week', [])
+        turns = self.request.query_params.getlist('turns', [])
+
+        if days_of_week and turns:
+            return self.queryset.filter(expedient__days_of_week__contains=days_of_week, expedient__turns__contains=turns)
+        elif turns:
+            return self.queryset.filter(expedient__turns__contains=turns)
+        elif days_of_week:
+            return self.queryset.filter(expedient__days_of_week__contains=days_of_week)
+        
         if user.is_staff:  # Admin pode visualizar usuários de todas as clínicas
             return User.objects.all()
+        
         return User.objects.all()  # Usuários podem ver somente da clínica associada
 
     def list_users_from_clinic(self, request):
