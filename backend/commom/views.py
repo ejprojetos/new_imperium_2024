@@ -163,4 +163,4 @@ def get_address(request, cep):
         return Response(data, status=status.HTTP_200_OK)
 
     except requests.exceptions.RequestException as e:
-        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({"code": 500, "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
