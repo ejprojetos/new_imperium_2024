@@ -12,6 +12,8 @@ from drf_spectacular.utils import extend_schema, OpenApiResponse
 from .validators import validar_email
 from users.models import User
 from commom.serializers import PasswordResetRequestSerializer, PasswordResetConfirmSerializer
+from rest_framework.decorators import api_view
+import requests
 
 class EmailAPIView(APIView):
     """
@@ -142,3 +144,23 @@ class PasswordResetConfirmView(GenericAPIView):
             return Response({"message": "Token não encontrado na lista de tokens válidos."}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"message": f"Erro ao invalidar o token: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def get_address(request, cep):
+    """
+    View para obter retornar informações de endereço pelo cep informado
+
+    **obs:** O cep deve ser passado como um número inteiro, sem formatação (ex: 12345678)
+    """
+    try:
+        url = f"https://viacep.com.br/ws/{cep}/json/"
+        response = requests.get(url)
+        data = response.json()
+
+        if 'erro' in data:
+            return Response({"code": 404, "message": "CEP não encontrado"}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response(data, status=status.HTTP_200_OK)
+
+    except requests.exceptions.RequestException as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
