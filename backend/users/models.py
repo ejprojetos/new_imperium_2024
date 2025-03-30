@@ -131,14 +131,10 @@ class UserPolicies(models.Model):
 class Tag(models.Model):
     name = models.CharField(max_length=255)
 
-class OtherArchives(models.Model):
-    name = models.CharField(max_length=255, blank=True, null=True)
-    file = models.FileField(upload_to='others-archives',null=True, blank=True)
-
 class UserSupport(models.Model):
+    title = models.CharField(max_length=255)
     profile = models.CharField(max_length=255, choices=RoleEnum.choices())
     manual_archive = models.FileField(upload_to='manual',null=True, blank=True)
-    other_files = models.ManyToManyField(OtherArchives)
 
 class FAQ(models.Model):
     title = models.CharField(max_length=255)
