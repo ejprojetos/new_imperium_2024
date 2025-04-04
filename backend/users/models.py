@@ -5,6 +5,9 @@ from django.utils.translation import gettext_lazy as _
 from commom.models import Address
 from enum import Enum
 
+def get_upload_path(instance, filename):
+    return f"users/{instance.first_name}/{filename}"
+
 class Expedient(models.Model):
     days_of_week = models.JSONField(default=list)
     turns = models.JSONField(default=list)
@@ -66,6 +69,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     formacao = models.CharField(max_length=255, null=True, blank=True)
     crm = models.CharField(max_length=255, null=True, blank=True)
     attach_document = models.FileField(upload_to='attach',null=True, blank=True)
+    image = models.ImageField(upload_to=get_upload_path, blank=True, null=True)
     phone = models.CharField(max_length=255, null=True, blank=True)
     expedient = models.OneToOneField(Expedient, on_delete=models.CASCADE, blank=True, null=True)
     availableForShift = models.BooleanField(default=False, blank=True, null=True)

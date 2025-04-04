@@ -97,13 +97,14 @@ class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True)
 
     attach_document = PDFBase64File(required=False, allow_null=True)
+    image = Base64ImageField(required=False)
 
     class Meta:
         model = User
         fields = [
             'id', 'first_name', 'email', 'cpf', 'date_birth',
             'password', 'roles', 'address', 'clinics', 'gender',
-            'formacao', 'crm', 'attach_document', 'phone', 'expedient', 'availableForShift'
+            'formacao', 'crm', 'attach_document','image', 'phone', 'expedient', 'availableForShift'
         ]
         read_only_fields = ['id']
         extra_kwargs = {
