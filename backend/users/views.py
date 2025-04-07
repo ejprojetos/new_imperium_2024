@@ -92,10 +92,11 @@ class UserViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("Somente administradores ou recepcionistas podem criar doctores, receptionists e patients.")
 
     def update(self, request, *args, **kwargs):
+        # permintindo que o admin atualize qualquer usuário e o usuário atualize apenas seus próprios dados
         user = request.user
         if user.is_staff:  # Admin pode atualizar qualquer usuário
             return super().update(request, *args, **kwargs)
-        elif user.id == kwargs['pk']:  # Usuário pode editar apenas seus próprios dados
+        elif user.id == int(kwargs['pk']):  # Usuário pode editar apenas seus próprios dados
             return super().update(request, *args, **kwargs)
         else:
             raise PermissionDenied("Você não tem permissão para editar este usuário.")
