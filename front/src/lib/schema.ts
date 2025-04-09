@@ -11,6 +11,10 @@ const fullnameSchema = stringRequiredError
 
 const cpfSchema = stringRequiredError.regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, 'CPF inválido')
 
+const cnpjSchema = stringRequiredError.regex(/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/, 'CNPJ inválido')
+
+const rgSchema = stringRequiredError.regex(/^\d{2}\.\d{3}\.\d{3}-\d{1}$/, 'RG inválido')
+
 const dateOfBirthSchema = z
     .string()
     .regex(/^\d{2}\/\d{2}\/\d{4}$/, 'Data de nascimento inválida. Use o formato DD/MM/YYYY')
@@ -87,6 +91,44 @@ export const patientSchema = z.object({
     gender: z.enum(['Masculino', 'Feminino', 'Outro'], {
         message: 'Gênero inválido. Escolha entre Masculino, Feminino ou Outro'
     }),
+    address: addressSchema,
+    email: stringRequiredError.email('E-mail inválido'),
+    phone: stringRequiredError.regex(/^\(\d{2}\) \d{4,5}-\d{4}$/, 'Telefone inválido')
+})
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
+const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/jpg']
+
+export const doctorSchema = z.object({
+    fullname: fullnameSchema,
+    cpf: cpfSchema,
+    dateOfBirth: dateOfBirthSchema,
+    gender: z.enum(['Masculino', 'Feminino', 'Outro'], {
+        message: 'Gênero inválido. Escolha entre Masculino, Feminino ou Outro'
+    }),
+    address: addressSchema,
+    email: stringRequiredError.email('E-mail inválido'),
+    phone: stringRequiredError.regex(/^\(\d{2}\) \d{4,5}-\d{4}$/, 'Telefone inválido'),
+    formation: z.string(),
+    attachDocument: z.string().nullable(),
+    file: z
+        .instanceof(File)
+        .refine((file) => file.size <= MAX_FILE_SIZE, {
+            message: 'O arquivo deve ter no máximo 5MB'
+        })
+        .refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), {
+            message: 'Formato inválido. Apenas PNG, JPG e JPEG são permitidos.'
+        })
+        .optional(),
+    crm: z.string().nonempty('CRM não pode estar vazio')
+})
+
+export const adminSchema = z.object({
+    // clinicName: stringRequiredError.min(5, 'O nome da clínica deve ter pelo menos 5 caracteres'),
+    fullname: fullnameSchema,
+    cpf: cpfSchema,
+    // rg: rgSchema,
+    // clinicCNPJ: cnpjSchema,
     address: addressSchema,
     email: stringRequiredError.email('E-mail inválido'),
     phone: stringRequiredError.regex(/^\(\d{2}\) \d{4,5}-\d{4}$/, 'Telefone inválido')

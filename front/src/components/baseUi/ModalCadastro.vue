@@ -1,17 +1,22 @@
 <template>
-    <div class="pb-[10px] pt-[40px] px-[60px] mb-4 bg-white ded-lgroun gap-x-4 w-[650px] rounded-xl hidden sm:block">
-
+    <div
+        class="pb-[10px] pt-[40px] px-[60px] mb-4 bg-white ded-lgroun gap-x-4 w-[650px] rounded-xl hidden sm:block">
         <header>
-            <slot name="header" class="mb-6 text-4xl font-bold text-3xl">Cadastrado com sucesso!</slot>
+            <slot name="header" class="mb-6 text-4xl font-bold text-3xl">
+                Cadastrado com sucesso!
+            </slot>
         </header>
-        
-    
+
         <div class="flex flex-col">
-            <label class="block mt-[10px] mb-2 text-lg font-montserrat br-16 font-semibold" >
+            <label class="block mt-[10px] mb-2 text-lg font-montserrat br-16 font-semibold">
                 Nome completo:
             </label>
             <p v-if="props.FormData.name !== ''">
-                {{ (props.FormData.name && props.FormData.lastName) ? `${props.FormData.name} ${props.FormData.lastName}` : props.FormData.fullName }}
+                {{
+                    props.FormData.name && props.FormData.lastName
+                        ? `${props.FormData.name} ${props.FormData.lastName}`
+                        : props.FormData.fullName
+                }}
             </p>
         </div>
         <div class="flex gap-[80px]">
@@ -20,7 +25,7 @@
                     Data de Nascimento:
                 </label>
                 <p>
-                    {{ formatDate(props.FormData.dateOfBirth)}}
+                    {{ formatDate(props.FormData.dateOfBirth) }}
                 </p>
             </div>
             <div>
@@ -33,143 +38,142 @@
             </div>
         </div>
         <div>
-            <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold" >
+            <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold">
                 CPF:
             </label>
             <p>
-                {{props.FormData.cpf}}
+                {{ props.FormData.cpf }}
             </p>
         </div>
         <h2 class="mt-[30px] mb-4 text-xl font-montserrat text-black font-bold">Endereço:</h2>
-        <div class="flex gap-[90px]" >
+        <div class="flex gap-[90px]">
             <div>
-                <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold" >
-                País:
+                <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold">
+                    País:
                 </label>
                 <p>
-                    {{props.FormData.country}}
+                    {{ props.FormData.country }}
                 </p>
             </div>
             <div>
-                <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold" >
-                Estado:
+                <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold">
+                    Estado:
                 </label>
                 <p>
-                    {{props.FormData.state}}
+                    {{ props.FormData.state }}
                 </p>
             </div>
         </div>
-        <div class="flex gap-[173px]" >
+        <div class="flex gap-[173px]">
             <div>
-                <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold" >
+                <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold">
                     Cidade:
                 </label>
                 <p>
-                    {{props.FormData.city}}
+                    {{ props.FormData.city }}
                 </p>
             </div>
             <div>
-                <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold" >
+                <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold">
                     Bairro:
                 </label>
                 <p>
-                    {{props.FormData.neighborhood}}
+                    {{ props.FormData.neighborhood }}
                 </p>
             </div>
         </div>
         <div>
-            <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold" >
-                    CEP:
-                </label>
-                <p>
-                    {{props.FormData.zipCode}}
-                </p>
+            <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold">
+                CEP:
+            </label>
+            <p>
+                {{ props.FormData.zipCode }}
+            </p>
         </div>
         <div class="flex gap-[165px]">
             <div>
-                <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold" >
+                <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold">
                     Logradouro:
                 </label>
                 <p>
-                    {{props.FormData.street}}
+                    {{ props.FormData.street }}
                 </p>
             </div>
             <div>
-                <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold" >
+                <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold">
                     Número:
                 </label>
                 <p>
-                    {{props.FormData.number}}
+                    {{ props.FormData.number }}
                 </p>
             </div>
         </div>
         <h2 class="mt-[30px] mb-4 text-xl font-montserrat text-black font-bold">Contato:</h2>
         <div>
-            <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold" >
+            <label class="block mt-[20px] mb-2 text-lg font-montserrat br-16 font-semibold">
                 Email:
             </label>
             <p>
-                {{props.FormData.email}}
+                {{ props.FormData.email }}
             </p>
         </div>
         <div>
-            <label class="block mt-[20px] text-lg font-montserrat br-16 font-semibold" >
+            <label class="block mt-[20px] text-lg font-montserrat br-16 font-semibold">
                 Celular:
             </label>
             <p>
-                {{props.FormData.phone}}
+                {{ props.FormData.phone }}
             </p>
         </div>
 
-        <slot/>
+        <slot />
     </div>
 </template>
 
 <script setup lang="ts">
-import {defineProps } from 'vue';
+import { defineProps } from 'vue'
 
-interface formData{
-    fullName:string;
-    name: string;
-    lastName: string;
-    dateOfBirth: string;
-    gener: string;
-    cpf: string;
-    country: string;
-    state: string;
-    city: string;
-    neighborhood: string;
-    zipCode: string;
-    street: string;
-    number: string;
-    email: string;
-    phone: string;
-    days: string[];
-    shifts: string;
-    plantoes: string;
-    degree: string;
-    specialty: string;
-    uploadedFile: File | null;
+interface formData {
+    fullName: string
+    name: string
+    lastName: string
+    dateOfBirth: string
+    gener: string
+    cpf: string
+    country: string
+    state: string
+    city: string
+    neighborhood: string
+    zipCode: string
+    street: string
+    number: string
+    email: string
+    phone: string
+    days: string[]
+    shifts: string
+    plantoes: string
+    degree: string
+    specialty: string
+    uploadedFile: File | null
 }
 
 const props = defineProps<{
-    FormData: formData;
-}>();
+    FormData: formData
+}>()
 
-const formatDate = (date: string) =>{
+const formatDate = (date: string) => {
     const [year, month, day] = date.split('-')
-    const d = new Date(Number(year), Number(month), Number(day));
-    return d.toLocaleDateString('pt-BR');
+    const d = new Date(Number(year), Number(month), Number(day))
+    return d.toLocaleDateString('pt-BR')
 }
-
 </script>
 
 <style>
-    label{
-        font-size: 1.25rem;
-    }
-    p{
-        font-family: 'Montserrat';
-        font-size: 1.125rem;
-    }
+label {
+    font-size: 1.25rem;
+}
+p {
+    font-family: 'Montserrat';
+    font-size: 1.125rem;
+}
 </style>

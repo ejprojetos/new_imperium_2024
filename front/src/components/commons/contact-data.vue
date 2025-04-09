@@ -36,7 +36,7 @@ defineProps<{
                 <FormControl>
                     <Input
                         id="phone"
-                        placeholder="Insara o número de telefone"
+                        placeholder="Insira o número de telefone"
                         v-maska="'(##) #####-####'"
                         v-bind="componentField" />
                 </FormControl>

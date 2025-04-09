@@ -45,7 +45,6 @@ import { useUIStore } from '@/stores/ui/useUIStore'
 import { useUserStore } from '@/stores/user/useUserStore'
 import { useRouter } from 'vue-router'
 import { RouterLink } from 'vue-router'
-import { ref, onMounted } from 'vue'
 
 const router = useRouter()
 const { isMobile } = useScreenSize()
@@ -72,6 +71,7 @@ const getProfileRoute = () => {
 }
 
 const goToProfile = () => {
+    console.log(getProfileRoute())
     router.push(getProfileRoute())
 }
 

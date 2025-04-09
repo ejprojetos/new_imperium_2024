@@ -73,7 +73,8 @@ const onSubmit = handleSubmit(async (values) => {
             state: values.address.state,
             city: values.address.city,
             street: values.address.street,
-            number: values.address.number
+            number: values.address.number,
+            neighborhood: values.address.neighborhood
         },
         email: values.email,
         phone: values.phone,

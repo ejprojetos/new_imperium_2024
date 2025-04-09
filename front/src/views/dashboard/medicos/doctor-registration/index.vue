@@ -29,6 +29,7 @@ const { isPending, mutate } = useMutation({
             city: string
             street: string
             number: string
+            neighborhood: string
         }
         email: string
         phone: string
@@ -80,7 +81,8 @@ const onSubmit = handleSubmit(async (values: DoctorDataSchema) => {
             state: values.address.state,
             city: values.address.city,
             street: values.address.street,
-            number: values.address.number
+            number: values.address.number,
+            neighborhood: values.address.neighborhood
         },
         formacao: values.formation,
         crm: values.crm,
