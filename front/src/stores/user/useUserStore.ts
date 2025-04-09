@@ -1,22 +1,28 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-type UserRole = 'ADMIN' | 'DOCTOR' | 'PATIENT' | 'RECEPTIONIST'
+type USER_ROLE = 'ADMIN' | 'DOCTOR' | 'PATIENT' | 'RECEPTIONIST'
+
+type User = {
+    role: USER_ROLE
+    name: string
+    id: number
+}
 
 export const useUserStore = defineStore(
     'user',
     () => {
-        const role = ref<UserRole>('PATIENT')
-        const name = ref('Admin')
+        const idRef = ref<number | null>(null)
+        const roleRef = ref<USER_ROLE>('PATIENT')
 
-        const setUser = (newRole: UserRole, newName: string) => {
-            role.value = newRole
-            name.value = newName
+        const setUser = ({ role, id }: User) => {
+            idRef.value = id
+            roleRef.value = role
         }
 
         return {
-            role,
-            name,
+            id: idRef,
+            role: roleRef,
             setUser
         }
     },

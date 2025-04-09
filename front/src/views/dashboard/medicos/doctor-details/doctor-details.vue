@@ -17,7 +17,6 @@ import { Loader } from 'lucide-vue-next'
 import { useForm } from 'vee-validate'
 import { getInitials } from '@/lib/utils'
 import { useDeleteUserMutation } from '@/hooks/use-delete-user-mutation'
-import DeleteUserDialog from '@/components/delete-user-dialog.vue'
 
 const { toast } = useToast()
 const route = useRoute()
@@ -26,10 +25,11 @@ const doctorId = route.params.id as string
 
 const id = ref(doctorId)
 const isEditMode = ref(false)
+const doctorValid = ref(false)
 
 const queryClient = new QueryClient()
 
-const { data, isLoading } = useQuery({
+const { data, isLoading, error } = useQuery({
     queryKey: ['doctor-user', id],
     queryFn: async () => await fetcher<Doctor>(`/users/${doctorId}`),
     staleTime: 5 * 1000
@@ -90,6 +90,16 @@ const { isFieldDirty, handleSubmit, setValues, resetForm, values } = useForm<Doc
     validationSchema: doctorDataSchema,
     initialValues: initialValues.value ?? undefined,
     keepValuesOnUnmount: true
+})
+
+watch(data, () => {
+    if (data.value?.roles[0].name !== 'DOCTOR') {
+        router.push('/dashboard/medicos')
+
+        return
+    }
+
+    doctorValid.value = true
 })
 
 watch(initialValues, (newAsyncData) => {
@@ -235,10 +245,13 @@ function handleDeleteUser() {
 
 <template>
     <LayoutDashboard>
+        <UserNotFound v-if="error" navigateTo="/dashboard/medicos" />
+
         <div v-if="isLoading" class="flex justify-center items-center h-full">
             <Loader class="animate-spin text-gray-400" />
         </div>
-        <form v-else-if="data" class="max-w-3xl mx-auto my-10" @submit="onSubmit">
+
+        <form v-else-if="data && doctorValid" class="max-w-3xl mx-auto my-10" @submit="onSubmit">
             <div class="flex items-center justify-between mb-4">
                 <div class="flex gap-4 items-center">
                     <Avatar size="base" class="bg-primary text-white">
@@ -253,7 +266,7 @@ function handleDeleteUser() {
                             {{ headerPersonalInfos.fullName }}
                         </h2>
                         <div class="text-sm text-gray-500">
-                            {{ values.gender === 'Feminino' ? 'Médico' : 'Médica' }}
+                            {{ values.gender === 'Feminino' ? 'Médica' : 'Médico' }}
                         </div>
                     </div>
                 </div>

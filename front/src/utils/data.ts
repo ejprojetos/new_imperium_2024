@@ -1,3 +1,5 @@
+import type { Role } from '@/types/users.types'
+
 export const academicFormations = [
     { id: 'ensino_medio', label: 'Ensino Médio' },
     { id: 'tecnico', label: 'Técnico' },
@@ -87,3 +89,11 @@ export const turns = [
         label: 'Noturno'
     }
 ] as const
+
+export type ROLE = 'ADMIN' | 'RECEPTIONIST' | 'DOCTOR'
+
+export const roles: Record<ROLE, string> = {
+    ADMIN: 'Administrador',
+    DOCTOR: 'Médico',
+    RECEPTIONIST: 'Recepcionista'
+}

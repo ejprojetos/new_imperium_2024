@@ -15,7 +15,6 @@
                             Cadastrar
                         </button>
                     </RouterLink>
-                    <Button>Test</Button>
                 </div>
                 <div class="p-4 bg-white rounded-lg shadow-lg min-w-56 max-lg:w-full">
                     <h3 class="mb-8 text-xl font-bold">Pagamentos</h3>

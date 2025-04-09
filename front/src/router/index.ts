@@ -57,14 +57,20 @@ const router = createRouter({
             component: () => import('../views/dashboard/perfil/paciente.vue')
         },
         {
-            path: '/dashboard/perfil/medico',
+            path: '/dashboard/perfil',
             name: 'perfil_medico',
-            component: () => import('../views/dashboard/perfil/medico.vue')
+            component: () => import('../views/dashboard/perfil/profile.vue')
+        },
+        {
+            path: '/dashboard/perfil/medico',
+            name: 'perfil_medico2',
+            component: () => import('../views/dashboard/perfil/doctor-profile/doctor-profile.vue')
         },
         {
             path: '/dashboard/perfil/recepcionista',
             name: 'perfil_recepcionista',
-            component: () => import('../views/dashboard/perfil/recepcionista.vue')
+            component: () =>
+                import('../views/dashboard/perfil/receptionist-profile/receptionist-profile.vue')
         },
 
         {

@@ -32,6 +32,7 @@
         "dayjs": "^1.11.13",
         "embla-carousel": "^8.3.1",
         "embla-carousel-vue": "^8.3.1",
+        "jwt-decode": "^4.0.0",
         "lodash": "^4.17.21",
         "lucide-vue-next": "^0.446.0",
         "maska": "^3.1.0",

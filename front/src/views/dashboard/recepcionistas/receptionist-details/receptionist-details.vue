@@ -26,6 +26,7 @@ import { fetcher } from '@/services/fetcher.service'
 import { useDeleteUserMutation } from '@/hooks/use-delete-user-mutation'
 import { useToast } from '@/components/ui/toast/use-toast'
 import { getInitials, arraysHaveSameValues } from '@/lib/utils'
+import UserNotFound from '@/components/user-not-found/user-not-found.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -35,8 +36,9 @@ const receptionistId = route.params.id as string
 const id = ref(receptionistId)
 const isEditMode = ref(false)
 const queryClient = new QueryClient()
+const receptionistValid = ref(false)
 
-const { data, isLoading } = useQuery({
+const { data, isLoading, error } = useQuery({
     queryKey: ['receptionist-user', id],
     queryFn: async () => await fetcher<Recepcionist>(`/users/${receptionistId}`),
     staleTime: 5 * 1000
@@ -96,7 +98,17 @@ const savedValues = ref(formatData())
 const { isFieldDirty, handleSubmit, setValues, resetForm } = useForm<ReceptionistDataSchema>({
     validationSchema: receptionistDataSchema,
     initialValues: initialValues.value ?? undefined,
-    keepValuesOnUnmount: true
+    keepValuesOnUnmount: !!data.value
+})
+
+watch(data, () => {
+    if (data.value?.roles[0].name !== 'RECEPTIONIST') {
+        router.push('/dashboard/recepcionistas')
+
+        return
+    }
+
+    receptionistValid.value = true
 })
 
 watch(initialValues, (newAsyncData) => {
@@ -249,9 +261,12 @@ function handleDeleteUser() {
 
 <template>
     <LayoutDashboard>
+        <UserNotFound v-if="error" navigateTo="/dashboard/recepcionistas" />
+
         <div v-if="isLoading" class="flex justify-center items-center h-full">
-            <Loader class="animate-spin text-gray-400" />
+            <Loader class="animate-spin text-zinc-400 size-4" />
         </div>
+
         <form v-else-if="data" class="max-w-3xl mx-auto my-10" @submit="onSubmit">
             <div class="flex items-center justify-between mb-4">
                 <div class="flex gap-4 items-center">
