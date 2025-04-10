@@ -122,37 +122,39 @@ class UserSerializer(serializers.ModelSerializer):
         roles_data = validated_data.pop('roles', [])
         roles_data = roles_data[0]['name']
         expedient_data = validated_data.pop('expedient', None)
-
         attach_document = validated_data.pop("attach_document", None)
-        
+
         address = None
         if address_data:
             address = Address.objects.create(**address_data)
 
-        user = User.objects.create(**validated_data, address=address)
+        user = User(**validated_data, address=address)
         user.set_password(validated_data['password'])
-        user.save()
+
+        if clinics:
+            #admin não pode ter mais de uma clínica cadastrada
+            if "ADMIN" in roles_data and len(clinics) > 1:
+                raise serializers.ValidationError({"clinics": "Um admin não pode ter mais de uma clínica cadastrada."})
+            else:
+                user.save()
+                user.clinics.set(clinics)
 
         if attach_document:
             user.attach_document = attach_document
-            user.save()
 
         if expedient_data:
             expedient_serializer = ExpedientSerializer(data=expedient_data, context={'user': user})
             if expedient_serializer.is_valid(raise_exception=True):
                 expedient = expedient_serializer.save()
                 user.expedient = expedient
-                user.save()
-
-        if clinics:
-            user.clinics.set(clinics)
 
         if roles_data:
             roles = Role.objects.filter(name=roles_data)  # Busca as roles pelos nomes
             user.roles.set(roles)
             if "ADMIN" in roles_data:
                 user.is_staff = True
-                user.save()
+
+        user.save()
 
         return user
     
