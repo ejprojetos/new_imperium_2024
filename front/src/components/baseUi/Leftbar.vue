@@ -47,10 +47,18 @@
 
             <!-- ajuda (suporte, contatos, politicas) -->
             <div class="flex flex-col items-start w-full">
+                <!-- DIRECIONA DE ACORDO COM O PROFILE -->
                 <p class="text-sm font-bold">Ajuda</p>
-                <RouterLink class="text-sm" to="/dashboard/suporte/escolher-perfil">
+                <RouterLink
+                    v-if="role === 'ADMIN'"
+                    class="text-sm"
+                    to="/dashboard/suporte/escolher-perfil">
                     Suporte
                 </RouterLink>
+
+                <!-- Caso o profile seja outro qualquer -->
+                <RouterLink v-else class="text-sm" to="/dashboard/suporte/faq">Suporte</RouterLink>
+
                 <RouterLink class="text-sm" to="/dashboard/suporte/contatos">Contatos</RouterLink>
                 <RouterLink class="text-sm" to="/dashboard/politicas/politicas">
                     Políticas
@@ -73,7 +81,7 @@ import clinicasIcon from '@/assets/icons/clinicas.svg'
 import emailIcon from '@/assets/icons/email.svg'
 import recepcionistasIcon from '@/assets/icons/recepcionistas.svg'
 import pacientesIcon from '@/assets/icons/pacientes.svg'
-import { RouterLink, useRouter, useRoute } from 'vue-router'
+import { RouterLink, useRouter, useRoute, routeLocationKey } from 'vue-router'
 
 import { computed } from 'vue'
 import { Bell } from 'lucide-vue-next'
@@ -88,7 +96,8 @@ const userStore = useUserStore()
 const uiStore = useUIStore()
 
 const { role, name } = storeToRefs(userStore)
-
+const profile = role.value
+console.log('role leftbar: ', role.value)
 const router = useRouter()
 const route = useRoute()
 const { isLeftbarOpen } = storeToRefs(uiStore)
