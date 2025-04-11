@@ -9,12 +9,12 @@
             <div class="max-w-4xl mx-auto">
                 <!-- Resources Section -->
                 <div class="bg-white rounded-lg shadow-md p-6 mb-8 grid grid-cols-2 gap-8">
-                    <RouterLink
-                        to="/dashboard/suporte/manual-usuario"
-                        class="flex flex-col items-center hover:opacity-80 transition-opacity">
-                        <img :src="manualIcon" alt="Manual" class="w-16 h-16 mb-2" />
-                        <span class="text-blue-900">Manual do usuário</span>
-                    </RouterLink>
+                    <div>
+                        <a :href="manualUsuarioDownload" class="flex flex-col items-center hover:opacity-80 transition-opacity" target="_blank" rel="noopener noreferrer">
+                            <img :src="manualIcon" alt="Manual" class="w-16 h-16 mb-2" />
+                            <span class="text-blue-900">Manual do usuário</span>
+                        </a>
+                    </div>
 
                     <RouterLink
                         to="/dashboard/suporte/documentos"
@@ -64,13 +64,29 @@ import documentIcon from '@/assets/icons/documentos.png'
 import { useFaqStore } from '@/stores/ajuda/faq.store'
 import type { Faq } from '@/types/ajuda.types'
 import { onMounted } from 'vue'
-import Escolher_perfil from '../suporte/escolher_perfil.vue'
+
+
+const userStore = useUserStore()
+const { role } = storeToRefs(userStore)
 
 const faqStore = useFaqStore()
 
 const faqs = ref<Faq[]>([])
 
+const manualStore = useManualStore()
+
+
+//const manualUsuarioDownload = ref('')
+
+const manualUsuarioDownload = computed(() =>{
+    const manuais = manualUsuario.value
+    return manuais.length > 0 ? manuais[manuais.length - 1].manual_archive : ''
+})
+
 import { perfilSelecionado } from '@/stores/ajuda/perfilStore'
+import { useUserStore } from '@/stores/user/useUserStore'
+import { storeToRefs } from 'pinia'
+import { useManualStore } from '@/stores/ajuda/manualStore'
 
 
 const filteredFaqs = computed(() => {
@@ -82,11 +98,25 @@ onMounted( async () =>{
         await faqStore.fetchFaqs()
         faqs.value = faqStore.faqs
         console.log('FAQs:', faqs)
-        console.log('Perfil:', perfilSelecionado)
+        console.log(role.value)
+
+        await manualStore.fetchManuals()
+        console.log(manualStore.manuals.length)
+        console.log(manualStore.manuals[0].manual_archive)
+
     }catch (error){
         console.error("Erro ao buscar dados", error)
     }
 })
+
+const manualUsuario = computed(() =>{
+    return manualStore.manuals.filter((manual) =>
+        manual.profile === role.value
+    )
+
+})
+console.log("manualUsuario",manualUsuario.value)
+
 
 const openQuestions = ref(new Array(faqs.value.length).fill(false))
 
