@@ -17,7 +17,7 @@
             </div>
             <div class="flex items-center mb-6 w-full max-w-[1000px] mx-auto">
                 <span class="text-[#00428F] font-montserrat text-4xl font-bold leading-none">
-                    Editar Manuais
+                    Editar Manuais de {{ perfil }}
                 </span>
             </div>
 
@@ -41,9 +41,13 @@
 
                     <select
                         class="select w-full rounded-[100px] border border-black flex h-[35px] min-h-[35px] px-7 items-center gap-[10px] self-stretch my-1"
-                        v-model="optionSelected.perfil">
-                        <option v-for="option in formData.perfil" :key="option">
-                            {{ option }}
+                        v-model="optionSelected.perfil"
+                        disabled>
+                        <option 
+                            v-for="option in formData.perfil" 
+                            :key="option.value" 
+                            :value="option.value">
+                            {{ option.label }}
                         </option>
                     </select>
                 </div>
@@ -54,7 +58,8 @@
                         type="file"
                         class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                         @change="handleFileChange"
-                        ref="fileInput" />
+                        ref="fileInput" 
+                        />
 
                     <!-- Estilização personalizada do botão -->
                     <div
@@ -73,11 +78,13 @@
 
                 <div class="flex justify-between mt-6">
                     <button
+                        @click="submitForm"
                         class="btn btn-active btn-neutral w-1/8 text-white hover:bg-blue min-h-[35px] h-[40px] px-6"
                         style="background-color: #00428f">
                         Cadastrar
                     </button>
                     <button
+                        @click="submitAndRegister"
                         class="btn btn-active btn-neutral w-1/6 text-white p-1 hover:bg-blue min-h-[35px] h-[40px]"
                         style="background-color: #00428f">
                         Salvar e cadastrar
@@ -89,52 +96,103 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
+import { toast } from 'vue-sonner'
+import { useManualStore } from '@/stores/ajuda/manualStore'
+import { useUserStore } from '@/stores/user/useUserStore'
+import { storeToRefs } from 'pinia'
+import { perfilSelecionado } from '@/stores/ajuda/perfilStore'
 
-interface manual {
+const manualStore = useManualStore()
+const isEditing = ref(false)
+
+
+
+console.log('PERFIL SELECIONADO: ',perfilSelecionado.value)
+
+const perfil = computed(() =>{
+    switch(perfilSelecionado.value){
+        case 'ADMIN':
+            return 'Administrador'
+        case 'PATIENT':
+            return 'Paciente'
+        case 'CLINIC':
+            return 'Clínica'
+        case 'DOCTOR':
+            return 'Médico'
+        case 'RECEPTIONIST':
+            return 'Recepcionista'
+        default:
+            return 'Perfil não encontrado'
+    }
+})
+
+interface Manual {
     titulo: string
-    perfil: string[]
-    manual: string
+    perfil: perfilOption[]
+    manual_archive: string | File
 }
 const fileName = ref<string | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
 
 const optionSelected = ref({
-    perfil: 'Médico'
+    perfil: perfilSelecionado.value
 })
-const formData = reactive<manual>({
+const formData = reactive<Manual>({
     titulo: '',
-    perfil: ['Administrator', 'Paciente', 'Clínica', 'Médico', 'Recepcionista'],
-    manual: ''
+    perfil: [
+        {label:'Administrador', value:'ADMIN'},
+        {label:'Paciente', value: 'PATIENT'},
+        {label:'Clínica', value: 'CLINIC'},
+        {label:'Médico', value: 'DOCTOR'},
+        {label:'Recepcionista', value: 'RECEPTIONIST'}]
+        ,
+    manual_archive: null as File | null
 })
 
-// function startEditing() {
-//     originalData.value = JSON.parse(JSON.stringify(formData))
-//     isEditing.value = true
-// }
-
-// function cancelEditing() {
-//     if (originalData.value) {
-//         Object.assign(formData, originalData.value)
-//     }
-//     isEditing.value = false
-// }
-
-// function saveChanges() {
-//     console.log('Saving changes:', formData)
-//     isEditing.value = false
-// }
 function handleFileChange(event: Event) {
     const input = event.target as HTMLInputElement
     if (input.files && input.files[0]) {
-        formData.manual = input.files[0].name
+        formData.manual_archive = input.files[0]
         fileName.value = input.files[0].name
     }
+}
+
+async function submitForm() {
+
+    
+    try {
+        if (!formData.titulo || !formData.perfil || !formData.manual_archive) {
+            toast('Preencha todos os campos');
+            return;
+        }
+
+        await manualStore.createManual({
+            titulo: formData.titulo,
+            profile: optionSelected.value.perfil,
+            manual_archive: formData.manual_archive,
+        });
+
+        toast('Manual cadastrado com sucesso!');
+    } catch (error) {
+        toast('Erro ao cadastrar manual');
+        console.error(error);
+    }
+}
+
+async function submitAndRegister() {
+    await submitForm();
+    formData.titulo = '';
+    formData.manual_archive = '';
+    fileName.value = null;
 }
 
 function triggerFileInput() {
     fileInput.value?.click()
 }
+
+
+
 </script>
