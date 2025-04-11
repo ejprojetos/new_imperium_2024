@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
-from .models import Role, User, Expedient, UserPolicies, FAQ, Tag, UserSupport, OtherArchives, UserSupport
+from .models import Role, User, Expedient, UserPolicies, FAQ, Tag, UserSupport, UserSupport
 from commom.models import Address
 from clinic.models import Clinic, WorkingHours
 from drf_extra_fields.fields import Base64ImageField, Base64FileField
@@ -97,13 +97,14 @@ class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True)
 
     attach_document = PDFBase64File(required=False, allow_null=True)
+    image = Base64ImageField(required=False)
 
     class Meta:
         model = User
         fields = [
             'id', 'first_name', 'email', 'cpf', 'date_birth',
             'password', 'roles', 'address', 'clinics', 'gender',
-            'formacao', 'crm', 'attach_document', 'phone', 'expedient', 'availableForShift'
+            'formacao', 'crm', 'attach_document','image', 'phone', 'expedient', 'availableForShift'
         ]
         read_only_fields = ['id']
         extra_kwargs = {
@@ -258,11 +259,6 @@ class RecepcionistSerializer(UserSerializer):
             'roles', 'address', 'clinics', 'gender', 'attach_document', 'phone', 'expedient'
         ]
 
-class OtherArchivesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OtherArchives
-        fields = '__all__'
-
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
@@ -325,25 +321,8 @@ class FAQSerializer(serializers.ModelSerializer):
         return instance
 
 class UserSupportSerializer(serializers.ModelSerializer):
-    other_files = OtherArchivesSerializer(required=False, many=True)
 
     class Meta:
         model = UserSupport
-        fields = ['id', 'profile', 'manual_archive', 'other_files']
-    
-    def update(self, instance, validated_data):
-        other_files_data = validated_data.pop('other_files', None)
-
-        # Atualiza os outros campos do UserPoliciesSupport
-        instance = super().update(instance, validated_data)
-
-        if other_files_data is not None:
-            # Atualiza os arquivos associados, removendo os antigos e adicionando os novos
-            instance.other_files.clear()
-            for file_data in other_files_data:
-                file_instance = OtherArchives.objects.create(**file_data)
-                instance.other_files.add(file_instance)
-
-        return instance
-
+        fields = ['id','title', 'profile', 'manual_archive']
     
