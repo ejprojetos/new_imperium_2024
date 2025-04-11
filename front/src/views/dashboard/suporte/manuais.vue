@@ -11,6 +11,7 @@
                     <RouterLink to="/dashboard/suporte/editar-manuais">
 
                         <button
+                            @click="emitPerfil('ADMIN')"
                             class="bg-blue-600 text-white px-6 py-1 rounded-full text-sm hover:bg-blue-600 transition-colors">
                             Editar
                         </button>
@@ -21,40 +22,52 @@
                 <div class="bg-white rounded-lg shadow-md p-6 flex flex-col items-center">
                     <img :src="pacienteIcon" alt="Paciente" class="w-20 h-20 mb-4" />
                     <span class="text-lg font-medium mb-4">Paciente</span>
-                    <button
-                        class="bg-blue-600 text-white px-6 py-1 rounded-full text-sm hover:bg-blue-600 transition-colors">
-                        Editar
-                    </button>
+                    <RouterLink to="/dashboard/suporte/editar-manuais">
+                        <button
+                            @click="emitPerfil('PATIENT')"
+                            class="bg-blue-600 text-white px-6 py-1 rounded-full text-sm hover:bg-blue-600 transition-colors">
+                            Editar
+                        </button>
+                    </RouterLink>
                 </div>
 
                 <!-- Clínica -->
                 <div class="bg-white rounded-lg shadow-md p-6 flex flex-col items-center">
                     <img :src="clinicaIcon" alt="Clínica" class="w-20 h-20 mb-4" />
                     <span class="text-lg font-medium mb-4">Clínica</span>
-                    <button
-                        class="bg-blue-600 text-white px-6 py-1 rounded-full text-sm hover:bg-blue-600 transition-colors">
-                        Editar
-                    </button>
+                    <RouterLink to="/dashboard/suporte/editar-manuais">
+                        <button
+                            @click="emitPerfil('CLINIC')"
+                            class="bg-blue-600 text-white px-6 py-1 rounded-full text-sm hover:bg-blue-600 transition-colors">
+                            Editar
+                        </button>
+                    </RouterLink>    
                 </div>
 
                 <!-- Médico -->
                 <div class="bg-white rounded-lg shadow-md p-6 flex flex-col items-center">
                     <img :src="medicoIcon" alt="Médico" class="w-20 h-20 mb-4" />
                     <span class="text-lg font-medium mb-4">Médico</span>
-                    <button
-                        class="bg-blue-600 text-white px-6 py-1 rounded-full text-sm hover:bg-blue-600 transition-colors">
-                        Editar
-                    </button>
+                    <RouterLink to="/dashboard/suporte/editar-manuais">
+                        <button
+                            @click="emitPerfil('DOCTOR')"
+                            class="bg-blue-600 text-white px-6 py-1 rounded-full text-sm hover:bg-blue-600 transition-colors">
+                            Editar
+                        </button>
+                    </RouterLink>
                 </div>
 
                 <!-- Recepcionista -->
                 <div class="bg-white rounded-lg shadow-md p-6 flex flex-col items-center">
                     <img :src="recepcionistaIcon" alt="Recepcionista" class="w-20 h-20 mb-4" />
                     <span class="text-lg font-medium mb-4">Recepcionista</span>
-                    <button
-                        class="bg-blue-600 text-white px-6 py-1 rounded-full text-sm hover:bg-blue-600 transition-colors">
-                        Editar
-                    </button>
+                    <RouterLink to="/dashboard/suporte/editar-manuais"> 
+                        <button
+                            @click="emitPerfil('RECEPTIONIST    ')"
+                            class="bg-blue-600 text-white px-6 py-1 rounded-full text-sm hover:bg-blue-600 transition-colors">
+                            Editar
+                        </button>
+                    </RouterLink>
                 </div>
             </div>
         </div>
@@ -70,6 +83,16 @@ import pacienteIcon from '@/assets/icons/pacientes.svg'
 import clinicaIcon from '@/assets/icons/clinicas.svg'
 import medicoIcon from '@/assets/icons/institucional.svg'
 import recepcionistaIcon from '@/assets/icons/recepcionistas.svg'
+
+
+import { perfilSelecionado } from '@/stores/ajuda/perfilStore'
+
+
+function emitPerfil(perfil: string){
+    console.log('PERFIL CLICADO', perfil)
+    perfilSelecionado.value = perfil
+}
+
 </script>
 
 <style scoped>

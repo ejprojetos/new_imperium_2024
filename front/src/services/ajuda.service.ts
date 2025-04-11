@@ -49,3 +49,53 @@ export const policiesService = {
                 method: 'DELETE'
             }) 
 }
+
+export const manualService = {
+    getAllManuals: () => fetcher<Manual[]>('/user-supports/'),
+
+    getManual: (id: number) => fetcher<Manual>(`/user-supports/${id}/`),
+
+    createManual: (data: { titulo: string; profile: string; manual_archive: File }) => {
+        if (!data.manual_archive) {
+            console.error("Erro: 'manual_archive' está indefinido!");
+            return Promise.reject(new Error("manual_archive está indefinido"));
+        }
+    
+        const formData = new FormData();
+        formData.append("title", data.titulo);
+        formData.append("profile", data.profile);
+        formData.append("manual_archive", data.manual_archive);
+
+
+        try {
+    
+            console.log("📤 Dados enviados para API:", Object.fromEntries(formData.entries()));
+    
+            return fetcher<Manual>("/user-supports/", {
+                method: "POST",
+                body: formData,
+            });
+        } catch (error) {
+            console.error("Erro ao converter Base64 para Blob:", error);
+            return Promise.reject(error);
+        }
+    },
+    
+
+    
+    updateManual: (id: number, data: { titulo?: string; perfil?: string; manual?: File }) => {
+        const formData = new FormData();
+        if (data.titulo) formData.append('title', data.titulo);
+        if (data.perfil) formData.append('profile', data.perfil);
+        if (data.manual) formData.append('manual_archive', data.manual);
+
+        return fetcher<Manual>(`/user-supports/${id}/`, {
+            method: 'PUT',
+            body: formData
+        });
+    },
+
+    deleteManual: (id: number) => fetcher(`/manuals/${id}/`, { method: 'DELETE' })
+
+}
+
