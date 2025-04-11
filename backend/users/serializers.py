@@ -202,7 +202,11 @@ class UserSerializer(serializers.ModelSerializer):
 
         # Atualiza clínicas
         if clinics:
-            instance.clinics.set(clinics)
+            #admin não pode ter mais de uma clínica cadastrada
+            if instance.is_staff and len(clinics) > 1:
+                raise serializers.ValidationError({"clinics": "Um admin não pode ter mais de uma clínica cadastrada."})
+            else:
+                instance.clinics.set(clinics)
 
         # Atualiza outros campos do usuário
         for key, value in validated_data.items():
