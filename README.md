@@ -13,7 +13,7 @@ Antes de iniciar, certifique-se de que possui o seguinte instalado:
 
 > A instalação do Node.js já inclui o `npm` (Node Package Manager)
 
-Para verificar se a instalação foi concluída com sucesso:
+Para verificar se a instalação foi concluída com sucesso, deve abrir o CMD e digitar o seguinte comando para ver a versão instalada:
 
 ```bash
 node -v
