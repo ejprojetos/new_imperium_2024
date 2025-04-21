@@ -78,10 +78,14 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         user = self.request.user
-        role = serializer.validated_data.get('roles')
-        role = role[0]['name']
-        
-        if role in ('ADMIN'):
+        role = serializer.validated_data.get('role')
+        if role is None:
+            role = Role.objects.get(name='PATIENT')
+            role = {
+                "name": role.name
+            }
+
+        if user.is_staff:
             serializer.save()
         elif self.request.user.is_authenticated and role in ('DOCTOR', 'RECEPTIONIST', 'PATIENT'):
             if user.has_role('RECEPTIONIST') or user.has_role('ADMIN'):
@@ -102,14 +106,14 @@ class UserViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("Você não tem permissão para editar este usuário.")
 
     @action(detail=True, methods=['patch'])
-    def update_roles(self, request, pk=None):
+    def update_role(self, request, pk=None):
         user = self.get_object()
         current_user = request.user
         if current_user.is_staff:  # Apenas admins podem alterar os papéis
-            roles_data = request.data.get('roles')
-            if roles_data:
-                roles = Role.objects.filter(id__in=roles_data)
-                user.roles.set(roles)
+            role_data = request.data.get('role')
+            if role_data:
+                role = Role.objects.get(name=role_data['name'])
+                user.role = role
                 user.save()
                 return Response({"detail": "Papéis atualizados com sucesso."})
             else:
@@ -135,7 +139,7 @@ from .models import User
 )
 class ViewGetUsersDoctors(APIView):
     def get(self, request, *args, **kwargs):
-        users = User.objects.filter(roles__name='DOCTOR')
+        users = User.objects.filter(role__name='DOCTOR')
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -150,7 +154,7 @@ class ViewGetUsersDoctors(APIView):
 )
 class ViewGetUsersRecepcionistas(APIView):
     def get(self, request, *args, **kwargs):
-        users = User.objects.filter(roles__name='RECEPTIONIST')
+        users = User.objects.filter(role__name='RECEPTIONIST')
         serializer = RecepcionistSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
@@ -164,7 +168,7 @@ class ViewGetUsersRecepcionistas(APIView):
 )
 class ViewGetUsersPacientes(APIView):
     def get(self, request, *args, **kwargs):
-        users = User.objects.filter(roles__name='PATIENT')
+        users = User.objects.filter(role__name='PATIENT')
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -191,7 +195,7 @@ class ViewGetUsersPacientes(APIView):
     def get(self, request, *args, **kwargs):
         user = self.request.user
 
-        users = User.objects.filter(roles__name__in=['PATIENT'])
+        users = User.objects.filter(role__name__in=['PATIENT'])
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -292,7 +296,6 @@ class ExpedientViewSet(viewsets.ModelViewSet):
   
    def destroy(self, request, *args, **kwargs):
        user_id = self.kwargs.get('pk')
-       print(user_id)
        user = User.objects.get(id=user_id)
        WorkingHours.objects.filter(user=user).delete()
 
