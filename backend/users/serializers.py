@@ -86,7 +86,7 @@ class ExpedientSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     address = AddressSerializer(required=False)
-    roles = RoleSerializer(many=True, required=False)
+    role = RoleSerializer(required=False)
     clinics = serializers.PrimaryKeyRelatedField(queryset=Clinic.objects.all(), many=True, required=False)
     expedient = ExpedientSerializer(required=False)
 
@@ -103,7 +103,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 'first_name', 'email', 'cpf', 'date_birth',
-            'password', 'roles', 'address', 'clinics', 'gender',
+            'password', 'role', 'address', 'clinics', 'gender',
             'formacao', 'crm', 'attach_document','image', 'phone', 'expedient', 'availableForShift'
         ]
         read_only_fields = ['id']
@@ -119,47 +119,49 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         address_data = validated_data.pop('address', None)
         clinics = validated_data.pop('clinics', [])
-        roles_data = validated_data.pop('roles', [])
-        roles_data = roles_data[0]['name']
+        #roles_data = roles_data[0]['name']
+        role_data = validated_data.pop('role', None)
         expedient_data = validated_data.pop('expedient', None)
-
         attach_document = validated_data.pop("attach_document", None)
-        
+
+        # Se o campo 'role' não for enviado, atribui o padrão
+        if role_data is None:
+            role_data = Role.objects.get(name='PATIENT')  # ou pelo id: Role.objects.get(id=1)
+            validated_data['role'] = role_data
+        else:
+            role_data = Role.objects.get(name=role_data['name'])  # Busca as roles pelos nomes
+            validated_data['role'] = role_data
+
         address = None
         if address_data:
             address = Address.objects.create(**address_data)
 
         user = User.objects.create(**validated_data, address=address)
         user.set_password(validated_data['password'])
-        user.save()
+
+        if "ADMIN" in role_data.name:
+            user.is_staff = True
 
         if attach_document:
             user.attach_document = attach_document
-            user.save()
 
         if expedient_data:
             expedient_serializer = ExpedientSerializer(data=expedient_data, context={'user': user})
             if expedient_serializer.is_valid(raise_exception=True):
                 expedient = expedient_serializer.save()
                 user.expedient = expedient
-                user.save()
 
         if clinics:
             user.clinics.set(clinics)
-
-        if roles_data:
-            roles = Role.objects.filter(name=roles_data)  # Busca as roles pelos nomes
-            user.roles.set(roles)
-            if "ADMIN" in roles_data:
-                user.is_staff = True
-                user.save()
+            
+        user.save()
 
         return user
     
     def update(self, instance, validated_data):
         address_data = validated_data.pop('address', None)
         clinics = validated_data.pop('clinics', [])
-        roles_data = validated_data.pop('roles', [])
+        role_data = validated_data.pop('role', [])
         expedient_data = validated_data.pop('expedient', None)
 
         # Atualiza endereço
@@ -171,12 +173,12 @@ class UserSerializer(serializers.ModelSerializer):
             else:
                 instance.address = Address.objects.create(**address_data)
 
-        # Atualiza roles
-        if roles_data:
-            role_names = [role['name'] for role in roles_data]
-            roles = Role.objects.filter(name__in=role_names)
-            instance.roles.set(roles)
-            if "ADMIN" in role_names:
+        # Atualiza role
+        if role_data:
+            #role_names = [role['name'] for role in role_data]
+            role = Role.objects.get(name=role_data['name'])
+            instance.role = role
+            if "ADMIN" in role_data['name']:
                 instance.is_staff = True
             else:
                 instance.is_staff = False
@@ -216,8 +218,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
         
-        roles = self.user.roles.values_list('name', flat=True)
-        data['user_role'] = list(roles)
+        # Acessa diretamente o nome do role
+        data['user_role'] = self.user.role.name if self.user.role else None
         
         return data
 
@@ -243,8 +245,7 @@ class CustomRefreshObtainPairSerializer(TokenRefreshSerializer):
             raise serializers.ValidationError("User not found.")
 
         # Recuperar as roles do usuário
-        roles = user.roles.values_list('name', flat=True)
-        data['user_role'] = list(roles)
+        data['user_role'] = user.role.name
 
         return data
     
@@ -256,7 +257,7 @@ class RecepcionistSerializer(UserSerializer):
         model = User
         fields = [
             'id', 'first_name', 'email', 'cpf', 'date_birth',
-            'roles', 'address', 'clinics', 'gender', 'attach_document', 'phone', 'expedient'
+            'role', 'address', 'clinics', 'gender', 'attach_document', 'phone', 'expedient'
         ]
 
 class TagSerializer(serializers.ModelSerializer):
