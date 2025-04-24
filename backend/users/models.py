@@ -62,7 +62,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     cpf = models.CharField(max_length=255)
     date_birth = models.DateField()
     address = models.ForeignKey(Address, on_delete=models.CASCADE, null=True, blank=True)
-    roles = models.ManyToManyField(Role, related_name='users')
+    role = models.ForeignKey(Role, on_delete=models.CASCADE)
     clinics = models.ManyToManyField("clinic.Clinic", blank=True)
     specialty = models.CharField(max_length=255, null=True, blank=True)
     gender = models.CharField(max_length=255, null=True, blank=True)
@@ -91,7 +91,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     def has_role(self, role_name):
         """Verifica se o usuário tem um determinado papel."""
-        return self.roles.filter(name=role_name).exists()
+        return self.role.name == role_name if self.role else False
 
 
 class Patient(models.Model):
