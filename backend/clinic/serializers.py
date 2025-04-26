@@ -22,9 +22,9 @@ class ClinicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Clinic
-        fields = ['id', 'name', 'image', 'cnpj', 'telefone_responsavel', 'email_responsavel', 'cpf_responsavel', 'nome_responsavel', 'rg_responsavel' ,  'address', 'admin_clinic']
+        fields = ['id', 'name', 'image', 'cnpj', 'telefone_responsavel', 'email_responsavel', 'cpf_responsavel', 'nome_responsavel', 'rg_responsavel' ,  'address', 'admins_clinic']
         extra_kwargs = {
-            'admin_clinic': {
+            'admins_clinic': {
                 'read_only': True
             }
         }
@@ -34,10 +34,34 @@ class ClinicSerializer(serializers.ModelSerializer):
         address = Address.objects.create(**address_data)
 
         request = self.context.get('request')
-        admin_clinic = request.user if request else None
+        # verifica se o admin já tem alguma clinica associada
+        if request and request.user.clinic:
+            # Se o admin já tem uma clínica associada, não atribui a nova clínica
+            raise serializers.ValidationError({"error": "Admin já possui uma clinica associada!"})
+        else:
+            # Se o admin não tem uma clínica associada, atribui a nova clínica
+            admin_clinic = request.user
 
-        clinic = Clinic.objects.create(address=address, admin_clinic=admin_clinic, **validated_data)
+        clinic = Clinic.objects.create(address=address, **validated_data)
+        clinic.admins_clinic.add(admin_clinic)
+        clinic.save()
+        # adicionando a clinica ao admin
+        request.user.clinic = clinic
+        request.user.save()
         return clinic
+    
+    def update(self, instance, validated_data):
+        address_data = validated_data.pop('address', None)
+        if address_data:
+            # Atualiza o endereço se fornecido
+            Address.objects.filter(id=instance.address.id).update(**address_data)
+
+        # Atualiza os outros campos da clínica
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        
+        instance.save()
+        return instance
 
 
 class MedicalRecordSerializer(serializers.ModelSerializer):

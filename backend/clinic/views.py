@@ -31,8 +31,7 @@ class ClinicViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         user = self.request.user
-        return super().get_queryset().filter(admin_clinic=user)
-
+        return super().get_queryset().filter(admins_clinic=user)
 
 class MedicalRecordViewSet(viewsets.ModelViewSet):
     """
