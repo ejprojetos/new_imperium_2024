@@ -87,7 +87,7 @@ class ExpedientSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     address = AddressSerializer(required=False)
     role = RoleSerializer(required=False)
-    clinics = serializers.PrimaryKeyRelatedField(queryset=Clinic.objects.all(), many=True, required=False)
+    #clinics = serializers.PrimaryKeyRelatedField(queryset=Clinic.objects.all(), many=True, required=False)
     expedient = ExpedientSerializer(required=False)
 
     # first_name = serializers.CharField(required=True)
@@ -103,7 +103,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 'first_name', 'email', 'cpf', 'date_birth',
-            'password', 'role', 'address', 'clinics', 'gender',
+            'password', 'role', 'address', 'clinic', 'gender',
             'formacao', 'crm', 'attach_document','image', 'phone', 'expedient', 'availableForShift'
         ]
         read_only_fields = ['id']
@@ -118,7 +118,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         address_data = validated_data.pop('address', None)
-        clinics = validated_data.pop('clinics', [])
+        clinic = validated_data.pop('clinic', None)
         #roles_data = roles_data[0]['name']
         role_data = validated_data.pop('role', None)
         expedient_data = validated_data.pop('expedient', None)
@@ -151,8 +151,8 @@ class UserSerializer(serializers.ModelSerializer):
                 expedient = expedient_serializer.save()
                 user.expedient = expedient
 
-        if clinics:
-            user.clinics.set(clinics)
+        if clinic:
+            user.clinic = clinic
             
         user.save()
 
@@ -160,7 +160,7 @@ class UserSerializer(serializers.ModelSerializer):
     
     def update(self, instance, validated_data):
         address_data = validated_data.pop('address', None)
-        clinics = validated_data.pop('clinics', [])
+        clinic = validated_data.pop('clinic', None)
         role_data = validated_data.pop('role', [])
         expedient_data = validated_data.pop('expedient', None)
 
@@ -201,8 +201,8 @@ class UserSerializer(serializers.ModelSerializer):
                     instance.save()
 
         # Atualiza clínicas
-        if clinics:
-            instance.clinics.set(clinics)
+        if clinic:
+            instance.clinic = clinic
 
         # Atualiza outros campos do usuário
         for key, value in validated_data.items():
@@ -257,7 +257,7 @@ class RecepcionistSerializer(UserSerializer):
         model = User
         fields = [
             'id', 'first_name', 'email', 'cpf', 'date_birth',
-            'role', 'address', 'clinics', 'gender', 'attach_document', 'phone', 'expedient'
+            'role', 'address', 'clinic', 'gender', 'attach_document', 'phone', 'expedient'
         ]
 
 class TagSerializer(serializers.ModelSerializer):
