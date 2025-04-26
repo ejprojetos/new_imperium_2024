@@ -110,16 +110,16 @@ Vue 3 + Vite
 
 ---
 
-# 🚀 Executando a API Localmente — **Imperium 2024**
+### 🚀 Executando a API Localmente — **Imperium 2024**
 
-## ⚙️ Pré-requisitos
+#### ⚙️ Pré-requisitos
 
 - Python **≥ 3.12**
 - (Opcional) Docker instalado na máquina
 
-## 🧪 Ambiente Local (sem Docker)
+##### 🧪 Ambiente Local (sem Docker)
 
-### 1. Abra o terminal no diretório do projeto
+##### 1. Abra o terminal no diretório do projeto
 
 Navegue até a pasta do backend:
 
@@ -127,7 +127,7 @@ Navegue até a pasta do backend:
 cd imperium_2024/Backend/
 ```
 
-### 2. Crie e ative o ambiente virtual
+##### 2. Crie e ative o ambiente virtual
 
 **Criação:**
 
@@ -149,13 +149,13 @@ python3 -m venv venv
   source venv/bin/activate
   ```
 
-### 3. Instale as dependências
+##### 3. Instale as dependências
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Configure o ambiente
+##### 4. Configure o ambiente
 
 Crie um arquivo `.env` na raiz do projeto e adicione:
 
@@ -167,7 +167,7 @@ EMAIL_PORT = ""
 EMAIL_HOST = ""
 ```
 
-### 5. Realize as migrações
+##### 5. Realize as migrações
 
 **Criar os arquivos de migração:**
 
@@ -181,13 +181,13 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
-### 6. Inicie o servidor
+##### 6. Inicie o servidor
 
 ```bash
 python manage.py runserver
 ```
 
-### ✅ Log Esperado
+##### ✅ Log Esperado
 
 ```bash
 Watching for file changes with StatReloader
@@ -202,11 +202,11 @@ Quit the server with CONTROL-C.
 
 ---
 
-## 🐳 Executando com Docker (mais simples)
+### 🐳 Executando com Docker (mais simples)
 
 Caso tenha Docker instalado, basta criar o arquivo `.env`:
 
-### 4. Configure o ambiente
+##### Configure o ambiente
 
 Crie um arquivo `.env` na raiz do projeto e adicione:
 
@@ -224,7 +224,7 @@ e rodar os comandos abaixo no diretório raiz do projeto:
 docker compose build && docker compose up
 ```
 
-### ✅ Log Esperado
+##### ✅ Log Esperado
 
 ```bash
 docker compose build && docker compose up
