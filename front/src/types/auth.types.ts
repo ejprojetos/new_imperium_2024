@@ -9,4 +9,5 @@ export interface LoginResponse {
     detail: string | null
     user_role: Array<'ADMIN' | 'DOCTOR' | 'PATIENT' | 'RECEPTIONIST'>
     name: string
+    id: number
 }

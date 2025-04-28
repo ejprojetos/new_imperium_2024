@@ -17,7 +17,11 @@ import { Loader } from 'lucide-vue-next'
 import { useForm } from 'vee-validate'
 import { getInitials } from '@/lib/utils'
 import { useDeleteUserMutation } from '@/hooks/use-delete-user-mutation'
-import DeleteUserDialog from '@/components/delete-user-dialog.vue'
+import { useUserStore } from '@/stores/user/useUserStore'
+import { storeToRefs } from 'pinia'
+
+const userStore = useUserStore()
+const { role } = storeToRefs(userStore)
 
 const { toast } = useToast()
 const route = useRoute()
@@ -26,10 +30,11 @@ const doctorId = route.params.id as string
 
 const id = ref(doctorId)
 const isEditMode = ref(false)
+const doctorValid = ref(false)
 
 const queryClient = new QueryClient()
 
-const { data, isLoading } = useQuery({
+const { data, isLoading, error } = useQuery({
     queryKey: ['doctor-user', id],
     queryFn: async () => await fetcher<Doctor>(`/users/${doctorId}`),
     staleTime: 5 * 1000
@@ -92,6 +97,16 @@ const { isFieldDirty, handleSubmit, setValues, resetForm, values } = useForm<Doc
     keepValuesOnUnmount: true
 })
 
+watch(data, () => {
+    if (data.value?.roles[0].name !== 'DOCTOR') {
+        router.push('/dashboard/medicos')
+
+        return
+    }
+
+    doctorValid.value = true
+})
+
 watch(initialValues, (newAsyncData) => {
     headerPersonalInfos.value.fullName = newAsyncData.fullname
     headerPersonalInfos.value.initials = getInitials(newAsyncData.fullname ?? '')
@@ -135,7 +150,6 @@ const onSubmit = handleSubmit(async (values) => {
             reader.readAsDataURL(values.file as File)
             reader.onload = () => resolve(reader.result as string)
         })
-        console.log(values.file)
     }
 
     const addressChanged =
@@ -236,9 +250,12 @@ function handleDeleteUser() {
 
 <template>
     <LayoutDashboard>
+        <UserNotFound v-if="error" navigateTo="/dashboard/medicos" />
+
         <div v-if="isLoading" class="flex justify-center items-center h-full">
             <Loader class="animate-spin text-gray-400" />
         </div>
+
         <form v-else-if="data" class="max-w-3xl mx-auto my-10" @submit="onSubmit">
             <div class="flex items-center justify-between mb-4">
                 <div class="flex gap-4 items-center">
@@ -254,7 +271,7 @@ function handleDeleteUser() {
                             {{ headerPersonalInfos.fullName }}
                         </h2>
                         <div class="text-sm text-gray-500">
-                            {{ values.gender === 'Feminino' ? 'Médico' : 'Médica' }}
+                            {{ values.gender === 'Feminino' ? 'Médica' : 'Médico' }}
                         </div>
                     </div>
                 </div>
@@ -279,13 +296,15 @@ function handleDeleteUser() {
                 </TabsContent>
             </Tabs>
 
-            <div class="mt-6 space-x-2 flex justify-end">
+            <div
+                v-if="role === 'DOCTOR' || role === 'ADMIN'"
+                class="mt-6 space-x-2 flex justify-end">
                 <template v-if="!isEditMode">
                     <DeleteUserDialog
                         :isPending="isPendingUser"
                         :onDelete="handleDeleteUser"
                         title="Você tem certeza que deseja remover?"
-                        description="Esta ação não pode ser desfeita. Isso excluirá permanentemente o recepcionista e
+                        description="Esta ação não pode ser desfeita. Isso excluirá permanentemente o médico e
                     removerá seus dados de nossos servidores." />
                     <Button @click="isEditMode = !isEditMode">
                         <svg

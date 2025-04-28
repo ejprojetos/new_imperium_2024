@@ -18,10 +18,10 @@ export interface User {
     crm: string
     attach_document: string | null
     password?: string
+    phone: string
 }
 
 export interface Recepcionist extends User {
-    phone: string
     availableForShift: boolean
     expedient: {
         days_of_week: string[]
@@ -30,8 +30,9 @@ export interface Recepcionist extends User {
 }
 
 export interface Doctor extends User {
-    phone: string
     speciality: string
     crm: string
     attach_document: string | null
 }
+
+export interface Patient extends User {}

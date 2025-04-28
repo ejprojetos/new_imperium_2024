@@ -1,0 +1,5 @@
+export { default as ContactData } from './contact-data.vue'
+export { default as PersonalData } from './personal-data.vue'
+export { default as AddressData } from './address-data.vue'
+export { default as DoctorProfessionalData } from './doctor-professional-data.vue'
+export { default as PatientSpecificData } from './patient-specific-data.vue'

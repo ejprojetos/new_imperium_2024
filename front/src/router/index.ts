@@ -57,14 +57,20 @@ const router = createRouter({
             component: () => import('../views/dashboard/perfil/paciente.vue')
         },
         {
-            path: '/dashboard/perfil/medico',
+            path: '/dashboard/perfil',
             name: 'perfil_medico',
-            component: () => import('../views/dashboard/perfil/medico.vue')
+            component: () => import('../views/dashboard/perfil/profile.vue')
+        },
+        {
+            path: '/dashboard/perfil/medico',
+            name: 'perfil_medico2',
+            component: () => import('../views/dashboard/perfil/doctor-profile/doctor-profile.vue')
         },
         {
             path: '/dashboard/perfil/recepcionista',
             name: 'perfil_recepcionista',
-            component: () => import('../views/dashboard/perfil/recepcionista.vue')
+            component: () =>
+                import('../views/dashboard/perfil/receptionist-profile/receptionist-profile.vue')
         },
 
         {
@@ -133,7 +139,7 @@ const router = createRouter({
         {
             path: '/dashboard/pacientes/:id',
             name: 'visualizar-paciente',
-            component: () => import('../views/dashboard/pacientes/visualizar-paciente.vue')
+            component: () => import('../views/dashboard/pacientes/patient-details/index.vue')
         },
         {
             path: '/dashboard/pacientes/cadastrar-consulta',
@@ -163,7 +169,8 @@ const router = createRouter({
         {
             path: '/dashboard/clinicas/cadastrar',
             name: 'cadastrar-clinica',
-            component: () => import('../views/dashboard/clinicas/cadastrar-clinica.vue')
+            component: () =>
+                import('../views/dashboard/clinicas/clinic-registration/clinic-registration.vue')
         },
         {
             path: '/dashboard/clinicas/cadastrar/:id',
@@ -188,18 +195,19 @@ const router = createRouter({
         },
         {
             path: '/dashboard/recepcionista/cadastrar',
-            name: 'cadastrar-recepcionista',
-            component: () => import('../views/dashboard/recepcionistas/cadastrar-recepcionista.vue')
+            name: 'receptionist-registration',
+            component: () =>
+                import('../views/dashboard/recepcionistas/receptionist-registration/index.vue')
         },
         {
             path: '/dashboard/pacientes/cadastrar',
-            name: 'cadastrar-paciente',
-            component: () => import('../views/dashboard/pacientes/cadastrar-paciente.vue')
+            name: 'pacient-registration',
+            component: () => import('../views/dashboard/pacientes/patient-registration/index.vue')
         },
         {
             path: '/dashboard/medicos/cadastrar',
-            name: 'cadastrar-medico',
-            component: () => import('../views/dashboard/medicos/cadastrar-medico.vue')
+            name: 'doctor-registration',
+            component: () => import('../views/dashboard/medicos/doctor-registration/index.vue')
         },
         {
             path: '/dashboard/prontuario/:id',
@@ -299,6 +307,7 @@ router.beforeEach((to, from, next) => {
         case '/dashboard/institucional':
             return roleGuard(['ADMIN'])(to, from, next)
         case '/dashboard/medicos':
+            return roleGuard(['ADMIN', 'RECEPTIONIST', 'DOCTOR'])(to, from, next)
         case '/dashboard/consultas/cadastrar':
             return roleGuard(['DOCTOR', 'ADMIN'])(to, from, next)
         case '/dashboard/recepcionistas':

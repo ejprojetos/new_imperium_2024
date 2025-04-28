@@ -1,5 +1,5 @@
 <template>
-    <div class="flex justify-between h-screen">
+    <div class="flex justify-between max-h-screen h-screen flex-1">
         <Leftbar />
 
         <div class="flex flex-col w-full">
