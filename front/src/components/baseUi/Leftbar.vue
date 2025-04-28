@@ -4,18 +4,25 @@
             v-if="isLeftbarOpen || !isMobile"
             :class="[
                 isMobile ? 'fixed bg-white top-0 left-0 z-50 w-[200px] shadow-lg' : '',
-                'px-4 py-4'
+                'px-4 py-4 w-[280px]'
             ]"
             class="flex flex-col w-[250px] px-4 py-8 items-center justify-between h-full max-lg:px-4 max-lg:items-start">
             <RouterLink to="/dashboard">
                 <img class="w-32" src="../../assets/logo.svg" alt="" srcset="" />
             </RouterLink>
-            <div class="flex flex-col mt-12">
-                <RouterLink v-for="item in navItems" :key="item.name" :to="item.path">
+            <div class="flex flex-col mt-12 w-full gap-2">
+                <RouterLink v-for="item in filteredNavItems" :key="item.name" :to="item.path">
                     <div
                         v-if="item.roles.includes(role)"
-                        class="flex gap-x-4 justify-start items-center mt-4 mb-2 text-sm">
-                        <img :src="item.icon" alt="" />
+                        :class="
+                            cn(
+                                'flex gap-x-2 justify-start items-center text-sm p-2 rounded-lg bg-white hover:bg-slate-100 transition-colors',
+                                {
+                                    'bg-slate-100': isActive(item.path)
+                                }
+                            )
+                        ">
+                        <img :src="item.icon" :alt="item.name" />
                         <p
                             :class="{ 'text-active': isActive(item.path) }"
                             class="font-bold text-md">
@@ -75,6 +82,7 @@ import { useUIStore } from '@/stores/ui/useUIStore'
 import { useUserStore } from '@/stores/user/useUserStore'
 import { useScreenSize } from '@/composables/useScreenSize'
 import { authService } from '@/services/auth.service'
+import { cn } from '@/lib/utils'
 
 const userStore = useUserStore()
 const uiStore = useUIStore()
@@ -146,13 +154,13 @@ const navItems: NavItem[] = [
         name: 'Recepcionistas',
         icon: recepcionistasIcon,
         path: '/dashboard/recepcionistas',
-        roles: ['ADMIN', 'RECEPTIONIST']
+        roles: ['ADMIN', 'DOCTOR']
     },
     {
         name: 'Pacientes',
         icon: pacientesIcon,
         path: '/dashboard/pacientes',
-        roles: ['ADMIN', 'PATIENT']
+        roles: ['ADMIN', 'RECEPTIONIST']
     },
     {
         name: 'Minhas Consultas',
@@ -161,6 +169,8 @@ const navItems: NavItem[] = [
         roles: ['ADMIN', 'PATIENT']
     }
 ]
+
+const filteredNavItems = computed(() => navItems.filter((item) => item.roles.includes(role.value)))
 </script>
 
 <style scoped>

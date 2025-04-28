@@ -90,10 +90,11 @@ export const turns = [
     }
 ] as const
 
-export type ROLE = 'ADMIN' | 'RECEPTIONIST' | 'DOCTOR'
+export type ROLE = 'ADMIN' | 'RECEPTIONIST' | 'DOCTOR' | 'PATIENT'
 
 export const roles: Record<ROLE, string> = {
     ADMIN: 'Administrador',
     DOCTOR: 'Médico',
-    RECEPTIONIST: 'Recepcionista'
+    RECEPTIONIST: 'Recepcionista',
+    PATIENT: 'Paciente'
 }

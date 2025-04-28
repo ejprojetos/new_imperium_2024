@@ -41,7 +41,7 @@ const dateOfBirthSchema = z
     )
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
-const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/jpg']
+const ACCEPTED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf']
 
 const passwordSchema = z
     .string({
@@ -122,12 +122,12 @@ const schema: z.ZodSchema = z
             required_error: 'Campo obrigatório'
         }),
         file: z
-            .instanceof(File) // Garante que seja um arquivo
+            .instanceof(File)
             .refine((file) => file.size <= MAX_FILE_SIZE, {
                 message: 'O arquivo deve ter no máximo 5MB'
             })
-            .refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), {
-                message: 'Formato inválido. Apenas PNG, JPG e JPEG são permitidos.'
+            .refine((file) => ACCEPTED_FILE_TYPES.includes(file.type), {
+                message: 'Formato inválido. Apenas PNG, JPG, JPEG e PDF são permitidos.'
             })
             .optional()
     })

@@ -67,7 +67,8 @@ const onSubmit = handleSubmit(async (values) => {
             state: values.address.state,
             city: values.address.city,
             street: values.address.street,
-            number: values.address.number
+            number: values.address.number,
+            neighborhood: values.address.neighborhood
         },
         email: values.email,
         phone: values.phone,
@@ -83,7 +84,7 @@ const onSubmit = handleSubmit(async (values) => {
             })
 
             resetForm()
-            router.push('/dashboard/paciente')
+            router.push('/dashboard/pacientes')
         },
         onError(error: any) {
             if (error.status === 400) {
