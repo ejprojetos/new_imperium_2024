@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 import { fetcher } from '@/services/fetcher.service'
 import { useUserStore } from '@/stores/user/useUserStore'
 import { storeToRefs } from 'pinia'
@@ -33,8 +32,8 @@ const { isPending, mutate } = useMutation({
     }
 })
 
-const { data, isLoading } = useQuery<Recepcionist, Error>({
-    queryKey: ['receptionist-user', id],
+const { data } = useQuery<Recepcionist, Error>({
+    queryKey: ['user', id],
     queryFn: async () => {
         const response = await fetcher<Recepcionist>(`/users/${id.value}`)
         if (!response) throw new Error('User not found')
@@ -81,7 +80,7 @@ const initialValues = computed(() => {
 
 const savedValues = ref(formatData())
 
-const { isFieldDirty, handleSubmit, setValues, } = useForm<ReceptionistDataSchema>({
+const { isFieldDirty, handleSubmit, setValues } = useForm<ReceptionistDataSchema>({
     validationSchema: receptionistDataSchema,
     initialValues: initialValues.value ?? undefined,
     keepValuesOnUnmount: !!data.value
@@ -190,46 +189,40 @@ const onSubmit = handleSubmit((values) => {
 </script>
 
 <template>
-    <LayoutDashboard>
-        <div v-if="isLoading" class="flex justify-center items-center h-full">
-            <Loader class="animate-spin text-zinc-400 size-4" />
-        </div>
-
-        <form v-else-if="data" class="max-w-3xl mx-auto my-10" @submit="onSubmit">
-            <div class="flex items-center justify-between mb-4">
-                <div class="flex gap-4 items-center">
-                    <Avatar size="base" class="bg-primary text-white">
-                        <AvatarImage src="https://github.com/josmartrigueiro.pnag" alt="@unovue" />
-                        <AvatarFallback>
-                            {{ getInitials(data.first_name) }}
-                        </AvatarFallback>
-                    </Avatar>
-                    <div>
-                        <h2 class="text-3xl font-bold">
-                            {{ data.first_name }}
-                        </h2>
-                        <div class="text-sm text-gray-500">
-                            {{ roles[data.roles[0].name as ROLE] }}
-                        </div>
+    <form class="max-w-3xl mx-auto my-10" @submit="onSubmit">
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex gap-4 items-center">
+                <Avatar size="base" class="bg-primary text-white">
+                    <AvatarImage src="https://github.com/josmartrigueiro.pnag" alt="@unovue" />
+                    <AvatarFallback>
+                        {{ getInitials(data?.first_name ?? '') }}
+                    </AvatarFallback>
+                </Avatar>
+                <div>
+                    <h2 class="text-3xl font-bold">
+                        {{ data?.first_name }}
+                    </h2>
+                    <div class="text-sm text-gray-500">
+                        {{ roles[data?.roles[0].name as ROLE] }}
                     </div>
                 </div>
             </div>
-            <Card>
-                <CardContent class="p-6 space-y-6">
-                    <PersonalData :isFieldDirty="isFieldDirty" />
-                    <AddressData :isFieldDirty="isFieldDirty" />
-                    <ContactData :isFieldDirty="isFieldDirty" />
-                    <ReceptionistData :isFieldDirty="isFieldDirty" />
-                </CardContent>
-            </Card>
+        </div>
+        <Card>
+            <CardContent class="p-6 space-y-6">
+                <PersonalData :isFieldDirty="isFieldDirty" />
+                <AddressData :isFieldDirty="isFieldDirty" />
+                <ContactData :isFieldDirty="isFieldDirty" />
+                <ReceptionistData :isFieldDirty="isFieldDirty" />
+            </CardContent>
+        </Card>
 
-            <div class="mt-6 space-x-2 flex justify-end">
-                <Button variant="outline" type="button">Cancelar</Button>
-                <Button type="submit">
-                    <Loader v-if="isPending" class="animate-spin size-4" />
-                    Salvar
-                </Button>
-            </div>
-        </form>
-    </LayoutDashboard>
+        <div class="mt-6 space-x-2 flex justify-end">
+            <Button variant="outline" type="button">Cancelar</Button>
+            <Button type="submit">
+                <Loader v-if="isPending" class="animate-spin size-4" />
+                Salvar
+            </Button>
+        </div>
+    </form>
 </template>

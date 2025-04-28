@@ -34,3 +34,5 @@ export interface Doctor extends User {
     crm: string
     attach_document: string | null
 }
+
+export interface Patient extends User {}

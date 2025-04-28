@@ -139,7 +139,7 @@ const router = createRouter({
         {
             path: '/dashboard/pacientes/:id',
             name: 'visualizar-paciente',
-            component: () => import('../views/dashboard/pacientes/visualizar-paciente.vue')
+            component: () => import('../views/dashboard/pacientes/patient-details/index.vue')
         },
         {
             path: '/dashboard/pacientes/cadastrar-consulta',
@@ -169,7 +169,8 @@ const router = createRouter({
         {
             path: '/dashboard/clinicas/cadastrar',
             name: 'cadastrar-clinica',
-            component: () => import('../views/dashboard/clinicas/cadastrar-clinica.vue')
+            component: () =>
+                import('../views/dashboard/clinicas/clinic-registration/clinic-registration.vue')
         },
         {
             path: '/dashboard/clinicas/cadastrar/:id',
@@ -306,6 +307,7 @@ router.beforeEach((to, from, next) => {
         case '/dashboard/institucional':
             return roleGuard(['ADMIN'])(to, from, next)
         case '/dashboard/medicos':
+            return roleGuard(['ADMIN', 'RECEPTIONIST', 'DOCTOR'])(to, from, next)
         case '/dashboard/consultas/cadastrar':
             return roleGuard(['DOCTOR', 'ADMIN'])(to, from, next)
         case '/dashboard/recepcionistas':

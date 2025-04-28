@@ -1,22 +1,27 @@
 <script setup lang="ts">
-import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 import { fetcher } from '@/services/fetcher.service'
 import { useUserStore } from '@/stores/user/useUserStore'
 import { storeToRefs } from 'pinia'
 import { QueryClient, useMutation, useQuery } from '@tanstack/vue-query'
 import { getInitials } from '@/lib/utils'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import type { User } from '@/types/users.types'
+import type { Doctor, Recepcionist } from '@/types/users.types'
 import { roles, type ROLE } from '@/utils/data'
-import { ContactData, AddressData } from '@/components/commons'
+import {
+    ContactData,
+    AddressData,
+    DoctorProfessionalData,
+    PatientSpecificData
+} from '@/components/commons'
 import { Card, CardContent } from '@/components/ui/card'
-import { AdminData } from './form'
-import { adminDataSchema, type AdminDataSchema } from './schema'
 import { useForm } from 'vee-validate'
-import { computed, ref, watch, watchEffect } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/components/ui/toast'
+import PersonalData from '@/components/commons/personal-data.vue'
 import { Loader } from 'lucide-vue-next'
+import type { DoctorDataSchema } from './schema'
+import { doctorDataSchema } from './schema'
 
 const queryClient = new QueryClient()
 const userStore = useUserStore()
@@ -24,68 +29,61 @@ const { id } = storeToRefs(userStore)
 
 const { isPending, mutate } = useMutation({
     mutationFn: async (newTodo) => {
-        return await fetcher<User>(`/users/${id.value}/`, {
+        return await fetcher<Recepcionist>(`/users/${id.value}/`, {
             method: 'PATCH',
             body: JSON.stringify(newTodo)
         })
     }
 })
 
-const { data } = useQuery<User, Error>({
-    queryKey: ['user', id.value],
+const { data } = useQuery<Doctor, Error>({
+    queryKey: ['user', id],
     queryFn: async () => {
-        const response = await fetcher<User>(`/users/${id.value}`)
+        const response = await fetcher<Doctor>(`/users/${id.value}`)
         if (!response) throw new Error('User not found')
         return response
     },
     staleTime: Infinity
 })
 
-function formatData(raw = data.value!): AdminDataSchema {
+function formatData(raw: Doctor = data.value!) {
     if (!raw) {
-        return {
-            fullname: '',
-            cpf: '',
-            address: {
-                zipCode: '',
-                country: '',
-                state: '',
-                city: '',
-                neighborhood: '',
-                street: '',
-                number: ''
-            },
-            email: '',
-            phone: ''
-        }
+        return {}
     }
 
-    const admin = raw
+    const formatDate = raw.date_birth?.split('-')
+
     return {
         fullname: raw.first_name,
         cpf: raw.cpf,
+        dateOfBirth: formatDate && `${formatDate[2]}/${formatDate[1]}/${formatDate[0]}`,
+        gender: raw.gender as 'Masculino' | 'Feminino' | 'Outro',
         address: {
-            zipCode: admin.address.zip_code,
-            country: admin.address.country,
-            state: admin.address.state,
-            city: admin.address.city,
-            neighborhood: admin.address.neighborhood,
-            street: admin.address.street,
-            number: admin.address.number
+            zipCode: raw.address.zip_code,
+            country: raw.address.country,
+            state: raw.address.state,
+            city: raw.address.city,
+            neighborhood: raw.address.street,
+            street: raw.address.street,
+            number: raw.address.number
         },
-        email: admin.email,
-        phone: admin.phone
+        email: raw.email,
+        phone: raw.phone,
+        attachDocument: raw.attach_document ?? null,
+        formation: raw.formacao,
+        specialty: raw.speciality,
+        crm: raw.crm
     }
 }
-
-const savedValues = ref<AdminDataSchema>({} as AdminDataSchema)
 
 const initialValues = computed(() => {
     return formatData()
 })
 
-const { isFieldDirty, handleSubmit, setValues } = useForm<AdminDataSchema>({
-    validationSchema: adminDataSchema,
+const savedValues = ref(formatData())
+
+const { isFieldDirty, handleSubmit, setValues, values, resetForm } = useForm<DoctorDataSchema>({
+    validationSchema: doctorDataSchema,
     initialValues: initialValues.value ?? undefined,
     keepValuesOnUnmount: !!data.value
 })
@@ -95,27 +93,34 @@ watch(initialValues, (newAsyncData) => {
     setValues(newAsyncData)
 })
 
-watchEffect(() => {
-    if (data.value) {
-        const formatted = formatData()
-        savedValues.value = formatted
-        setValues(formatted)
-    }
-})
-
-const onSubmit = handleSubmit((values) => {
-    const hasChanged = <K extends keyof AdminDataSchema>(
+const onSubmit = handleSubmit(async (values) => {
+    const hasChanged = <K extends keyof DoctorDataSchema>(
         key: K,
-        subKey?: keyof AdminDataSchema[K]
+        subKey?: keyof DoctorDataSchema[K]
     ) => {
         if (
             subKey &&
             typeof values[key] === 'object' &&
-            typeof savedValues.value[key] === 'object'
+            typeof savedValues.value?.[key as keyof typeof savedValues.value] === 'object'
         ) {
+            // @ts-ignore
             return (values[key] as any)[subKey] !== (savedValues.value[key] as any)[subKey]
         }
-        return values[key] !== savedValues.value[key]
+        return (
+            values[key as keyof typeof values] !==
+            savedValues.value?.[key as keyof typeof savedValues.value]
+        )
+    }
+
+    const formatDate = values.dateOfBirth.split('/')
+    let base64Image: string | null = null
+
+    if (values.file) {
+        base64Image = await new Promise((resolve) => {
+            const reader = new FileReader()
+            reader.readAsDataURL(values.file as File)
+            reader.onload = () => resolve(reader.result as string)
+        })
     }
 
     const addressChanged =
@@ -124,11 +129,17 @@ const onSubmit = handleSubmit((values) => {
         hasChanged('address', 'state') ||
         hasChanged('address', 'city') ||
         hasChanged('address', 'street') ||
-        hasChanged('address', 'number')
+        hasChanged('address', 'number') ||
+        hasChanged('address', 'neighborhood')
 
-    const newData = {
+    const newData: Partial<Doctor> = {
         first_name: hasChanged('fullname') ? values.fullname : undefined,
         cpf: hasChanged('cpf') ? values.cpf : undefined,
+        date_birth: hasChanged('dateOfBirth')
+            ? `${formatDate[2]}-${formatDate[1]}-${formatDate[0]}`
+            : undefined,
+        gender: hasChanged('gender') ? values.gender : undefined,
+        // @ts-ignore
         address: addressChanged
             ? {
                   zip_code: hasChanged('address', 'zipCode') ? values.address.zipCode : undefined,
@@ -136,17 +147,21 @@ const onSubmit = handleSubmit((values) => {
                   state: hasChanged('address', 'state') ? values.address.state : undefined,
                   city: hasChanged('address', 'city') ? values.address.city : undefined,
                   street: hasChanged('address', 'street') ? values.address.street : undefined,
-                  number: hasChanged('address', 'number') ? values.address.number : undefined
+                  number: hasChanged('address', 'number') ? values.address.number : undefined,
+                  neighborhood: hasChanged('address', 'neighborhood')
+                      ? values.address.neighborhood
+                      : undefined
               }
             : undefined,
         email: hasChanged('email') ? values.email : undefined,
-        phone: hasChanged('phone') ? values.phone : undefined
-    }
-
-    const isEmpty = Object.values(newData).every((value) => value === undefined)
-
-    if (isEmpty) {
-        return
+        phone: hasChanged('phone') ? values.phone : undefined,
+        formacao: hasChanged('formation') ? values.formation : undefined,
+        crm: hasChanged('crm') ? values.crm.toUpperCase() : undefined,
+        attach_document: base64Image
+            ? base64Image
+            : values.attachDocument === null
+              ? null
+              : undefined
     }
 
     mutate(newData as any, {
@@ -154,18 +169,16 @@ const onSubmit = handleSubmit((values) => {
             if (newValue) {
                 toast({
                     variant: 'success',
-                    description: 'Administrador atualizado com sucesso! 🎉'
+                    description: 'Dados atualizados com sucesso! 🎉'
                 })
 
-                queryClient.setQueryData(['user', id], newValue)
-
-                savedValues.value = formatData(newValue)
+                queryClient.setQueryData(['doctor-user', id], newValue)
             }
         },
         onError: () => {
             toast({
                 variant: 'destructive',
-                description: 'Erro ao atualizar administrador! 😢'
+                description: 'Erro ao atualizar os dados! 😢'
             })
         }
     })
@@ -192,16 +205,18 @@ const onSubmit = handleSubmit((values) => {
                 </div>
             </div>
         </div>
+
         <Card>
             <CardContent class="p-6 space-y-6">
-                <AdminData :isFieldDirty="isFieldDirty" />
+                <PersonalData :isFieldDirty="isFieldDirty" />
                 <AddressData :isFieldDirty="isFieldDirty" />
                 <ContactData :isFieldDirty="isFieldDirty" />
+                <PatientSpecificData :isFieldDirty="isFieldDirty" />
             </CardContent>
         </Card>
 
         <div class="mt-6 space-x-2 flex justify-end">
-            <Button variant="outline" type="button">Cancelar</Button>
+            <Button variant="outline" type="button" @click="resetForm">Cancelar</Button>
             <Button type="submit">
                 <Loader v-if="isPending" class="animate-spin size-4" />
                 Salvar
