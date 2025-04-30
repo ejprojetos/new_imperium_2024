@@ -35,7 +35,7 @@ class ClinicSerializer(serializers.ModelSerializer):
 
         request = self.context.get('request')
         # verifica se o admin já tem alguma clinica associada
-        if request and request.user.clinic:
+        if request and request.user.clinics.exists():
             # Se o admin já tem uma clínica associada, não atribui a nova clínica
             raise serializers.ValidationError({"error": "Admin já possui uma clinica associada!"})
         else:
@@ -46,7 +46,8 @@ class ClinicSerializer(serializers.ModelSerializer):
         clinic.admins_clinic.add(admin_clinic)
         clinic.save()
         # adicionando a clinica ao admin
-        request.user.clinic = clinic
+        #request.user.clinic = clinic
+        request.user.clinics.add(clinic)
         request.user.save()
         return clinic
     
@@ -62,6 +63,18 @@ class ClinicSerializer(serializers.ModelSerializer):
         
         instance.save()
         return instance
+    
+    def destroy(self, instance):
+        # Remove a clínica associada ao admin
+        if instance.admins_clinic.exists():
+            instance.admins_clinic.remove(instance.admins_clinic.first())
+        
+        # Remove o endereço associado à clínica
+        if instance.address:
+            instance.address.delete()
+        
+        # Remove a clínica
+        instance.delete()
 
 
 class MedicalRecordSerializer(serializers.ModelSerializer):
