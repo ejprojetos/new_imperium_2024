@@ -34,17 +34,18 @@
 			<button class="px-4 py-2 text-white bg-blue-700 rounded-full">Hoje</button>
 			<select class="px-4 py-2 bg-gray-200 rounded-full">
 				<option>Dias da semana</option>
-			</select>
-			<select class="px-4 py-2 bg-gray-200 rounded-full">
-				<option>Médico</option>
+				<option v-for="day in days_of_week" :key="day">{{ day }}</option>
+				
 			</select>
 			<select class="px-4 py-2 bg-gray-200 rounded-full">
 				<option>Turno</option>
+				<option v-for="turn in turns" :key="turn">{{ turn }}</option>
 			</select>
-			<input type="text" v-model="searchName" class="px-4 py-2 bg-gray-200 rounded-full" placeholder="Nome" />
-			<input type="text" v-model="searchEmail" class="px-4 py-2 bg-gray-200 rounded-full" placeholder="Email" />
+			
+			<input type="text" v-model="searchName" class="px-4 py-2 bg-gray-200 rounded-full" placeholder="Pesquise..." />
 			<button class="p-2 bg-gray-200 rounded-full">
 				<Search />
+				
 			</button>
 		</div>
 
@@ -57,12 +58,17 @@
 			<div v-else v-for="receptionist in filteredReceptionists" :key="receptionist.id"
 				class="flex flex-col items-center p-4 bg-white rounded-lg shadow">
 				<RouterLink :to="`/dashboard/recepcionistas/${receptionist.id}`">
-					<img :src="`src/assets/images/avatar.png`" alt="Recepcionista"
+					<img :src="`${apiAddress}${receptionist.attach_document}`" alt="Recepcionista"
 						class="mx-auto w-24 h-24 rounded-full cursor-pointer" />
 				</RouterLink>
-				<h4 class="mt-2 font-bold text-center">{{ receptionist.first_name }} {{ receptionist.last_name }}</h4>
-				<p class="text-sm text-center">Atendimento: {{ receptionist.schedule }}</p>
-				<p class="text-sm text-center">Turno: {{ receptionist.shift }}</p>
+				
+				<h4 class="mt-2 font-bold text-center"> {{ receptionist.first_name }} </h4>
+				<p class="text-sm text-center">Atendimento: 
+					<p> <span>{{ formats(receptionist.expedient.days_of_week) }}</span> </p>
+				</p>
+				<p class="text-sm text-center">Turno: 
+					<p> <span>{{ formats(receptionist.expedient.turns) }}</span> </p>
+				</p>
 				<div class="flex gap-x-2 mt-2">
 					<Mail class="mx-auto w-6 h-6 text-blue-700" />
 					<p class="text-sm text-center">{{ receptionist.email }}</p>
@@ -95,10 +101,13 @@ const userStore = useUserStore()
 
 // referencia para armazenar os recepcionistas
 const receptionists = ref<User[]>([])
+const apiAddress = 'http://191.252.192.82'
 
 // referencias para os campos de busca
 const searchName = ref('')
 const searchEmail = ref('')
+const days_of_week = ['Segunda-Feira', 'Terça-Feira', 'Quarta-Feira', 'Quinta-Feira', 'Sexta-Feira', 'Sábado', 'Domingo']
+const turns = ['Matutino', 'Vespertino', 'Noturno']
 
 // computed property para filtrar os recepcionistas
 const filteredReceptionists = computed(() => {
@@ -112,7 +121,16 @@ const filteredReceptionists = computed(() => {
 	})
 })
 
-// busca os recepcionistas quando o componente é montado
+function formats(itens: String[]) {
+	if (!itens || itens.length === 0) return ''; 
+      if (itens.length === 1) return itens[0]; 
+
+      
+      const itensCopy = [...itens];
+      const lastItem = itensCopy.pop(); 
+      return itensCopy.join(', ') + ' e ' + lastItem; 
+}
+
 onMounted(async () => {
 	try {
 		await userStore.fetchReceptionists()
