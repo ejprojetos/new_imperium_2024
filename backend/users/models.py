@@ -74,6 +74,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField(max_length=255, null=True, blank=True)
     expedient = models.OneToOneField(Expedient, on_delete=models.CASCADE, blank=True, null=True)
     availableForShift = models.BooleanField(default=False, blank=True, null=True)
+    terms_accepted = models.BooleanField(default=False, null=True, blank=True)
 
     objects = UserManager()
 

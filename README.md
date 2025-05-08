@@ -181,6 +181,18 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
+**Rode o script para criar os tipos de usuarios do sistema e o user ADMIN**:
+```bash
+python scripts/seed.py
+```
+
+o usuario admin criado possui as seguintes credenciais:
+
+```txt
+email: admin@example.com
+senha: admin123
+```
+
 ##### 6. Inicie o servidor
 
 ```bash

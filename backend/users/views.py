@@ -13,7 +13,7 @@ from .models import User, Role, Expedient, UserPolicies, FAQ, UserSupport
 from .serializers import UserSerializer, CustomTokenObtainPairSerializer, ExpedientSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django_filters.rest_framework import DjangoFilterBackend
-from clinic.pagination import FaqPagination
+from clinic.pagination import FaqPagination, SmallPagination
 from clinic.models import WorkingHours
 from .permissions import IsRoleUser
 
@@ -249,6 +249,7 @@ class UserSupportViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_fields = ['profile']
+    pagination_class = SmallPagination
 
 class ExpedientViewSet(viewsets.ModelViewSet):
    days_dict = {

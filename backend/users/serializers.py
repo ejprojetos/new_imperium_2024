@@ -103,8 +103,8 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 'first_name', 'email', 'cpf', 'date_birth',
-            'password', 'role', 'address', 'clinics', 'gender',
-            'formacao', 'crm', 'attach_document','image', 'phone', 'expedient', 'availableForShift'
+            'password', 'role', 'address', 'clinic', 'gender',
+            'formacao', 'crm', 'attach_document','image', 'phone', 'expedient', 'availableForShift', 'terms_accepted'
         ]
         read_only_fields = ['id']
         extra_kwargs = {
