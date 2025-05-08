@@ -9,7 +9,7 @@
                 <div class="bg-white rounded-lg shadow-md p-6 flex flex-col items-center">
                     <h2 class="text-2xl font-semibold text-blue-900 mb-6">Manuais</h2>
                     <RouterLink
-                        to="/dashboard/suporte/manuais"
+                        to="/dashboard/suporte/todos-manuais"
                         class="bg-blue-600 text-white px-8 py-2 rounded-full hover:bg-blue-700 transition-colors">
                         Ver
                     </RouterLink>
