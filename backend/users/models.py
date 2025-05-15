@@ -17,6 +17,7 @@ class RoleEnum(Enum):
     DOCTOR = "doctor"
     PATIENT = "patient"
     RECEPTIONIST = "receptionist"
+    CLINIC = "clinic"
 
     @classmethod
     def choices(cls):
@@ -141,6 +142,7 @@ class UserSupport(models.Model):
     title = models.CharField(max_length=255)
     profile = models.CharField(max_length=255, choices=RoleEnum.choices())
     manual_archive = models.FileField(upload_to='manual',null=True, blank=True)
+    creation_date = models.DateTimeField(default=timezone.now)
 
 class FAQ(models.Model):
     title = models.CharField(max_length=255)
