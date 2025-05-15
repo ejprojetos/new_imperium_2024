@@ -327,5 +327,5 @@ class UserSupportSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserSupport
-        fields = ['id','title', 'profile', 'manual_archive']
+        fields = ['id','title', 'profile', 'manual_archive', 'creation_date']
     
