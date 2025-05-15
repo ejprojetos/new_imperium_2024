@@ -17,6 +17,7 @@ class RoleEnum(Enum):
     DOCTOR = "doctor"
     PATIENT = "patient"
     RECEPTIONIST = "receptionist"
+    CLINIC = "clinic"
 
     @classmethod
     def choices(cls):
