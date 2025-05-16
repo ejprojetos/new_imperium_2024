@@ -92,7 +92,11 @@ git clone https://github.com/EJECT4UFRN/imperium_2024.git
     * PATIENT
         - email: mariana.silva@gmail.com
         - senha: Paciente@2025
-    
+     
+    * CLINIC
+        - email: clinic@example.com
+        - senha: clinic123
+     
    
 
 
