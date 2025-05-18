@@ -51,9 +51,16 @@ export const policiesService = {
 }
 
 export const manualService = {
-    getAllManuals: () => fetcher<Manual[]>('/user-supports/'),
+    // getAllManuals: () => fetcher<Manual[]>('/user-supports/'),
 
-    getManual: (id: number) => fetcher<Manual>(`/user-supports/${id}/`),
+    getAllManuals: (page = 1) => fetcher<{
+        results: Manual[];
+        count: number;
+        next: string | null;
+        previous: string | null;
+    }>('/user-supports/?page=' + page),
+
+    getManual: (id: string) => fetcher<Manual>(`/user-supports/${id}/`),
 
     createManual: (data: { titulo: string; profile: string; manual_archive: File }) => {
         if (!data.manual_archive) {
@@ -83,17 +90,23 @@ export const manualService = {
     
 
     
-    updateManual: (id: number, data: { titulo?: string; perfil?: string; manual?: File }) => {
-        const formData = new FormData();
-        if (data.titulo) formData.append('title', data.titulo);
-        if (data.perfil) formData.append('profile', data.perfil);
-        if (data.manual) formData.append('manual_archive', data.manual);
+    updateManual: (id: string, data: {
+    title?: string;
+    profile?: string;
+    manual_archive?: File;
+    creation_date?: string;
+  }) => {
+    const formData = new FormData();
+    if (data.title)           formData.append('title', data.title);
+    if (data.profile)         formData.append('profile', data.profile);
+    if (data.manual_archive)  formData.append('manual_archive', data.manual_archive);
+    if (data.creation_date)   formData.append('creation_date', data.creation_date);
 
-        return fetcher<Manual>(`/user-supports/${id}/`, {
-            method: 'PUT',
-            body: formData
-        });
-    },
+    return fetcher<Manual>(`/user-supports/${id}/`, {
+      method: 'PATCH',
+      body: formData,
+    });
+  },
 
     deleteManual: (id: number) => fetcher(`/manuals/${id}/`, { method: 'DELETE' })
 

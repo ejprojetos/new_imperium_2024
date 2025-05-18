@@ -19,8 +19,9 @@ interface Policies {
 }
 
 interface Manual {
-    id: number
+    id: string
     title: string
     profile: string
     manual_archive: string
+    date_created: string
 }

@@ -224,6 +224,11 @@ const router = createRouter({
             name: 'editar-manuais',
             component: () => import('../views/dashboard/suporte/editar-manuais.vue')
         },
+        {
+            path: '/dashboard/suporte/editar-manuais/:id',
+            name: 'editar-manuais-id',
+            component: () => import('../views/dashboard/suporte/editar-manuais.vue')
+        },
 
         {
             path: '/dashboard/politicas/politicas',

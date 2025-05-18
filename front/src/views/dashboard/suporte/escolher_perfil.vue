@@ -63,7 +63,7 @@ import { perfilSelecionado } from '@/stores/ajuda/perfilStore'
 
 
 function emitPerfil(perfil: string) {
-    console.log(perfil)
+    console.log("perfil selecionado", perfil)
     perfilSelecionado.value = perfil
 }
 

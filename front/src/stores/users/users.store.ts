@@ -14,8 +14,8 @@ export const useUserStore = defineStore('users', () => {
     const fetchDoctors = async () => {
         try {
             loading.value = true
-            doctors.value = await userService.getDoctors()
-        } catch (error) {
+            doctors.value = (await userService.getDoctors()) || []
+        } catch (error: any) {
             console.error('erro ao buscar médicos:', error)
             error.value = 'erro ao buscar médicos'
             throw error
@@ -27,8 +27,8 @@ export const useUserStore = defineStore('users', () => {
     const fetchPatients = async () => {
         try {
             loading.value = true
-            patients.value = await userService.getPatients()
-        } catch (error) {
+            patients.value = (await userService.getPatients()) || []
+        } catch (error: any) {
             console.error('erro ao buscar pacientes:', error)
             error.value = 'erro ao buscar pacientes'
             throw error
@@ -40,8 +40,8 @@ export const useUserStore = defineStore('users', () => {
     const fetchReceptionists = async () => {
         try {
             loading.value = true
-            receptionists.value = await userService.getReceptionists()
-        } catch (error) {
+            receptionists.value = (await userService.getReceptionists()) || []
+        } catch (error: any) {
             console.error('Erro ao buscar recepcionistas:', error)
             error.value = 'Erro ao buscar recepcionistas'
             throw error
