@@ -9,10 +9,10 @@
                     <span>< Suporte ao usuário</span>
                 </RouterLink>
                 <RouterLink
-                    to="/dashboard/suporte/manuais"
+                    to="/dashboard/suporte/todos-manuais"
                     class="flex items-center text-blue-600 hover:text-blue-800 mb-4">
                     <span class="mr-2"></span>
-                    <span>< FAQ</span>
+                    <span>< Manuais</span>
                 </RouterLink>
             </div>
             <div class="flex items-center mb-6 w-full max-w-[1000px] mx-auto">
@@ -38,6 +38,7 @@
                     <label class="text-black font-montserrat text-lg font-light leading-none">
                         Perfil:
                     </label>
+
 
                     <select
                         class="select w-full rounded-[100px] border border-black flex h-[35px] min-h-[35px] px-7 items-center gap-[10px] self-stretch my-1"
@@ -65,7 +66,10 @@
                     <div
                         class="flex justify-between items-center w-full h-[40px] px-4 rounded-[100px] border border-black bg-gray-100 cursor-pointer"
                         @click="triggerFileInput">
-                        <span class="truncate">{{ fileName || 'Selecionar arquivo...' }}</span>
+                        <span class="truncate">
+                        {{ fileName || (typeof formData.manual_archive === 'string' ? extractFileName(formData.manual_archive) : 'Selecionar arquivo...') }}
+                        </span>
+
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 512 512"
@@ -96,17 +100,68 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
-import { RouterLink } from 'vue-router'
+import { ref, reactive, computed, onMounted } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
 import LayoutDashboard from '@/layouts/LayoutDashboard.vue'
 import { toast } from 'vue-sonner'
 import { useManualStore } from '@/stores/ajuda/manualStore'
+import { perfilSelecionado } from '@/stores/ajuda/perfilStore'
 import { useUserStore } from '@/stores/user/useUserStore'
 import { storeToRefs } from 'pinia'
-import { perfilSelecionado } from '@/stores/ajuda/perfilStore'
 
 const manualStore = useManualStore()
 const isEditing = ref(false)
+const route = useRoute()
+const id = route.params.id as string | undefined
+
+
+// const userStore = useUserStore()
+// const { role } = storeToRefs(userStore)
+// console.log('ROLE: ', role.value)
+
+
+function extractFileName(path: string): string {
+    return path.split('/').pop() || 'Selecionar arquivo...';
+}
+
+
+
+interface ManualForm {
+    titulo: string
+    perfil: perfilOption[]
+    manual_archive: string | File | null
+    creation_date?: string
+}
+
+const formData = reactive<ManualForm>({
+    titulo: '',
+    perfil: [
+        {label:'Administrador', value:'ADMIN'},
+        {label:'Paciente', value: 'PATIENT'},
+        {label:'Clínica', value: 'CLINIC'},
+        {label:'Médico', value: 'DOCTOR'},
+        {label:'Recepcionista', value: 'RECEPTIONIST'}]
+        ,
+    manual_archive: null as File | null
+})
+
+const optionSelected = ref({
+    perfil: perfilSelecionado.value
+})
+console.log('PERFIL SELECIONADO: ',perfilSelecionado.value)
+
+
+onMounted( async () => {
+    if(id){
+        await manualStore.fetchSingleManual(id)
+        console.log('MANUAL: ', manualStore.currentManual)
+        formData.titulo = manualStore.currentManual?.title || ''
+        optionSelected.value.perfil = manualStore.currentManual?.profile || ''
+        formData.manual_archive = manualStore.currentManual?.manual_archive || ''
+    }else{
+        manualStore.resetCurrentManual()
+    }
+})
 
 
 
@@ -129,28 +184,11 @@ const perfil = computed(() =>{
     }
 })
 
-interface Manual {
-    titulo: string
-    perfil: perfilOption[]
-    manual_archive: string | File
-}
+
 const fileName = ref<string | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
 
-const optionSelected = ref({
-    perfil: perfilSelecionado.value
-})
-const formData = reactive<Manual>({
-    titulo: '',
-    perfil: [
-        {label:'Administrador', value:'ADMIN'},
-        {label:'Paciente', value: 'PATIENT'},
-        {label:'Clínica', value: 'CLINIC'},
-        {label:'Médico', value: 'DOCTOR'},
-        {label:'Recepcionista', value: 'RECEPTIONIST'}]
-        ,
-    manual_archive: null as File | null
-})
+
 
 function handleFileChange(event: Event) {
     const input = event.target as HTMLInputElement
@@ -161,8 +199,16 @@ function handleFileChange(event: Event) {
 }
 
 async function submitForm() {
-
-    
+    if(id){
+        // Prepare payload with correct types for updateManual
+        await manualStore.updateManual(id, {
+            title: formData.titulo,
+            profile: optionSelected.value.perfil,
+            manual_archive: typeof formData.manual_archive === 'string' ? undefined : formData.manual_archive ?? undefined,
+            creation_date: formData.creation_date
+        })
+        toast('Manual atualizado com sucesso!');
+    }else{
     try {
         if (!formData.titulo || !formData.perfil || !formData.manual_archive) {
             toast('Preencha todos os campos');
@@ -173,12 +219,14 @@ async function submitForm() {
             titulo: formData.titulo,
             profile: optionSelected.value.perfil,
             manual_archive: formData.manual_archive,
+            creation_date: new Date().toISOString()
         });
 
         toast('Manual cadastrado com sucesso!');
     } catch (error) {
         toast('Erro ao cadastrar manual');
         console.error(error);
+    }
     }
 }
 

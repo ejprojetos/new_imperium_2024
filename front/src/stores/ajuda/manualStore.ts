@@ -1,6 +1,6 @@
 import { manualService } from "@/services/ajuda.service";
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 
 
@@ -12,19 +12,39 @@ export const useManualStore = defineStore('manual', () => {
     const loading = ref(false);
     const error = ref<string | null>(null);
 
-    const fetchManuals = async () => {
+
+    const count = ref(0);
+    const next = ref<string | null>(null);
+    const previous = ref<string | null>(null);
+
+
+    //novos estados para paginação
+    const totalCount = ref(0);
+    const currentPage = ref(1);
+    const pageSize = ref(5);
+    const totalPages = computed(() => Math.ceil(totalCount.value / pageSize.value));
+
+    const fetchManuals = async (page = 1) => {
         try {
             loading.value = true;
-            manuals.value = (await manualService.getAllManuals()) || [];
+            const response = await manualService.getAllManuals(page);
+            manuals.value = response?.results || [];
+            count.value = response?.count || 0;
+            next.value = response?.next || null;
+            previous.value = response?.previous || null;
+            currentPage.value = page;
+
+            return response;
         } catch (err) {
             error.value = 'Erro ao buscar manuais';
             console.error(err);
+            return null;
         } finally {
             loading.value = false;
         }
     };
 
-    const fetchSingleManual = async (id: number) => {
+    const fetchSingleManual = async (id: string) => {
         try {
             loading.value = true;
             currentManual.value = await manualService.getManual(id);
@@ -62,7 +82,7 @@ export const useManualStore = defineStore('manual', () => {
         }
     };
 
-    const updateManual = async (id: number, manualData: { titulo?: string; perfil?: string; manual?: File }) => {
+    const updateManual = async (id: string, manualData: { title?: string; profile?: string; manual_archive?: File, creation_date?: string }) => {
         try {
             loading.value = true;
             const updatedManual = await manualService.updateManual(id, manualData);
@@ -85,7 +105,7 @@ export const useManualStore = defineStore('manual', () => {
         }
     };
 
-    const deleteManual = async (id: number) => {
+    const deleteManual = async (id: string) => {
         try {
             loading.value = true;
             await manualService.deleteManual(id);
@@ -98,15 +118,27 @@ export const useManualStore = defineStore('manual', () => {
         }
     };
 
+    const resetCurrentManual = () => {
+        currentManual.value = null;
+    };
+    console.log(totalCount.value, currentPage.value, pageSize.value, totalPages.value);
     return {
         manuals,
+        count,
+        next,
+        previous,
         currentManual,
         loading,
         error,
+        totalCount,
+        currentPage,
+        pageSize,
+        totalPages,
         fetchManuals,
         fetchSingleManual,
         createManual,
         updateManual,
-        deleteManual
+        deleteManual,
+        resetCurrentManual
     };
 });

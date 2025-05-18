@@ -1,6 +1,12 @@
 import type { Address } from './clinic.types'
 
 export interface Role {
+    role: string | ''
+    name: string
+}
+
+export type UserRole = {
+    role: string
     name: string
 }
 

@@ -16,9 +16,11 @@ export async function fetcher<T>(endpoint: string, options: RequestInit = {}): P
     const headers: HeadersInit = {
         ...(token && { Authorization: `Bearer ${token}` }),
         ...(!options.body || !(options.body instanceof FormData)
+    
             ? { 'Content-Type': 'application/json' }
             : {}),
         ...options.headers
+    
     }
 
     try {
