@@ -146,10 +146,7 @@ const carregarTodosManuais = async () => {
     }
 
     // ✅ Filtra manuais pelo perfil selecionado
-    const manuaisFiltrados = tempManuais.filter(manual => manual.profile === optionSelected.value.perfil);
-
-    // Ordena por ID decrescente (mais novo primeiro)
-    tempManuais.sort((a, b) => b.id - a.id);
+    const manuaisFiltrados = tempManuais.filter(manual => manual.profile === optionSelected.value.perfil).sort((a, b) => b.id - a.id);
 
     todosManuais.value = manuaisFiltrados;
 
