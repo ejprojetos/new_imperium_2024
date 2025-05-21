@@ -42,12 +42,22 @@ git clone https://github.com/EJECT4UFRN/imperium_2024.git
      ```
      npm install
      ```
+     
+   * Ainda no terminal, digite:
+     ```
+     npm install -g pnpm
+     ```
+     
+   * E em seguida:
+     ```
+     pnpm install
+     ```
 
    **Isso fará a instalação dos modulos do NODE**
 
 4. **Rode o projeto VUE**
    ```
-   npm run dev
+   pnpm run dev
    ```
 
     * No terminal, terá um retorno como esse.
@@ -78,8 +88,8 @@ git clone https://github.com/EJECT4UFRN/imperium_2024.git
  * Acesse o login de acordo com o perfil que deseja e bom teste :D
    
     * ADMIN
-      - email: admin123@example.com
-      - senha: admin
+      - email: admin@example.com
+      - senha: admin123
       - 
     * DOCTOR
       - email: camila.torres@clinicavital.com
