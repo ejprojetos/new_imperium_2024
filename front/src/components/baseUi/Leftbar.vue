@@ -101,7 +101,7 @@
 		name: string
 		icon: any
 		path: string
-		roles: Array<'ADMIN' | 'DOCTOR' | 'PATIENT' | 'RECEPTIONIST'>
+		roles: Array<'ADMIN' | 'DOCTOR' | 'PATIENT' | 'RECEPTIONIST' | 'CLINIC'>
 	}
 
 
@@ -110,7 +110,7 @@
 			name: 'Principal',
 			icon: principalIcon,
 			path: '/dashboard',
-			roles: ['ADMIN', 'DOCTOR', 'PATIENT', 'RECEPTIONIST']
+			roles: ['ADMIN', 'DOCTOR', 'PATIENT', 'RECEPTIONIST', 'CLINIC']
 		},
 		{
 			name: 'Institucional',
@@ -134,25 +134,25 @@
 			name: 'Médicos',
 			icon: clinicasIcon,
 			path: '/dashboard/medicos',
-			roles: ['ADMIN', 'DOCTOR', 'RECEPTIONIST']
+			roles: ['ADMIN', 'DOCTOR', 'RECEPTIONIST', 'CLINIC']
 		},
 		{
 			name: 'Consultas',
 			icon: principalIcon,
 			path: '/dashboard/consultas',
-			roles: ['ADMIN', 'DOCTOR', 'RECEPTIONIST']
+			roles: ['ADMIN', 'DOCTOR', 'RECEPTIONIST', 'CLINIC']
 		},
 		{
 			name: 'Recepcionistas',
 			icon: recepcionistasIcon,
 			path: '/dashboard/recepcionistas',
-			roles: ['ADMIN', 'RECEPTIONIST']
+			roles: ['ADMIN', 'RECEPTIONIST', 'CLINIC']
 		},
 		{
 			name: 'Pacientes',
 			icon: pacientesIcon,
 			path: '/dashboard/pacientes',
-			roles: ['ADMIN', 'PATIENT']
+			roles: ['ADMIN', 'PATIENT', 'CLINIC']
 		},
 		{
 			name: 'Minhas Consultas',
