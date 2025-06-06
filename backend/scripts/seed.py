@@ -17,6 +17,7 @@ def create_roles():
         {"name": "DOCTOR", "description": "doctor role"},
         {"name": "PATIENT", "description": "patient role"},
         {"name": "RECEPTIONIST", "description": "receptionist role"},
+        {"name": "CLINIC", "description": "clinic role"},
     ]
     for role_data in roles:
         role, created = Role.objects.get_or_create(name=role_data["name"], defaults={"description": role_data["description"]})
@@ -45,6 +46,27 @@ def create_admin_user():
     user.save()
     print("Usuário admin criado com sucesso.")
 
+def create_clinic_user():
+    if User.objects.filter(email='clinic@example.com').exists():
+        print("Usuário clinic já existe.")
+        return
+
+    clinic_role = Role.objects.get(name="CLINIC")
+    user = User.objects.create(
+        email='clinic@example.com',
+        role=clinic_role,
+        cpf='00000000000',
+        date_birth='1990-01-01',
+        is_staff=False,
+        is_superuser=True,
+        is_active=True,
+        date_joined=timezone.now()
+    )
+    user.set_password('clinic123')
+    user.save()
+    print("Usuário clinic criado com sucesso.")
+
 if __name__ == "__main__":
     create_roles()
     create_admin_user()
+    create_clinic_user()
