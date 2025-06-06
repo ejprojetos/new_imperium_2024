@@ -102,6 +102,8 @@ class UserViewSet(viewsets.ModelViewSet):
                 raise PermissionDenied("Somente administradores ou recepcionistas podem criar doctores, receptionists e patients.")
         elif role["name"] in "PATIENT":
             serializer.save()
+        else:
+            raise PermissionDenied("Você não tem permissão para criar esse tipo de usuário.")
         
     def update(self, request, *args, **kwargs):
         # permintindo que o admin atualize qualquer usuário e o usuário atualize apenas seus próprios dados
