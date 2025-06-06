@@ -89,16 +89,22 @@ class UserViewSet(viewsets.ModelViewSet):
                 "name": role.name
             }
 
-        if user.is_staff:
-            serializer.save()
-        elif self.request.user.is_authenticated and role in ('DOCTOR', 'RECEPTIONIST', 'PATIENT'):
-            if user.has_role('RECEPTIONIST') or user.has_role('ADMIN'):
+        # liberar a criação de usuários apenas para PATIENTS para usuários não autenticados
+        if self.request.user.is_authenticated:
+            if user.is_staff:
                 serializer.save()
+            elif role in ('DOCTOR', 'RECEPTIONIST', 'PATIENT'):
+                if user.has_role('RECEPTIONIST') or user.has_role('ADMIN'):
+                    serializer.save()
+                else:
+                    raise PermissionDenied("Você não tem permissão para criar esse tipo de usuário.")
             else:
-                raise PermissionDenied("Você não tem permissão para criar esse tipo de usuário.")
+                raise PermissionDenied("Somente administradores ou recepcionistas podem criar doctores, receptionists e patients.")
+        elif role["name"] in "PATIENT":
+            serializer.save()
         else:
-            raise PermissionDenied("Somente administradores ou recepcionistas podem criar doctores, receptionists e patients.")
-
+            raise PermissionDenied("Você não tem permissão para criar esse tipo de usuário.")
+        
     def update(self, request, *args, **kwargs):
         # permintindo que o admin atualize qualquer usuário e o usuário atualize apenas seus próprios dados
         user = request.user
