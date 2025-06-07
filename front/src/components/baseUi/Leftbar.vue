@@ -178,6 +178,10 @@ const navItems: NavItem[] = [
     }
 ]
 
+console.log('[DEBUG] NAV ITEMS: ', navItems)
+console.log('[DEBUG] ROLE: ', role.value)
+console.log('[DEBUG] ROUTE: ', route.path)
+
 const filteredNavItems = computed(() => navItems.filter((item) => item.roles.includes(role.value)))
 </script>
 
