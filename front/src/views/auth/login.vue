@@ -74,7 +74,7 @@ async function login() {
 
         const user = {
             id: decode.user_id,
-            role: response.user_role[0]
+            role: response.user_role
         }
 
         setUser(user)
