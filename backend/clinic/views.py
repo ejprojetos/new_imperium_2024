@@ -10,9 +10,11 @@ from rest_framework.response import Response
 from .pagination import SmallPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
-from users.models import User
+from users.models import User, Role
 from .tasks import send_notifications
 from datetime import datetime, timedelta
+from django.contrib.auth import get_user_model
+from django.core.mail import send_mail
 
 class ClinicViewSet(viewsets.ModelViewSet):
     queryset = Clinic.objects.all()
@@ -31,7 +33,42 @@ class ClinicViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         user = self.request.user
-        return super().get_queryset().filter(admin_clinic=user)
+        return super().get_queryset().filter(admins_clinic=user)
+    
+    def create(self, request, *args, **kwargs):
+        """
+            aplicar a criação do usuario de clinica
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        clinic = serializer.save()
+
+        # role admin
+        role = Role.objects.get(name="CLINIC")
+        User = get_user_model()
+        password = User.objects.make_random_password()
+
+        # Create a user for the clinic
+        user_data = {
+            "email": clinic.email_responsavel,
+            "first_name": clinic.nome_responsavel,
+            "cpf": clinic.cpf_responsavel,
+            "password": password,
+            "role": role,
+        }
+        user = User.objects.create_user(**user_data)
+        #clinic.admins_clinic.add(user)
+
+        # enviar o email com a senha do user
+        send_mail(
+            subject="Bem-vindo à Clínica!",
+            message=f"Olá {clinic.nome_responsavel},\n\nSua conta foi criada com sucesso. Aqui estão suas credenciais de acesso:\n\nEmail: {clinic.email_responsavel}\nSenha: {password}\n\nPor favor, altere sua senha após o primeiro login.",
+            from_email="no-reply@clinic.com",
+            recipient_list=[clinic.email_responsavel],
+            fail_silently=False,
+        )
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class MedicalRecordViewSet(viewsets.ModelViewSet):
@@ -145,7 +182,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user_id = self.kwargs.get('user_id')
-        if user_id is not None:
+        if (user_id is not None):
             return Notification.objects.filter(user_id=user_id).order_by('id')
         else:
             return super().get_queryset()

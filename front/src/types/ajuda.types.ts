@@ -17,3 +17,11 @@ interface Policies {
     title: string
     content: string
 }
+
+interface Manual {
+    id: string
+    title: string
+    profile: string
+    manual_archive: string
+    date_created: string
+}

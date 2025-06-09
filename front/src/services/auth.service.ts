@@ -2,8 +2,32 @@ import { fetcher } from './fetcher.service'
 import { useRouter } from 'vue-router'
 import type { LoginData, LoginResponse } from '@/types/auth.types'
 
+
+
 export const authService = {
     login: async (data: LoginData) => {
+        //////////////////////////////////////
+
+        // if (IS_AUTH_DISABLED) {
+        //     // Simula um login fake
+        //     const mockResponse: LoginResponse = {
+        //         access: 'fake-access-token',
+        //         refresh: 'fake-refresh-token',
+        //         user_role: ['ADMIN']
+        //     }
+
+        //     localStorage.setItem('access_token', mockResponse.access)
+        //     localStorage.setItem('refresh_token', mockResponse.refresh)
+        //     localStorage.setItem('user_role', mockResponse.user_role[0])
+
+        //     console.warn('🔓 Autenticação desativada — modo mock ativo')
+        //     return mockResponse
+        // }
+
+
+        // /////////////////////////////
+        
+        
         try {
             const response = await fetcher<LoginResponse>('/auth/token/', {
                 method: 'POST',
@@ -22,7 +46,7 @@ export const authService = {
             if (response.access) {
                 localStorage.setItem('access_token', response.access)
                 localStorage.setItem('refresh_token', response.refresh)
-                localStorage.setItem('user_role', response.user_role[0])
+                localStorage.setItem('user_role', JSON.stringify(response.user_role))
             }
 
             return response as LoginResponse

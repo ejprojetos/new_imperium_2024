@@ -215,8 +215,18 @@ const router = createRouter({
             component: () => import('../views/dashboard/suporte/manuais.vue')
         },
         {
+            path: '/dashboard/suporte/todos-manuais',
+            name: 'todos-manuais',
+            component: () => import('../views/dashboard/suporte/manuais-ativos.vue')
+        },
+        {
             path: '/dashboard/suporte/editar-manuais',
             name: 'editar-manuais',
+            component: () => import('../views/dashboard/suporte/editar-manuais.vue')
+        },
+        {
+            path: '/dashboard/suporte/editar-manuais/:id',
+            name: 'editar-manuais-id',
             component: () => import('../views/dashboard/suporte/editar-manuais.vue')
         },
 

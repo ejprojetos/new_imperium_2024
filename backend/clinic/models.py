@@ -19,7 +19,8 @@ class Clinic(models.Model):
     is_active = models.BooleanField(default=True)
     
     address = models.ForeignKey(Address, on_delete=models.CASCADE)
-    admin_clinic = models.ForeignKey(User, on_delete=models.CASCADE, related_name='admin_clinic')
+    #admin_clinic = models.ForeignKey(User, on_delete=models.CASCADE, related_name='admin_clinic')
+    admins_clinic = models.ManyToManyField(User, related_name='admins_clinic', blank=True)
 
     def __str__(self):
         return self.name

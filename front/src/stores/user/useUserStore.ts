@@ -3,6 +3,7 @@ import { ref } from 'vue'
 
 type UserRole = 'ADMIN' | 'DOCTOR' | 'PATIENT' | 'RECEPTIONIST'
 
+
 export const useUserStore = defineStore(
     'user',
     () => {
@@ -11,9 +12,10 @@ export const useUserStore = defineStore(
 
         const setUser = (newRole: UserRole, newName: string) => {
             role.value = newRole
+            console.log('role no store', newRole)
             name.value = newName
         }
-
+    
         return {
             role,
             name,

@@ -13,7 +13,7 @@ from .models import User, Role, Expedient, UserPolicies, FAQ, UserSupport
 from .serializers import UserSerializer, CustomTokenObtainPairSerializer, ExpedientSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django_filters.rest_framework import DjangoFilterBackend
-from clinic.pagination import FaqPagination
+from clinic.pagination import FaqPagination, SmallPagination
 from clinic.models import WorkingHours
 from .permissions import IsRoleUser
 
@@ -82,19 +82,29 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         user = self.request.user
-        role = serializer.validated_data.get('roles')
-        role = role[0]['name']
-        
-        if role in ('ADMIN'):
-            serializer.save()
-        elif self.request.user.is_authenticated and role in ('DOCTOR', 'RECEPTIONIST', 'PATIENT'):
-            if user.has_role('RECEPTIONIST') or user.has_role('ADMIN'):
-                serializer.save()
-            else:
-                raise PermissionDenied("Você não tem permissão para criar esse tipo de usuário.")
-        else:
-            raise PermissionDenied("Somente administradores ou recepcionistas podem criar doctores, receptionists e patients.")
+        role = serializer.validated_data.get('role')
+        if role is None:
+            role = Role.objects.get(name='PATIENT')
+            role = {
+                "name": role.name
+            }
 
+        # liberar a criação de usuários apenas para PATIENTS para usuários não autenticados
+        if self.request.user.is_authenticated:
+            if user.is_staff:
+                serializer.save()
+            elif role in ('DOCTOR', 'RECEPTIONIST', 'PATIENT'):
+                if user.has_role('RECEPTIONIST') or user.has_role('ADMIN'):
+                    serializer.save()
+                else:
+                    raise PermissionDenied("Você não tem permissão para criar esse tipo de usuário.")
+            else:
+                raise PermissionDenied("Somente administradores ou recepcionistas podem criar doctores, receptionists e patients.")
+        elif role["name"] in "PATIENT":
+            serializer.save()
+        else:
+            raise PermissionDenied("Você não tem permissão para criar esse tipo de usuário.")
+        
     def update(self, request, *args, **kwargs):
         # permintindo que o admin atualize qualquer usuário e o usuário atualize apenas seus próprios dados
         user = request.user
@@ -106,14 +116,14 @@ class UserViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("Você não tem permissão para editar este usuário.")
 
     @action(detail=True, methods=['patch'])
-    def update_roles(self, request, pk=None):
+    def update_role(self, request, pk=None):
         user = self.get_object()
         current_user = request.user
         if current_user.is_staff:  # Apenas admins podem alterar os papéis
-            roles_data = request.data.get('roles')
-            if roles_data:
-                roles = Role.objects.filter(id__in=roles_data)
-                user.roles.set(roles)
+            role_data = request.data.get('role')
+            if role_data:
+                role = Role.objects.get(name=role_data['name'])
+                user.role = role
                 user.save()
                 return Response({"detail": "Papéis atualizados com sucesso."})
             else:
@@ -139,7 +149,7 @@ from .models import User
 )
 class ViewGetUsersDoctors(APIView):
     def get(self, request, *args, **kwargs):
-        users = User.objects.filter(roles__name='DOCTOR')
+        users = User.objects.filter(role__name='DOCTOR')
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -154,7 +164,7 @@ class ViewGetUsersDoctors(APIView):
 )
 class ViewGetUsersRecepcionistas(APIView):
     def get(self, request, *args, **kwargs):
-        users = User.objects.filter(roles__name='RECEPTIONIST')
+        users = User.objects.filter(role__name='RECEPTIONIST')
         serializer = RecepcionistSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
@@ -168,7 +178,7 @@ class ViewGetUsersRecepcionistas(APIView):
 )
 class ViewGetUsersPacientes(APIView):
     def get(self, request, *args, **kwargs):
-        users = User.objects.filter(roles__name='PATIENT')
+        users = User.objects.filter(role__name='PATIENT')
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -195,7 +205,7 @@ class ViewGetUsersPacientes(APIView):
     def get(self, request, *args, **kwargs):
         user = self.request.user
 
-        users = User.objects.filter(roles__name__in=['PATIENT'])
+        users = User.objects.filter(role__name__in=['PATIENT'])
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -245,6 +255,7 @@ class UserSupportViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_fields = ['profile']
+    pagination_class = SmallPagination
 
 class ExpedientViewSet(viewsets.ModelViewSet):
    days_dict = {
@@ -296,7 +307,6 @@ class ExpedientViewSet(viewsets.ModelViewSet):
   
    def destroy(self, request, *args, **kwargs):
        user_id = self.kwargs.get('pk')
-       print(user_id)
        user = User.objects.get(id=user_id)
        WorkingHours.objects.filter(user=user).delete()
 

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import Clinic, Appointment, MedicalRecord, WorkingHours, Room, WaitingList
 
-
+"""
 class ClinicAdmin(admin.ModelAdmin):
     list_display = ['name', 'cnpj', 'is_active']
     search_fields = ['name', 'cnpj']
@@ -52,3 +52,4 @@ admin.site.register(MedicalRecord, MedicalRecordAdmin)
 admin.site.register(WorkingHours, WorkingHoursAdmin)
 admin.site.register(Room, RoomAdmin)
 admin.site.register(WaitingList, WaitingListAdmin)
+"""

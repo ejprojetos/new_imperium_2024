@@ -58,7 +58,7 @@ async function login() {
 			email: email.value,
 			password: password.value
 		})
-		setUser(response.user_role[0], response.name)
+		setUser(response.user_role, response.name)
 		toast.success('Login realizado com sucesso')
 		router.push('/dashboard')
 	} catch (error) {

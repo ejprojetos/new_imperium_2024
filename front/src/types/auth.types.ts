@@ -7,6 +7,6 @@ export interface LoginResponse {
     access: string
     refresh: string
     detail: string | null
-    user_role: Array<'ADMIN' | 'DOCTOR' | 'PATIENT' | 'RECEPTIONIST'>
+    user_role: string
     name: string
 }

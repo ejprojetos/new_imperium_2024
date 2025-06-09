@@ -17,6 +17,7 @@ class RoleEnum(Enum):
     DOCTOR = "doctor"
     PATIENT = "patient"
     RECEPTIONIST = "receptionist"
+    CLINIC = "clinic"
 
     @classmethod
     def choices(cls):
@@ -60,10 +61,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
     cpf = models.CharField(max_length=255)
-    date_birth = models.DateField()
+    date_birth = models.DateField(null=True, blank=True)
     address = models.ForeignKey(Address, on_delete=models.CASCADE, null=True, blank=True)
-    roles = models.ManyToManyField(Role, related_name='users')
+    role = models.ForeignKey(Role, on_delete=models.CASCADE)
     clinics = models.ManyToManyField("clinic.Clinic", blank=True)
+    #clinic = models.ForeignKey("clinic.Clinic", on_delete=models.CASCADE, blank=True, null=True)
     specialty = models.CharField(max_length=255, null=True, blank=True)
     gender = models.CharField(max_length=255, null=True, blank=True)
     formacao = models.CharField(max_length=255, null=True, blank=True)
@@ -73,6 +75,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField(max_length=255, null=True, blank=True)
     expedient = models.OneToOneField(Expedient, on_delete=models.CASCADE, blank=True, null=True)
     availableForShift = models.BooleanField(default=False, blank=True, null=True)
+    terms_accepted = models.BooleanField(default=False, null=True, blank=True)
 
     objects = UserManager()
 
@@ -91,7 +94,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     def has_role(self, role_name):
         """Verifica se o usuário tem um determinado papel."""
-        return self.roles.filter(name=role_name).exists()
+        return self.role.name == role_name if self.role else False
 
 
 class Patient(models.Model):
@@ -139,6 +142,7 @@ class UserSupport(models.Model):
     title = models.CharField(max_length=255)
     profile = models.CharField(max_length=255, choices=RoleEnum.choices())
     manual_archive = models.FileField(upload_to='manual',null=True, blank=True)
+    creation_date = models.DateTimeField(default=timezone.now)
 
 class FAQ(models.Model):
     title = models.CharField(max_length=255)
